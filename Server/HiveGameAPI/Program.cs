@@ -1,5 +1,6 @@
 using HiveGame.BusinessLogic.Models.Graph;
 using HiveGame.BusinessLogic.Services;
+using Microsoft.AspNetCore.Hosting;
 using QuickGraph.Algorithms.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAutoMapper(typeof(Program));
 
 //Services
 builder.Services.AddScoped<IHiveGameService, HiveGameService>();

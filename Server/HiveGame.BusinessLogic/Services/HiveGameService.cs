@@ -1,41 +1,54 @@
-﻿using HiveGame.BusinessLogic.Models.Graph;
+﻿using AutoMapper;
+using HiveGame.BusinessLogic.Models.DTOs;
+using HiveGame.BusinessLogic.Models.Graph;
 using HiveGame.BusinessLogic.Models.Requests;
 
 namespace HiveGame.BusinessLogic.Services
 {
     public interface IHiveGameService
     {
-        public bool Move(MoveRequest request);
+        public IList<VertexDTO> Move(MoveRequest request);
 
-        public bool Put(PutRequest request);
+        public IList<VertexDTO> Put(PutRequest request);
 
-        public bool PutFirstInsect(PutFirstInsectRequest request);
+        public IList<VertexDTO> PutFirstInsect(PutFirstInsectRequest request);
     }
 
     public class HiveGameService : IHiveGameService
     {
         private readonly IHiveGraph _graph;
-        public HiveGameService(IHiveGraph graph) 
+        private readonly IMapper _mapper;
+        public HiveGameService(IHiveGraph graph, IMapper mapper) 
         {
             _graph = graph;
+            _mapper = mapper;
         }
 
-        public bool Move(MoveRequest request)
+        public IList<VertexDTO> Move(MoveRequest request)
         {
             var vertexFrom = _graph.GetVertexByCoord(request.MoveFrom);
             var vertexTo = _graph.GetVertexByCoord(request.MoveTo);
-            return _graph.Move(vertexFrom, vertexTo, null);
+            _graph.Move(vertexFrom, vertexTo, null);
+            return GetVerticesDTOFromGraph();
         }
 
-        public bool Put(PutRequest request)
+        public IList<VertexDTO> Put(PutRequest request)
         {
             var vertexFrom = _graph.GetVertexByCoord(request.WhereToPut);
-            return _graph.Put(request.InsectToPut, vertexFrom, null);
+            _graph.Put(request.InsectToPut, vertexFrom, null);
+            return GetVerticesDTOFromGraph();
         }
 
-        public bool PutFirstInsect(PutFirstInsectRequest request)
+        public IList<VertexDTO> PutFirstInsect(PutFirstInsectRequest request)
         {
-            return _graph.PutFirstInsect(request.InsectToPut, null);
+            _graph.PutFirstInsect(request.InsectToPut, null);
+            return GetVerticesDTOFromGraph();
+        }
+
+        private IList<VertexDTO> GetVerticesDTOFromGraph()
+        {
+            var verticesDTO = _mapper.Map<IList<VertexDTO>>(_graph.Vertices);
+            return verticesDTO;
         }
     }
 }

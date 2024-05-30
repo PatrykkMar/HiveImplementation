@@ -2,6 +2,7 @@
 using HiveGame.BusinessLogic.Models.Graph;
 using HiveGame.Core.Models;
 using QuickGraph;
+using QuickGraph.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,8 @@ namespace HiveGame.BusinessLogic.Models.Graph
         public bool PutFirstInsect(InsectType insect, Player player);
         public Vertex? GetVertexByCoord(long x, long y);
         Vertex? GetVertexByCoord(Point point);
+        IEnumerable<Vertex> Vertices { get; }
+
     }
 
     public class HiveGraph : AdjacencyGraph<Vertex, DirectedEdge<Vertex>>, IHiveGraph
@@ -33,7 +36,6 @@ namespace HiveGame.BusinessLogic.Models.Graph
             var insect = moveFrom.CurrentInsect;
             moveTo.CurrentInsect = insect;
             moveFrom.CurrentInsect = null;
-
             RemoveAllEmptyUnconnectedVerticesAround(moveFrom);
 
             AddEmptyVerticesAround(moveTo);
@@ -61,7 +63,6 @@ namespace HiveGame.BusinessLogic.Models.Graph
         public bool PutFirstInsect(InsectType insectType, Player player)
         {
             Vertex vertex;
-
             var insect = new Insect(insectType);
 
             if (VertexCount == 0)

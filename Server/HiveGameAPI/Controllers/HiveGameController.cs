@@ -8,6 +8,7 @@ namespace HiveGameAPI.Controllers
     [Route("[controller]")]
     public class HiveGameController : ControllerBase
     {
+        //TODO: Result classes
         private readonly IHiveGameService _hiveGameService;
 
         public HiveGameController(IHiveGameService hiveGameService)
@@ -19,21 +20,21 @@ namespace HiveGameAPI.Controllers
         public IActionResult Move([FromBody] MoveRequest request)
         {
             var result = _hiveGameService.Move(request);
-            return Ok(new { success = result });
+            return Ok(result);
         }
 
         [HttpPost("put")]
         public IActionResult Put([FromBody] PutRequest request)
         {
-            _hiveGameService.Put(request);
-            return Ok();
+            var result = _hiveGameService.Put(request);
+            return Ok(result);
         }
 
         [HttpPost("putFirstInsect")]
         public IActionResult PutFirstInsect([FromBody] PutFirstInsectRequest request)
         {
-            _hiveGameService.PutFirstInsect(request);
-            return Ok();
+            var result = _hiveGameService.PutFirstInsect(request);
+            return Ok(result);
         }
     }
 }
