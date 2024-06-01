@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HiveGame.BusinessLogic.Models.DTOs;
 using HiveGame.BusinessLogic.Models.Graph;
+using HiveGame.BusinessLogic.Models.Insects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace HiveGame.BusinessLogic.AutoMapper
         public AutoMapperProfile()
         {
             CreateMap<Vertex, VertexDTO>()
-                .ForMember(dest => dest.Insect, opt => opt.MapFrom(src => src.CurrentInsect != null ? (InsectType?)src.CurrentInsect.Type : null));
+                .ForMember(dest => dest.insect, opt => opt.MapFrom(src => src.CurrentInsect != null ? (InsectType?)src.CurrentInsect.Type : null));
         }
     }
 }

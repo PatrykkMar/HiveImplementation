@@ -1,5 +1,5 @@
 ﻿using HiveGame.BusinessLogic.Models;
-using HiveGame.BusinessLogic.Models.Graph;
+using HiveGame.BusinessLogic.Models.Insects;
 using HiveGame.Core.Models;
 using QuickGraph;
 using QuickGraph.Serialization;

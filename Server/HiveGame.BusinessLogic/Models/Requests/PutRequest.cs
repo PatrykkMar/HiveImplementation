@@ -1,4 +1,4 @@
-﻿using HiveGame.BusinessLogic.Models.Graph;
+﻿using HiveGame.BusinessLogic.Models.Insects;
 using HiveGame.Core.Models;
 using System;
 using System.Collections.Generic;

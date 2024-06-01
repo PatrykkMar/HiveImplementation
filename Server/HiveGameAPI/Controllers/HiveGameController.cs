@@ -16,6 +16,13 @@ namespace HiveGameAPI.Controllers
             _hiveGameService = hiveGameService;
         }
 
+        [HttpGet("grid")]
+        public IActionResult GetTestGrid()
+        {
+            var result = _hiveGameService.GetTestGrid();
+            return Ok(new{ Vertices = result });
+        }
+
         [HttpPost("move")]
         public IActionResult Move([FromBody] MoveRequest request)
         {

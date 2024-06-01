@@ -1,4 +1,5 @@
 ﻿using HiveGame.BusinessLogic.Models.Graph;
+using HiveGame.BusinessLogic.Models.Insects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,14 +11,14 @@ namespace HiveGame.BusinessLogic.Models.DTOs
     [Serializable]
     public class VertexDTO
     {
-        public long X { get; set; }
-        public long Y { get; set; }
-        public InsectType? Insect { get; set; }
+        public long x { get; set; }
+        public long y { get; set; }
+        public InsectType? insect { get; set; }
         public VertexDTO(Vertex vertex) 
         { 
-            X = vertex.X;
-            Y = vertex.Y;
-            Insect = vertex.CurrentInsect?.Type;
+            x = vertex.X;
+            y = vertex.Y;
+            insect = vertex.CurrentInsect?.Type;
         }
     }
 }

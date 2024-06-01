@@ -1,4 +1,5 @@
-﻿using QuickGraph;
+﻿using HiveGame.BusinessLogic.Models.Insects;
+using QuickGraph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
