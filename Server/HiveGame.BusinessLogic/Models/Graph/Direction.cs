@@ -12,27 +12,19 @@ namespace HiveGame.BusinessLogic.Models.Graph
     {
         public enum Direction
         {
-            TopRight, Right, BottomRight, BottomLeft, Left, TopLeft
+            TopRight, Right, BottomRight, BottomLeft, Left, TopLeft, Up, Down
         }
 
-        public static readonly Dictionary<Direction, (int dx, int dy)> NeighborOffsetsDict = new()
+        public static readonly Dictionary<Direction, (int dx, int dy, int dz)> NeighborOffsetsDict = new()
         {
-            { Direction.Right, (1, 0) },
-            { Direction.TopRight, (1, -1) },
-            { Direction.TopLeft, (0, -1) },
-            { Direction.Left, (-1, 0) },
-            { Direction.BottomLeft, (-1, 1) },
-            { Direction.BottomRight, (0, 1) }
-        };
-
-        public static readonly (int dx, int dy)[] NeighborOffsets = new (int, int)[]
-        {
-            (1, 0),
-            (1, -1),
-            (0, -1), 
-            (-1, 0),
-            (-1, 1),
-            (0, 1)
+            { Direction.Right, (1, 0, 0) },
+            { Direction.TopRight, (1, -1, 0) },
+            { Direction.TopLeft, (0, -1, 0) },
+            { Direction.Left, (-1, 0, 0) },
+            { Direction.BottomLeft, (-1, 1, 0) },
+            { Direction.BottomRight, (0, 1, 0) },
+            { Direction.Up, (0, 0, 1) },
+            { Direction.Down, (0, 0, -1) }
         };
 
         public static Direction OppositeDirection(Direction direction)
@@ -45,6 +37,8 @@ namespace HiveGame.BusinessLogic.Models.Graph
                 Direction.Left => Direction.Right,
                 Direction.BottomLeft => Direction.TopRight,
                 Direction.BottomRight => Direction.TopLeft,
+                Direction.Up => Direction.Down,
+                Direction.Down => Direction.Up,
                 _ => throw new ArgumentException("Invalid direction")
             };
         }

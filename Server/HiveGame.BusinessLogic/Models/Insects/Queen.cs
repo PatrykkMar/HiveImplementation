@@ -12,20 +12,12 @@ namespace HiveGame.BusinessLogic.Models.Insects
     {
         public Queen()
         {
-
+            Type = InsectType.Queen;
         }
 
-        public override IList<Vertex> GetAllEmptyVertices(Vertex moveFrom, IList<Vertex> vertices)
+        public override IList<Vertex> GetAvailableVertices(Vertex moveFrom, HiveGraph graph)
         {
-            //if is surrouded by at least 5 insects, can't move
-            if(moveFrom.GetAdjacentVerticesList(vertices).Count >=5)
-                return new List<Vertex>();
-
-            vertices = base.GetAllEmptyVertices(moveFrom, vertices);
-            
-            vertices = vertices.Intersect(moveFrom.GetAdjacentVerticesList(vertices)).ToList();
-
-            return vertices;
+            throw new NotImplementedException();
         }
     }
 }

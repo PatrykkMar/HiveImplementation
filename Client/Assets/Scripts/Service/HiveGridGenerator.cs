@@ -23,19 +23,19 @@ public class HexGridGenerator : MonoBehaviour
     {
         foreach (var vertex in vertices)
         {
-            Debug.Log($"Hex_{vertex.x}_{vertex.y}_{vertex.insect}");
-            Vector3 position = CalculatePosition(vertex.x, vertex.y);
+            Debug.Log($"Hex_{vertex.x}_{vertex.y}_{vertex.z}_{vertex.insect}");
+            Vector3 position = CalculatePosition(vertex.x, vertex.y, vertex.z);
             GameObject hexPrism = Instantiate(vertex.insect == 0 ? hexPrismPrefab : hexPrismInsectPrefab, position, Quaternion.identity);
-            hexPrism.name = $"Hex_{vertex.x}_{vertex.y}";
+            hexPrism.name = $"Hex_{vertex.x}_{vertex.y}_{vertex.z}_{vertex.insect}";
         }
     }
 
-    private Vector3 CalculatePosition(long x, long y)
+    private Vector3 CalculatePosition(long x, long y, long z)
     {
         float posX = radius * 3f / 2f * x;
         posX/=10;
         float posY = radius * Mathf.Sqrt(3) * (y + x / 2f);
         posY/=10;
-        return new Vector3(posX, 0, posY); // Assuming Z is the vertical axis in Unity
+        return new Vector3(posX, z * 0.5f, posY); // Assuming Z is the vertical axis in Unity
     }
 }

@@ -8,17 +8,16 @@ using System.Threading.Tasks;
 
 namespace HiveGame.BusinessLogic.Models.Insects
 {
-    public class Bettle : Insect
+    public class Beetle : Insect
     {
-        public Bettle()
+        public Beetle()
         {
-
+            Type = InsectType.Beetle;
         }
 
-        public override IList<Vertex> GetAllEmptyVertices(Vertex moveFrom, IList<Vertex> vertices)
+        public override IList<Vertex> GetAvailableVertices(Vertex moveFrom, HiveGraph graph)
         {
-            //TODO
-            return vertices;
+            throw new NotImplementedException();
         }
     }
 }

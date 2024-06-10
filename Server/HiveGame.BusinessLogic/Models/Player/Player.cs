@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HiveGame.BusinessLogic.Models.Player
+namespace HiveGame.BusinessLogic.Models
 {
     public class Player
     {

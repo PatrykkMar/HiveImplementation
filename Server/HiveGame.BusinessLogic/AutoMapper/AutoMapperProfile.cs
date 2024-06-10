@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using HiveGame.BusinessLogic.Models.DTOs;
 using HiveGame.BusinessLogic.Models.Graph;
 using HiveGame.BusinessLogic.Models.Insects;
 using System;

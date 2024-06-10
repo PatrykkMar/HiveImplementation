@@ -5,9 +5,11 @@ VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HiveGame", "HiveGameAPI\HiveGame.csproj", "{5DE50D52-7ABF-407C-B397-86A87404C536}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HiveGame.BusinessLogic", "HiveGame.BusinessLogic\HiveGame.BusinessLogic.csproj", "{E1605F89-2035-40AA-92F6-D51F39A4D4B9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HiveGame.BusinessLogic", "HiveGame.BusinessLogic\HiveGame.BusinessLogic.csproj", "{E1605F89-2035-40AA-92F6-D51F39A4D4B9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HiveGame.Core", "HiveGame.Core\HiveGame.Core.csproj", "{C0E64A07-7473-414C-82C9-C69880E0AC85}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HiveGame.Core", "HiveGame.Core\HiveGame.Core.csproj", "{C0E64A07-7473-414C-82C9-C69880E0AC85}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HiveGame.Test", "HiveGame.Test\HiveGame.Test.csproj", "{6CBB3E4D-03BA-4A9D-A65E-8E555A7228C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{C0E64A07-7473-414C-82C9-C69880E0AC85}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C0E64A07-7473-414C-82C9-C69880E0AC85}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C0E64A07-7473-414C-82C9-C69880E0AC85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CBB3E4D-03BA-4A9D-A65E-8E555A7228C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CBB3E4D-03BA-4A9D-A65E-8E555A7228C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CBB3E4D-03BA-4A9D-A65E-8E555A7228C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CBB3E4D-03BA-4A9D-A65E-8E555A7228C3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -12,19 +12,19 @@ namespace HiveGame.BusinessLogic.Models.Insects
     {
         public Spider()
         {
-
+            Type = InsectType.Spider;
         }
 
         //can move on adjacent field
-        public override IList<Vertex> GetAllEmptyVertices(Vertex moveFrom, IList<Vertex> vertices)
+        public override IList<Vertex> GetAvailableVertices(Vertex moveFrom, HiveGraph graph)
         {
             //if is surrouded by at least 5 insects, can't move
-            if(moveFrom.GetAdjacentVerticesList(vertices).Count >=5)
+            if (CheckIfSurrounded(moveFrom, graph))
                 return new List<Vertex>();
 
-            vertices = base.GetAllEmptyVertices(moveFrom, vertices);
+            var vertices = BasicCheck(moveFrom, graph);
             
-            vertices = vertices.Intersect(moveFrom.GetAdjacentVerticesList(vertices)).ToList();
+            vertices = vertices.Intersect(graph.GetAdjacentVerticesList(moveFrom)).ToList();
 
             return vertices;
         }

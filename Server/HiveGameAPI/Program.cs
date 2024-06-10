@@ -1,3 +1,4 @@
+using HiveGame.BusinessLogic.Factories;
 using HiveGame.BusinessLogic.Models.Graph;
 using HiveGame.BusinessLogic.Services;
 using Microsoft.AspNetCore.Hosting;
@@ -16,8 +17,11 @@ builder.Services.AddAutoMapper(typeof(Program));
 //Services
 builder.Services.AddScoped<IHiveGameService, HiveGameService>();
 
+//Factories
+builder.Services.AddScoped<IInsectFactory, InsectFactory>();
+
 //Others
-builder.Services.AddScoped<IHiveGraph, HiveGraph>();
+builder.Services.AddScoped<HiveGraph, HiveGraph>();
 
 
 var app = builder.Build();

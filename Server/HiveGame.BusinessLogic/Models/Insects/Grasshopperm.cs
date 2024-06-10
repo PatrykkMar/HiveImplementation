@@ -12,14 +12,19 @@ namespace HiveGame.BusinessLogic.Models.Insects
     {
         public Grasshopperm()
         {
-
+            Type= InsectType.Grasshopperm;
         }
 
         //can move on adjacent field
-        public override IList<Vertex> GetAllEmptyVertices(Vertex moveFrom, IList<Vertex> vertices)
+        public IList<Vertex> BasicCheck(Vertex moveFrom, HiveGraph graph)
         {
             //TODO
-            return vertices;
+            return null;
+        }
+
+        public override IList<Vertex> GetAvailableVertices(Vertex moveFrom, HiveGraph graph)
+        {
+            throw new NotImplementedException();
         }
     }
 }

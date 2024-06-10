@@ -14,23 +14,31 @@ namespace HiveGame.BusinessLogic.Models.Graph
 
         public Vertex() { }
 
+        public Vertex(int x, int y, int z) : this(x, y)
+        {
+            Z = z;
+        }
+
         public Vertex(int x, int y)
         {
             X = x;
             Y = y;
+            Z = 0;
         }
 
-        public Vertex(int x, int y, Insect insect)
+        public Vertex(int x, int y, int z, Insect insect)
         {
             X = x;
             Y = y;
+            Z = z;
             CurrentInsect = insect;
         }
 
-        public Vertex(Vertex vertex, (int dx, int dy) offset)
+        public Vertex(Vertex vertex, (int dx, int dy, int dz) offset)
         {
             X = vertex.X + offset.dx;
             Y = vertex.Y + offset.dy;
+            Z = vertex.Z + offset.dz;
         }
 
         public Vertex(Vertex vertex, Direction direction)
@@ -38,6 +46,7 @@ namespace HiveGame.BusinessLogic.Models.Graph
             var offset = NeighborOffsetsDict[direction];
             X = vertex.X + offset.dx;
             Y = vertex.Y + offset.dy;
+            Z = vertex.Z + offset.dz;
         }
 
         public Insect? CurrentInsect { get; set; }
@@ -52,34 +61,6 @@ namespace HiveGame.BusinessLogic.Models.Graph
 
         public long X { get; set; }
         public long Y { get; set; }
-
-        public Dictionary<Direction, Vertex> GetAdjacentVerticesDict(IList<Vertex> vertices)
-        {
-            var dict = new Dictionary<Direction, Vertex>();
-            var leftUp = vertices.FirstOrDefault(x => x.X == X && x.Y == Y + 1);
-            if (leftUp != null) dict.Add(Direction.TopLeft, leftUp);
-
-            var rightUp = vertices.FirstOrDefault(x => x.X == X + 1 && x.Y == Y + 1);
-            if (rightUp != null) dict.Add(Direction.TopRight, rightUp);
-
-            var left = vertices.FirstOrDefault(x => x.X == X - 1 && x.Y == Y);
-            if (left != null) dict.Add(Direction.Left, left);
-
-            var right = vertices.FirstOrDefault(x => x.X == X + 1 && x.Y == Y);
-            if (right != null) dict.Add(Direction.Right, right);
-
-            var leftDown = vertices.FirstOrDefault(x => x.X == X && x.Y == Y - 1);
-            if (leftDown != null) dict.Add(Direction.BottomLeft, leftDown);
-
-            var rightDown = vertices.FirstOrDefault(x => x.X == X - 1 && x.Y == Y - 1);
-            if (rightDown != null) dict.Add(Direction.BottomRight, rightDown);
-
-            return dict;
-        }
-
-        public List<Vertex> GetAdjacentVerticesList(IList<Vertex> vertices)
-        {
-            return GetAdjacentVerticesDict(vertices).Values.ToList();
-        }
+        public long Z { get; set; }
     }
 }

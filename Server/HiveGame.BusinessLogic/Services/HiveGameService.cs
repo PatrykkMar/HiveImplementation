@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using HiveGame.BusinessLogic.Models.DTOs;
 using HiveGame.BusinessLogic.Models.Graph;
 using HiveGame.BusinessLogic.Models.Insects;
 using HiveGame.BusinessLogic.Models.Requests;
@@ -19,9 +18,9 @@ namespace HiveGame.BusinessLogic.Services
 
     public class HiveGameService : IHiveGameService
     {
-        private readonly IHiveGraph _graph;
+        private readonly HiveGraph _graph;
         private readonly IMapper _mapper;
-        public HiveGameService(IHiveGraph graph, IMapper mapper) 
+        public HiveGameService(HiveGraph graph, IMapper mapper) 
         {
             _graph = graph;
             _mapper = mapper;
@@ -30,9 +29,10 @@ namespace HiveGame.BusinessLogic.Services
         public IList<VertexDTO> GetTestGrid()
         {
             _graph.PutFirstInsect(InsectType.Ant, null);
-            _graph.Put(InsectType.Queen, _graph.GetVertexByCoord(1, -1), null);
-            _graph.Move(_graph.GetVertexByCoord(0, 0), _graph.GetVertexByCoord(2, -2), null);
-            return GetVerticesDTOFromGraph();
+            _graph.Put(InsectType.Queen, _graph.GetVertexByCoord(1, -1, 0), null);
+            //_graph.Move(_graph.GetVertexByCoord(0, 0, 0), _graph.GetVertexByCoord(2, -2 ,0), null);
+            var dtos = GetVerticesDTOFromGraph();
+            return dtos;
         }
 
         public IList<VertexDTO> Move(MoveRequest request)

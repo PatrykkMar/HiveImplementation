@@ -8,5 +8,6 @@ public class VertexDTO
 {
     public long x;
     public long y;
+    public long z;
     public int insect;
 }
