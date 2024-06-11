@@ -25,7 +25,6 @@ public class HiveGameService
             }
 
             string jsonResponse = webRequest.downloadHandler.text;
-            Debug.Log(jsonResponse);
             return JsonUtility.FromJson<VertexDTOList>(jsonResponse).vertices;
         }
     }

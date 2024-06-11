@@ -79,6 +79,6 @@ namespace HiveGame.BusinessLogic.Models.Insects
 
     public enum InsectType
     {
-        Queen, Ant, Spider, Grasshopperm, Beetle
+        Nothing=-1, Queen=0, Ant=1, Spider=2, Grasshopperm=3, Beetle=4
     }
 }

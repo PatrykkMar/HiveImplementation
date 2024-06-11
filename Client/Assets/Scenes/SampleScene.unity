@@ -168,8 +168,39 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hexPrismPrefab: {fileID: 8245136676699455747, guid: 82fb2a07e5b2d5c4886d29aad6236100, type: 3}
-  hexPrismInsectPrefab: {fileID: 919132149155446097, guid: da1cf2b21211cc048bfa0aa2d3d2c24d, type: 3}
+  hexPrismInsectPrefab: {fileID: 4499399255008462367, guid: 435633ee5615edb479723a6a37864721, type: 3}
   radius: 10
+  insectObjectPairs:
+  - InsectType: 0
+    PlayerColor: 0
+    UV: {fileID: 2100000, guid: 41b8897f7e62d0b46b2b976067597d66, type: 2}
+  - InsectType: 1
+    PlayerColor: 0
+    UV: {fileID: 2100000, guid: d7ce83b5c9649b640a84534beb4c7b1a, type: 2}
+  - InsectType: 2
+    PlayerColor: 0
+    UV: {fileID: 2100000, guid: e8b319175eba3204394308df395cc3a8, type: 2}
+  - InsectType: 3
+    PlayerColor: 0
+    UV: {fileID: 2100000, guid: 5fb72b8f536f54e4681177fcc6d3c8f0, type: 2}
+  - InsectType: 4
+    PlayerColor: 0
+    UV: {fileID: 2100000, guid: c22a081556f952345ab4b5b4d0c3f15e, type: 2}
+  - InsectType: 0
+    PlayerColor: 1
+    UV: {fileID: 2100000, guid: d611e2056a734984f8e0e6a6f66b13fd, type: 2}
+  - InsectType: 1
+    PlayerColor: 1
+    UV: {fileID: 2100000, guid: ae7ec90e65fe63c4290aeda0e21e6a04, type: 2}
+  - InsectType: 2
+    PlayerColor: 1
+    UV: {fileID: 2100000, guid: 9fba80dfa49a5274ba55c17d86a97784, type: 2}
+  - InsectType: 3
+    PlayerColor: 1
+    UV: {fileID: 2100000, guid: b14e7059938e2434da42539ee8f80943, type: 2}
+  - InsectType: 4
+    PlayerColor: 1
+    UV: {fileID: 2100000, guid: 4e208e13b5a903242b3d0ea79952ce2a, type: 2}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
