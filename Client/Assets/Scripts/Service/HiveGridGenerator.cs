@@ -23,10 +23,11 @@ public class HexGridGenerator : MonoBehaviour
     {
         foreach (var vertex in vertices)
         {
-            Debug.Log($"Hex_{vertex.x}_{vertex.y}_{vertex.z}_{vertex.insect}");
+            var log = $"Hex_{vertex.x}_{vertex.y}_{vertex.z}_" + (vertex.insect == -1 ? "no insect" : "insect");
+            Debug.Log(log);
             Vector3 position = CalculatePosition(vertex.x, vertex.y, vertex.z);
-            GameObject hexPrism = Instantiate(vertex.insect == 0 ? hexPrismPrefab : hexPrismInsectPrefab, position, Quaternion.identity);
-            hexPrism.name = $"Hex_{vertex.x}_{vertex.y}_{vertex.z}_{vertex.insect}";
+            GameObject hexPrism = Instantiate(vertex.insect == -1 ? hexPrismPrefab : hexPrismInsectPrefab, position, Quaternion.identity);
+            hexPrism.name = log;
         }
     }
 

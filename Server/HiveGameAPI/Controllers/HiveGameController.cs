@@ -23,6 +23,13 @@ namespace HiveGameAPI.Controllers
             return Ok(new{ Vertices = result });
         }
 
+        [HttpGet("gridPrint")]
+        public IActionResult GetTestGridPrint()
+        {
+            var result = _hiveGameService.GetTestGridPrint();
+            return Ok(new { Vertices = result });
+        }
+
         [HttpPost("move")]
         public IActionResult Move([FromBody] MoveRequest request)
         {

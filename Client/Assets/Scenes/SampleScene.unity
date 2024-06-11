@@ -168,7 +168,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hexPrismPrefab: {fileID: 8245136676699455747, guid: 82fb2a07e5b2d5c4886d29aad6236100, type: 3}
-  hexPrismInsectPrefab: {fileID: 4499399255008462367, guid: 435633ee5615edb479723a6a37864721, type: 3}
+  hexPrismInsectPrefab: {fileID: 919132149155446097, guid: da1cf2b21211cc048bfa0aa2d3d2c24d, type: 3}
   radius: 10
 --- !u!1 &705507993
 GameObject:

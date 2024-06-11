@@ -14,6 +14,7 @@ namespace HiveGame.BusinessLogic.Services
 
         public IList<VertexDTO> PutFirstInsect(PutFirstInsectRequest request);
         IList<VertexDTO> GetTestGrid();
+        string GetTestGridPrint();
     }
 
     public class HiveGameService : IHiveGameService
@@ -32,6 +33,27 @@ namespace HiveGame.BusinessLogic.Services
             _graph.Put(InsectType.Queen, _graph.GetVertexByCoord(1, -1, 0), null);
             //_graph.Move(_graph.GetVertexByCoord(0, 0, 0), _graph.GetVertexByCoord(2, -2 ,0), null);
             var dtos = GetVerticesDTOFromGraph();
+            return dtos;
+        }
+
+        public string GetTestGridPrint()
+        {
+            _graph.PutFirstInsect(InsectType.Ant, null);
+            //_graph.Put(InsectType.Queen, _graph.GetVertexByCoord(1, -1, 0), null);
+            //_graph.Move(_graph.GetVertexByCoord(0, 0, 0), _graph.GetVertexByCoord(2, -2 ,0), null);
+            var dtos = "";
+            dtos += "Vertices\n";
+            foreach (var vertex in _graph.Vertices)
+            {
+                dtos += vertex.PrintVertex() + "\n";
+            }
+
+            // Wypisujemy krawędzie
+            dtos += "Edges:\n";
+            foreach (var edge in _graph.Edges)
+            {
+                dtos += $"{((edge.Source.PrintVertex()))} -> {edge.Target.PrintVertex()} {edge.Direction}\n";
+            }
             return dtos;
         }
 

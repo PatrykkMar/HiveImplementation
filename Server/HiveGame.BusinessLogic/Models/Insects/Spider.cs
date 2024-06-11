@@ -24,7 +24,7 @@ namespace HiveGame.BusinessLogic.Models.Insects
 
             var vertices = BasicCheck(moveFrom, graph);
             
-            vertices = vertices.Intersect(graph.GetAdjacentVerticesList(moveFrom)).ToList();
+            vertices = vertices.Intersect(graph.GetAdjacentVerticesByCoordList(moveFrom)).ToList();
 
             return vertices;
         }

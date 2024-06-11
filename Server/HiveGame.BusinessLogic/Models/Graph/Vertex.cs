@@ -59,6 +59,11 @@ namespace HiveGame.BusinessLogic.Models.Graph
             }
         }
 
+        public string PrintVertex()
+        {
+            return $"({X},{Y},{Z}) {(IsEmpty ? "empty " : " ")}{(CurrentInsect != null ? "hasInsect" : "")}";
+        }
+
         public long X { get; set; }
         public long Y { get; set; }
         public long Z { get; set; }

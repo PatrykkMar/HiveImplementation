@@ -68,6 +68,7 @@ namespace HiveGame.BusinessLogic.Models.Graph
                 vertex = new Vertex(0, 0, 0, insect);
             else
                 throw new Exception("First insect is put");
+
             AddVertex(vertex);
             AddEmptyVerticesAround(vertex);
             return true;
@@ -75,13 +76,14 @@ namespace HiveGame.BusinessLogic.Models.Graph
 
         private void AddEmptyVerticesAround(Vertex vertex, bool ignoreDown = true)
         {
-            var adjacentEdges = OutEdges(vertex);
-            foreach(var direction in (Direction[])Enum.GetValues(typeof(Direction)))
+            var graph = this;
+            var adjacentVertices = GetAdjacentVerticesByCoordDict(vertex, ignoreDown);
+            foreach (var direction in (Direction[])Enum.GetValues(typeof(Direction)))
             {
                 if(ignoreDown && direction == Direction.Down) 
                     continue;
 
-                if (!adjacentEdges.Any(x => x.Direction == direction))
+                if (!adjacentVertices.ContainsKey(direction))
                 {
                     var emptyVertex = new Vertex(vertex, direction);
                     AddVertex(emptyVertex);
@@ -118,43 +120,28 @@ namespace HiveGame.BusinessLogic.Models.Graph
         }
 
 
-        public Dictionary<Direction, Vertex> GetAdjacentVerticesDict(Vertex vertex, bool ignoreDown = true)
+        public Dictionary<Direction, Vertex> GetAdjacentVerticesByCoordDict(Vertex vertex, bool ignoreDown = true)
         {
             var dict = new Dictionary<Direction, Vertex>();
 
-            var topLeft = Vertices.FirstOrDefault(x => x.X == vertex.X && x.Y == vertex.Y + 1 && x.Z == vertex.Z);
-            if (topLeft != null) dict.Add(Direction.TopLeft, topLeft);
+            foreach (var direction in (Direction[])Enum.GetValues(typeof(Direction)))
+            {
+                if (ignoreDown && direction == Direction.Down)
+                    continue;
 
-            var topRight = Vertices.FirstOrDefault(x => x.X == vertex.X + 1 && x.Y == vertex.Y + 1 && x.Z == vertex.Z);
-            if (topRight != null) dict.Add(Direction.TopRight, topRight);
+                var offset = NeighborOffsetsDict[direction];
 
-            var left = Vertices.FirstOrDefault(x => x.X == vertex.X - 1 && x.Y == vertex.Y && x.Z == vertex.Z);
-            if (left != null) dict.Add(Direction.Left, left);
-
-            var right = Vertices.FirstOrDefault(x => x.X == vertex.X + 1 && x.Y == vertex.Y && x.Z == vertex.Z);
-            if (right != null) dict.Add(Direction.Right, right);
-
-            var bottomLeft = Vertices.FirstOrDefault(x => x.X == vertex.X && x.Y == vertex.Y - 1 && x.Z == vertex.Z);
-            if (bottomLeft != null) dict.Add(Direction.BottomLeft, bottomLeft);
-
-            var bottomRight = Vertices.FirstOrDefault(x => x.X == vertex.X - 1 && x.Y == vertex.Y - 1 && x.Z == vertex.Z);
-            if (bottomRight != null) dict.Add(Direction.BottomRight, bottomRight);
-
-            var up = Vertices.FirstOrDefault(x => x.X == vertex.X && x.Y == vertex.Y && x.Z == vertex.Z + 1);
-            if (up != null) dict.Add(Direction.Up, up);
-
-            if(!ignoreDown)
-            { 
-                var down = Vertices.FirstOrDefault(x => x.X == vertex.X && x.Y == vertex.Y && x.Z == vertex.Z - 1);
-                if (down != null) dict.Add(Direction.Down, down);
+                var adjacent = Vertices.FirstOrDefault(x => x.X == vertex.X + offset.dx && x.Y == vertex.Y + offset.dy && x.Z == vertex.Z + offset.dz);
+                if (adjacent != null)
+                    dict.Add(direction, adjacent);
             }
 
             return dict;
         }
 
-        public List<Vertex> GetAdjacentVerticesList(Vertex vertex)
+        public List<Vertex> GetAdjacentVerticesByCoordList(Vertex vertex)
         {
-            return GetAdjacentVerticesDict(vertex).Values.ToList();
+            return GetAdjacentVerticesByCoordDict(vertex).Values.ToList();
         }
     }
 }

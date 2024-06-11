@@ -23,7 +23,7 @@ namespace HiveGame.BusinessLogic.Models.Insects
             if (CheckIfSurrounded(moveFrom, graph))
                 return new List<Vertex>();
 
-            vertices = vertices.Intersect(graph.GetAdjacentVerticesList(moveFrom)).ToList();
+            vertices = vertices.Intersect(graph.GetAdjacentVerticesByCoordList(moveFrom)).ToList();
 
             vertices = GetAntVerticesByBFS(moveFrom, graph);
 
@@ -48,7 +48,7 @@ namespace HiveGame.BusinessLogic.Models.Insects
                     result.Add(current);
                 }
 
-                var adjacent = graph.GetAdjacentVerticesList(current);
+                var adjacent = graph.GetAdjacentVerticesByCoordList(current);
 
                 if (adjacent.Count < 5)
                 {

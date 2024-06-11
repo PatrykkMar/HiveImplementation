@@ -26,8 +26,8 @@ namespace HiveGame.BusinessLogic.Models.Insects
         {
             var vertices = graph.Vertices.ToList();
 
-            var verticesToRemove = graph.GetAdjacentVerticesList(moveFrom)
-                .Where(x => graph.GetAdjacentVerticesList(x).Count == 1); //cannot move on empty vertex which would be deleted after move
+            var verticesToRemove = graph.GetAdjacentVerticesByCoordList(moveFrom)
+                .Where(x => graph.GetAdjacentVerticesByCoordList(x).Count == 1); //cannot move on empty vertex which would be deleted after move
 
             foreach(var v in verticesToRemove)
                 vertices.Remove(v);
@@ -40,7 +40,7 @@ namespace HiveGame.BusinessLogic.Models.Insects
         //insect is surrounded (and most of them can't move) if there are 2 parallel pairs around it
         public bool CheckIfSurrounded(Vertex moveFrom, HiveGraph graph)
         {
-            if(graph.GetAdjacentVerticesList(moveFrom).Count >= 5)
+            if(graph.GetAdjacentVerticesByCoordList(moveFrom).Count >= 5)
                 return true;
 
             var directions = graph
