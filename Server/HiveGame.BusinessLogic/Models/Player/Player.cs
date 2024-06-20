@@ -9,8 +9,8 @@ namespace HiveGame.BusinessLogic.Models
 {
     public class Player
     {
-        public string PlayerName { get; set; }
-        public string PlayerIP { get; set; }
+        public string Nick { get; set; }
+        public string IP { get; set; }
         public WebSocket WebSocket { get; set; }
     }
 }

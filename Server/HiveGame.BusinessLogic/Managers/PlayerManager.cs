@@ -1,22 +1,30 @@
 ﻿using HiveGame.BusinessLogic.Models;
+using HiveGame.BusinessLogic.Models.WebSocketModels;
+using Newtonsoft.Json;
 using System.Collections.Concurrent;
 using System.Net.WebSockets;
 using System.Text;
 
 namespace HiveGame.BusinessLogic.Managers
 {
-    public interface IWebSocketManager
+    public interface IPlayerManager
     {
+        void AddClient(string playerName, string playerIP, WebSocket webSocket);
 
+        void RemoveClient(string playerName);
+
+        Player GetClient(string playerName);
+
+        Task SendMessageAsync(string playerName, WebSocketMessage message);
     }
 
-    public sealed class WebSocketManager : IWebSocketManager
+    public sealed class PlayerManager : IPlayerManager
     {
         private readonly ConcurrentDictionary<string, Player> _connectedClients = new ConcurrentDictionary<string, Player>();
 
         public void AddClient(string playerName, string playerIP, WebSocket webSocket)
         {
-            var client = new Player { PlayerName = playerName, PlayerIP = playerIP, WebSocket = webSocket };
+            var client = new Player { Nick = playerName, IP = playerIP, WebSocket = webSocket };
             _connectedClients.TryAdd(playerName, client);
         }
 
@@ -31,13 +39,14 @@ namespace HiveGame.BusinessLogic.Managers
             return client;
         }
 
-        public async Task SendMessageAsync(string playerName, string message)
+        public async Task SendMessageAsync(string playerName, WebSocketMessage message)
         {
             if (_connectedClients.TryGetValue(playerName, out var client))
             {
-                var buffer = Encoding.UTF8.GetBytes(message);
+                var jsonMessage = JsonConvert.SerializeObject(message);
+                var buffer = Encoding.UTF8.GetBytes(jsonMessage);
                 var segment = new ArraySegment<byte>(buffer);
-                await client.WebSocket.SendAsync(segment, WebSocketMessageType.Text, true, System.Threading.CancellationToken.None);
+                await client.WebSocket.SendAsync(segment, WebSocketMessageType.Text, true, CancellationToken.None);
             }
         }
     }

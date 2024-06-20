@@ -19,14 +19,14 @@ builder.Services.AddScoped<IHiveGameService, HiveGameService>();
 builder.Services.AddScoped<IMatchmakingService, MatchmakingService>();
 
 //Managers
-builder.Services.AddSingleton<IWebSocketManager, HiveGame.BusinessLogic.Managers.WebSocketManager>();
+builder.Services.AddSingleton<IPlayerManager, PlayerManager>();
+builder.Services.AddSingleton<IGameManager, GameManager>();
 
 //Factories
 builder.Services.AddScoped<IInsectFactory, InsectFactory>();
 
 //Others
 builder.Services.AddScoped<HiveBoard, HiveBoard>();
-
 
 var app = builder.Build();
 
@@ -40,6 +40,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseWebSockets();
 
 app.MapControllers();
 

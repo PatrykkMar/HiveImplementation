@@ -17,6 +17,11 @@ namespace HiveGame.BusinessLogic.Models.Game
             GameId = gameId;
         }
 
+        public Game()
+        {
+
+        }
+
         public HiveBoard Graph { get; set; }
         public long GameId { get; set; }
         public string[] Players { get; set; }

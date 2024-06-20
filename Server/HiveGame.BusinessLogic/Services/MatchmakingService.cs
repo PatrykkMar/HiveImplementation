@@ -1,31 +1,57 @@
 ﻿using AutoMapper;
 using HiveGame.BusinessLogic.Managers;
+using HiveGame.BusinessLogic.Models.Game;
+using HiveGame.BusinessLogic.Models;
 using HiveGame.BusinessLogic.Models.Insects;
 using HiveGame.BusinessLogic.Models.Requests;
+using System.Net.WebSockets;
+using HiveGame.BusinessLogic.Models.WebSocketModels;
 
 namespace HiveGame.BusinessLogic.Services
 {
     public interface IMatchmakingService
     {
-        void AddToQueue(AddToQueue request);
+        Task AddPlayerToQueueAsync(string playerName, string playerIP, WebSocket webSocket);
     }
 
     public class MatchmakingService : IMatchmakingService
     {
-        private readonly IWebSocketManager _gameManager;
-        private Queue<string> _playerQueue = new Queue<string>();
-        public MatchmakingService(IWebSocketManager gameManager)
+        long _nextGameId = 0;
+        private readonly IPlayerManager _playerManager;
+        private readonly IGameManager _gameManager;
+        private readonly Queue<Player> _queue = new Queue<Player>();
+        public MatchmakingService(IPlayerManager playerManager)
         {
-            _gameManager = gameManager;
+            _playerManager = playerManager;
         }
 
-        public void AddToQueue(AddToQueue request)
+        public async Task AddPlayerToQueueAsync(string playerName, string playerIP, WebSocket webSocket)
         {
-            _playerQueue.Enqueue(request.Nick);
+            var player = new Player { Nick = playerName, IP = playerIP, WebSocket = webSocket };
+            _queue.Enqueue(player);
+            _playerManager.AddClient(playerName, playerIP, webSocket);
 
-            if(_playerQueue.Count >= 2)
+            if (_queue.Count >= 2)
             {
-                
+                var players = new List<Player>
+                {
+                    _queue.Dequeue(),
+                    _queue.Dequeue()
+                };
+
+                var game = new Game();
+                _gameManager.AddGame(game);
+
+                var message = new WebSocketMessage
+                {
+                    Message = "Utworzono grę",
+                    Type = MessageType.GameCreated
+                };
+
+                foreach (var p in players)
+                {
+                    await _playerManager.SendMessageAsync(p.Nick, message);
+                }
             }
         }
     }
