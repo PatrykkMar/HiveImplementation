@@ -1,8 +1,8 @@
 using HiveGame.BusinessLogic.Factories;
-using HiveGame.BusinessLogic.Models.Graph;
+using HiveGame.BusinessLogic.Managers;
+using HiveGame.BusinessLogic.Models.Game.Graph;
 using HiveGame.BusinessLogic.Services;
 using Microsoft.AspNetCore.Hosting;
-using QuickGraph.Algorithms.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,12 +16,16 @@ builder.Services.AddAutoMapper(typeof(Program));
 
 //Services
 builder.Services.AddScoped<IHiveGameService, HiveGameService>();
+builder.Services.AddScoped<IMatchmakingService, MatchmakingService>();
+
+//Managers
+builder.Services.AddSingleton<IWebSocketManager, HiveGame.BusinessLogic.Managers.WebSocketManager>();
 
 //Factories
 builder.Services.AddScoped<IInsectFactory, InsectFactory>();
 
 //Others
-builder.Services.AddScoped<HiveGraph, HiveGraph>();
+builder.Services.AddScoped<HiveBoard, HiveBoard>();
 
 
 var app = builder.Build();

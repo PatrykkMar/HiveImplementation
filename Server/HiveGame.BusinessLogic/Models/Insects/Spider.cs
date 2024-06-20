@@ -1,5 +1,4 @@
-﻿using HiveGame.BusinessLogic.Models.Graph;
-using QuickGraph;
+﻿using HiveGame.BusinessLogic.Models.Game.Graph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,15 +15,15 @@ namespace HiveGame.BusinessLogic.Models.Insects
         }
 
         //can move on adjacent field
-        public override IList<Vertex> GetAvailableVertices(Vertex moveFrom, HiveGraph graph)
+        public override IList<Vertex> GetAvailableVertices(Vertex moveFrom, HiveBoard board)
         {
             //if is surrouded by at least 5 insects, can't move
-            if (CheckIfSurrounded(moveFrom, graph))
+            if (CheckIfSurrounded(moveFrom, board))
                 return new List<Vertex>();
 
-            var vertices = BasicCheck(moveFrom, graph);
+            var vertices = BasicCheck(moveFrom, board);
             
-            vertices = vertices.Intersect(graph.GetAdjacentVerticesByCoordList(moveFrom)).ToList();
+            vertices = vertices.Intersect(board.GetAdjacentVerticesByCoordList(moveFrom)).ToList();
 
             return vertices;
         }

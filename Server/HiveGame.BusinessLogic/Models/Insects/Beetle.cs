@@ -1,5 +1,4 @@
-﻿using HiveGame.BusinessLogic.Models.Graph;
-using QuickGraph;
+﻿using HiveGame.BusinessLogic.Models.Game.Graph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +14,7 @@ namespace HiveGame.BusinessLogic.Models.Insects
             Type = InsectType.Beetle;
         }
 
-        public override IList<Vertex> GetAvailableVertices(Vertex moveFrom, HiveGraph graph)
+        public override IList<Vertex> GetAvailableVertices(Vertex moveFrom, HiveBoard board)
         {
             throw new NotImplementedException();
         }

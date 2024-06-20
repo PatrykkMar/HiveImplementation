@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using HiveGame.BusinessLogic.Models.Graph;
+using HiveGame.BusinessLogic.Models.Game.Graph;
 using HiveGame.BusinessLogic.Models.Insects;
 using System;
 using System.Collections.Generic;

@@ -1,23 +1,30 @@
 ﻿using HiveGame.BusinessLogic.Factories;
-using HiveGame.BusinessLogic.Models;
 using HiveGame.BusinessLogic.Models.Insects;
-using HiveGame.Core.Models;
-using QuickGraph;
-using QuickGraph.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static HiveGame.BusinessLogic.Models.Graph.DirectionConsts;
+using static HiveGame.BusinessLogic.Models.Game.Graph.DirectionConsts;
 
-namespace HiveGame.BusinessLogic.Models.Graph
+namespace HiveGame.BusinessLogic.Models.Game.Graph
 {
-    public class HiveGraph : AdjacencyGraph<Vertex, DirectedEdge<Vertex>>
+    public class HiveBoard
     {
+        private Dictionary<(int, int, int), Vertex> _board;
         private readonly IInsectFactory _factory;
-        public HiveGraph(IInsectFactory factory) 
+        public HiveBoard(IInsectFactory factory)
         {
             _factory = factory;
+            _board = new Dictionary<(int, int, int), Vertex>();
         }
+
+        public List<Vertex> Vertices
+        {
+            get
+            {
+                return _board.Values.ToList();
+            }
+        }
+
         public bool Move(Vertex moveFrom, Vertex moveTo, Player player)
         {
             if (moveFrom.IsEmpty)
@@ -43,10 +50,10 @@ namespace HiveGame.BusinessLogic.Models.Graph
 
         public bool Put(InsectType? insectType, Vertex where, Player player)
         {
-            if(insectType == null) 
+            if (insectType == null)
                 throw new ArgumentNullException("Vertex cannot be null");
-            if (IsVerticesEmpty)
-                throw new Exception("Cannot put insect on the empty graph");
+            if (!_board.Keys.Any())
+                throw new Exception("Cannot put insect on the empty board");
 
             //adjacency rule
 
@@ -55,8 +62,14 @@ namespace HiveGame.BusinessLogic.Models.Graph
             var insect = _factory.CreateInsect(insectType.Value);
 
             where.CurrentInsect = insect;
+            AddVertex(where);
             AddEmptyVerticesAround(where);
             return true;
+        }
+
+        public void AddVertex(Vertex vertex)
+        {
+            _board[(vertex.X, vertex.Y, vertex.Z)] = vertex;
         }
 
         public bool PutFirstInsect(InsectType insectType, Player player)
@@ -64,7 +77,7 @@ namespace HiveGame.BusinessLogic.Models.Graph
             Vertex vertex;
             Insect insect = _factory.CreateInsect(insectType);
 
-            if (VertexCount == 0)
+            if (_board.Count == 0)
                 vertex = new Vertex(0, 0, 0, insect);
             else
                 throw new Exception("First insect is put");
@@ -76,19 +89,17 @@ namespace HiveGame.BusinessLogic.Models.Graph
 
         private void AddEmptyVerticesAround(Vertex vertex, bool ignoreDown = true)
         {
-            var graph = this;
+            var board = this;
             var adjacentVertices = GetAdjacentVerticesByCoordDict(vertex, ignoreDown);
             foreach (var direction in (Direction[])Enum.GetValues(typeof(Direction)))
             {
-                if(ignoreDown && direction == Direction.Down) 
+                if (ignoreDown && direction == Direction.Down)
                     continue;
 
                 if (!adjacentVertices.ContainsKey(direction))
                 {
                     var emptyVertex = new Vertex(vertex, direction);
                     AddVertex(emptyVertex);
-                    AddEdge(new DirectedEdge<Vertex>(vertex, emptyVertex, direction));
-                    AddEdge(new DirectedEdge<Vertex>(emptyVertex, vertex, OppositeDirection(direction)));
                 }
             }
         }
@@ -101,22 +112,26 @@ namespace HiveGame.BusinessLogic.Models.Graph
 
         private void RemoveAllEmptyUnconnectedVerticesAround(Vertex vertex)
         {
-            var verticesToDelete = OutEdges(vertex)
-                .Select(x => x.Target)
-                .Where(y => y.IsEmpty && OutEdges(y).Select(z => z.Target).Where(a => !a.IsEmpty).Count() == 0).ToList();
+            var verticesToDelete = GetAdjacentVerticesByCoordList(vertex);
 
-            foreach(var vertice in verticesToDelete)
-                RemoveVertex(vertice);
+            foreach (var ver in verticesToDelete)
+                _board.Remove(ver.Coords);
         }
 
-        public Vertex? GetVertexByCoord(long x, long y, long z)
+        public Vertex? GetVertexByCoord(int x, int y, int z)
         {
-            return Vertices.FirstOrDefault(a => a.X == x && a.Y == y && a.Z == z);
+            if (!_board.ContainsKey((x, y, z)))
+                return null;
+            return _board[(x, y, z)];
+
         }
 
-        public Vertex? GetVertexByCoord(Point point)
+        public Vertex? GetVertexByCoord((int X, int Y, int Z)? point)
         {
-            return GetVertexByCoord(point.X, point.Y, point.Z);
+            if(!point.HasValue)
+                return null;
+
+            return GetVertexByCoord(point.Value.X, point.Value.Y, point.Value.Z);
         }
 
 
@@ -131,7 +146,7 @@ namespace HiveGame.BusinessLogic.Models.Graph
 
                 var offset = NeighborOffsetsDict[direction];
 
-                var adjacent = Vertices.FirstOrDefault(x => x.X == vertex.X + offset.dx && x.Y == vertex.Y + offset.dy && x.Z == vertex.Z + offset.dz);
+                var adjacent = GetVertexByCoord(vertex.X + offset.dx, vertex.Y + offset.dy, vertex.Z + offset.dz);
                 if (adjacent != null)
                     dict.Add(direction, adjacent);
             }

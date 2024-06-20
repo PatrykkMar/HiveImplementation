@@ -1,5 +1,4 @@
-﻿using HiveGame.BusinessLogic.Models.Graph;
-using QuickGraph;
+﻿using HiveGame.BusinessLogic.Models.Game.Graph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,13 +15,13 @@ namespace HiveGame.BusinessLogic.Models.Insects
         }
 
         //can move on adjacent field
-        public IList<Vertex> BasicCheck(Vertex moveFrom, HiveGraph graph)
+        public IList<Vertex> BasicCheck(Vertex moveFrom, HiveBoard board)
         {
             //TODO
             return null;
         }
 
-        public override IList<Vertex> GetAvailableVertices(Vertex moveFrom, HiveGraph graph)
+        public override IList<Vertex> GetAvailableVertices(Vertex moveFrom, HiveBoard board)
         {
             throw new NotImplementedException();
         }

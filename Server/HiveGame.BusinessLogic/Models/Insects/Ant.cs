@@ -1,5 +1,4 @@
-﻿using HiveGame.BusinessLogic.Models.Graph;
-using QuickGraph;
+﻿using HiveGame.BusinessLogic.Models.Game.Graph;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -16,21 +15,21 @@ namespace HiveGame.BusinessLogic.Models.Insects
 
         }
 
-        public override IList<Vertex> GetAvailableVertices(Vertex moveFrom, HiveGraph graph)
+        public override IList<Vertex> GetAvailableVertices(Vertex moveFrom, HiveBoard board)
         {
-            var vertices = BasicCheck(moveFrom, graph);
+            var vertices = BasicCheck(moveFrom, board);
 
-            if (CheckIfSurrounded(moveFrom, graph))
+            if (CheckIfSurrounded(moveFrom, board))
                 return new List<Vertex>();
 
-            vertices = vertices.Intersect(graph.GetAdjacentVerticesByCoordList(moveFrom)).ToList();
+            vertices = vertices.Intersect(board.GetAdjacentVerticesByCoordList(moveFrom)).ToList();
 
-            vertices = GetAntVerticesByBFS(moveFrom, graph);
+            vertices = GetAntVerticesByBFS(moveFrom, board);
 
             return vertices;
         }
 
-        private IList<Vertex> GetAntVerticesByBFS(Vertex moveFrom, HiveGraph graph) 
+        private IList<Vertex> GetAntVerticesByBFS(Vertex moveFrom, HiveBoard board) 
         {
             var result = new List<Vertex>();
             var visited = new HashSet<Vertex>();
@@ -48,7 +47,7 @@ namespace HiveGame.BusinessLogic.Models.Insects
                     result.Add(current);
                 }
 
-                var adjacent = graph.GetAdjacentVerticesByCoordList(current);
+                var adjacent = board.GetAdjacentVerticesByCoordList(current);
 
                 if (adjacent.Count < 5)
                 {

@@ -1,12 +1,11 @@
-﻿using QuickGraph;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static HiveGame.BusinessLogic.Models.Graph.DirectionConsts;
+using static HiveGame.BusinessLogic.Models.Game.Graph.DirectionConsts;
 
-namespace HiveGame.BusinessLogic.Models.Graph
+namespace HiveGame.BusinessLogic.Models.Game.Graph
 {
     public class DirectionConsts
     {
