@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HiveGame.BusinessLogic.Managers;
 using HiveGame.BusinessLogic.Models.Game.Graph;
 using HiveGame.BusinessLogic.Models.Insects;
 using HiveGame.BusinessLogic.Models.Requests;
@@ -7,9 +8,9 @@ namespace HiveGame.BusinessLogic.Services
 {
     public interface IHiveGameService
     {
-        public IList<VertexDTO> Move(MoveRequest request);
+        public IList<VertexDTO> Move(MoveInsectRequest request);
 
-        public IList<VertexDTO> Put(PutRequest request);
+        public IList<VertexDTO> Put(PutInsectRequest request);
 
         public IList<VertexDTO> PutFirstInsect(PutFirstInsectRequest request);
         IList<VertexDTO> GetTestGrid();
@@ -49,7 +50,7 @@ namespace HiveGame.BusinessLogic.Services
             return dtos;
         }
 
-        public IList<VertexDTO> Move(MoveRequest request)
+        public IList<VertexDTO> Move(MoveInsectRequest request)
         {
             var vertexFrom = _board.GetVertexByCoord(request.MoveFrom);
             var vertexTo = _board.GetVertexByCoord(request.MoveTo);
@@ -57,7 +58,7 @@ namespace HiveGame.BusinessLogic.Services
             return GetVerticesDTOFromGraph();
         }
 
-        public IList<VertexDTO> Put(PutRequest request)
+        public IList<VertexDTO> Put(PutInsectRequest request)
         {
             var vertexFrom = _board.GetVertexByCoord(request.WhereToPut);
             _board.Put(request.InsectToPut, vertexFrom, null);

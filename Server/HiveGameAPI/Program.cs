@@ -2,7 +2,8 @@ using HiveGame.BusinessLogic.Factories;
 using HiveGame.BusinessLogic.Managers;
 using HiveGame.BusinessLogic.Models.Game.Graph;
 using HiveGame.BusinessLogic.Services;
-using Microsoft.AspNetCore.Hosting;
+using HiveGame.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,14 +14,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddSignalR();
 
 //Services
 builder.Services.AddScoped<IHiveGameService, HiveGameService>();
-builder.Services.AddScoped<IMatchmakingService, MatchmakingService>();
 
 //Managers
-builder.Services.AddSingleton<IPlayerManager, PlayerManager>();
-builder.Services.AddSingleton<IGameManager, GameManager>();
+builder.Services.AddSingleton<IPlayerConnectionManager, PlayerConnectionManager>();
 
 //Factories
 builder.Services.AddScoped<IInsectFactory, InsectFactory>();
@@ -41,8 +41,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.UseWebSockets();
-
 app.MapControllers();
+
+app.MapHub<GameHub>("gamehub");
 
 app.Run();

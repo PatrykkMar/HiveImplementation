@@ -24,30 +24,22 @@ namespace HiveGame.BusinessLogic.Managers
 
         public void AddClient(string playerName, string playerIP, WebSocket webSocket)
         {
-            var client = new Player { Nick = playerName, IP = playerIP, WebSocket = webSocket };
-            _connectedClients.TryAdd(playerName, client);
+            throw new NotImplementedException(); 
         }
 
         public void RemoveClient(string playerName)
         {
-            _connectedClients.TryRemove(playerName, out _);
+            throw new NotImplementedException();
         }
 
         public Player GetClient(string playerName)
         {
-            _connectedClients.TryGetValue(playerName, out var client);
-            return client;
+            throw new NotImplementedException();
         }
 
         public async Task SendMessageAsync(string playerName, WebSocketMessage message)
         {
-            if (_connectedClients.TryGetValue(playerName, out var client))
-            {
-                var jsonMessage = JsonConvert.SerializeObject(message);
-                var buffer = Encoding.UTF8.GetBytes(jsonMessage);
-                var segment = new ArraySegment<byte>(buffer);
-                await client.WebSocket.SendAsync(segment, WebSocketMessageType.Text, true, CancellationToken.None);
-            }
+            throw new NotImplementedException();
         }
     }
 }

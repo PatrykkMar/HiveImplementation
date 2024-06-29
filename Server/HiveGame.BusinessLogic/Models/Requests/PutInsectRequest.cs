@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace HiveGame.BusinessLogic.Models.Requests
 {
-    public class PutFirstInsectRequest : GameMoveRequest
+    public class PutInsectRequest : GameMoveRequest
     {
         public InsectType InsectToPut { get; set; }
+        public (int, int, int)? WhereToPut { get; set; }
     }
 }

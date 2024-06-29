@@ -31,14 +31,14 @@ namespace HiveGameAPI.Controllers
         }
 
         [HttpPost("move")]
-        public IActionResult Move([FromBody] MoveRequest request)
+        public IActionResult Move([FromBody] MoveInsectRequest request)
         {
             var result = _hiveGameService.Move(request);
             return Ok(result);
         }
 
         [HttpPost("put")]
-        public IActionResult Put([FromBody] PutRequest request)
+        public IActionResult Put([FromBody] PutInsectRequest request)
         {
             var result = _hiveGameService.Put(request);
             return Ok(result);
