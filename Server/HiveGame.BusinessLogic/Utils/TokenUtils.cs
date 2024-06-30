@@ -8,18 +8,19 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace HiveGame.BusinessLogic.Utils
 {
     public interface ITokenUtils
     {
         public string CreateToken(Player player);
-        public string GenerateRefreshToken();
-        public ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
-        public TokenDatas DecodeToken(string jwt);
+        public string CreateToken(string playerId);
+        public Player DecodeToken(string jwt);
     }
 
-    public class TokenUtils
+    public class TokenUtils : ITokenUtils
     {
         private readonly IConfiguration _config;
         public TokenUtils(IConfiguration config)
@@ -33,21 +34,44 @@ namespace HiveGame.BusinessLogic.Utils
         /// </summary>
         public string CreateToken(Player player)
         {
-            throw new NotImplementedException(); //TODO
+            var key = _config.GetValue<string>("Jwt:AuthKey");
+            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+            var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+            var claims = new List<Claim>
+            {
+                new Claim(type: "playerId",value: player.PlayerId),
+                new Claim(type: "gameId",value: player.GameId.ToString())
+            };
+
+            var tokenOptions = new JwtSecurityToken(
+                expires: DateTime.Now.AddHours(1),
+                claims: claims,
+                signingCredentials: signingCredentials
+                );
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+            return tokenString;
         }
 
-
-        /// <summary>
-        /// Returns principal from expired token
-        /// </summary>
-        public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+        public string CreateToken(string playerId)
         {
-            throw new NotImplementedException(); //TODO
+            var player = new Player()
+            {
+                PlayerId = playerId
+            };
+            return CreateToken(player);
         }
 
-        public TokenDatas DecodeToken(string jwt)
+        public Player DecodeToken(string jwt)
         {
-            throw new NotImplementedException(); //TODO
+            var handler = new JwtSecurityTokenHandler();
+            var decodedValue = handler.ReadJwtToken(jwt.Substring(7));
+            var claims = decodedValue.Claims;
+            var datas = new Player()
+            {
+                PlayerId = claims.FirstOrDefault(x => x.Type == "playerId").Value,
+                GameId = long.Parse(claims.FirstOrDefault(x => x.Type == "gameId").Value)
+            };
+            return datas;
         }
     }
 }

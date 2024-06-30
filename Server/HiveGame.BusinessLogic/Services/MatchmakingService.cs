@@ -13,26 +13,25 @@ namespace HiveGame.BusinessLogic.Services
 {
     public interface IMatchmakingService
     {
-        Task JoinQueue(string nick, WebSocket webSocket);
+        Task<string[]?> JoinQueue(string clientId);
     }
 
     public class MatchmakingService : IMatchmakingService
     {
-        long _nextGameId = 0;
-        private readonly IPlayerConnectionManager _playerManager;
-        private readonly IGameManager _gameManager;
-        private readonly IInsectFactory _insectFactory;
-        private readonly Queue<Player> _queue = new Queue<Player>();
-        public MatchmakingService(IPlayerConnectionManager playerManager, IInsectFactory factory, IGameManager gameManager)
+        private readonly Queue<string> _queue = new Queue<string>();
+        public MatchmakingService()
         {
-            _playerManager = playerManager;
-            _insectFactory = factory;
-            _gameManager = gameManager;
+
         }
 
-        public async Task JoinQueue(string nick, WebSocket webSocket)
+        public async Task<string[]?> JoinQueue(string clientId)
         {
-            throw new NotImplementedException();
+            _queue.Enqueue(clientId);
+            while(_queue.Count >= 2)
+            {
+                return new string[] {_queue.Dequeue(), _queue.Dequeue};
+            }
+            return null;
         }
     }
 }

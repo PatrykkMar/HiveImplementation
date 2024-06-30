@@ -7,7 +7,7 @@ using System.Text;
 
 namespace HiveGame.BusinessLogic.Managers
 {
-    public interface IPlayerConnectionManager
+    public interface IConnectedPlayerManager
     {
         Player AddClient(string playerName, WebSocket webSocket);
 
@@ -19,13 +19,13 @@ namespace HiveGame.BusinessLogic.Managers
         Task SendMessageAsync(string playerName, WebSocketMessage message);
     }
 
-    public sealed class PlayerConnectionManager : IPlayerConnectionManager
+    public sealed class ConnectedPlayerManager : IConnectedPlayerManager
     {
         private readonly ConcurrentDictionary<string, Player> _connectedClients = new ConcurrentDictionary<string, Player>();
 
         public Player AddClient(string playerName, WebSocket webSocket)
         {
-            var client = new Player { Nick = playerName, WebSocket = webSocket };
+            var client = new Player();
             _connectedClients.TryAdd(playerName, client);
             return client;
         }
@@ -53,7 +53,7 @@ namespace HiveGame.BusinessLogic.Managers
                 var jsonMessage = JsonConvert.SerializeObject(message);
                 var buffer = Encoding.UTF8.GetBytes(jsonMessage);
                 var segment = new ArraySegment<byte>(buffer);
-                await client.WebSocket.SendAsync(segment, WebSocketMessageType.Text, true, CancellationToken.None);
+                //awdawait client.WebSocket.SendAsync(segment, WebSocketMessageType.Text, true, CancellationToken.None);
             }
         }
     }

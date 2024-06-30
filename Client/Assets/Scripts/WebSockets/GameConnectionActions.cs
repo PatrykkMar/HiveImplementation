@@ -1,4 +1,4 @@
 public enum GameConnectionActions
 {
-    Connected
+    TryingToConnect
 }

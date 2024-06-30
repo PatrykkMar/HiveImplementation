@@ -2,8 +2,12 @@ using HiveGame.BusinessLogic.Factories;
 using HiveGame.BusinessLogic.Managers;
 using HiveGame.BusinessLogic.Models.Game.Graph;
 using HiveGame.BusinessLogic.Services;
+using HiveGame.BusinessLogic.Utils;
 using HiveGame.Hubs;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,13 +24,34 @@ builder.Services.AddSignalR();
 builder.Services.AddScoped<IHiveGameService, HiveGameService>();
 
 //Managers
-builder.Services.AddSingleton<IPlayerConnectionManager, PlayerConnectionManager>();
+builder.Services.AddSingleton<IConnectedPlayerManager, ConnectedPlayerManager>();
 
 //Factories
 builder.Services.AddScoped<IInsectFactory, InsectFactory>();
 
 //Others
 builder.Services.AddScoped<HiveBoard, HiveBoard>();
+builder.Services.AddScoped<ITokenUtils, TokenUtils>();
+
+
+builder.Services
+    .AddAuthentication(x =>
+    {
+        x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(x =>
+    {
+        x.TokenValidationParameters = new TokenValidationParameters()
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("Jwt:AuthKey")))
+        };
+    });
 
 var app = builder.Build();
 
@@ -44,5 +69,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapHub<GameHub>("gamehub");
+app.MapHub<MatchmakingHub>("matchmakinghub");
 
 app.Run();

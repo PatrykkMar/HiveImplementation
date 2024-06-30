@@ -7,7 +7,6 @@ using TMPro;
 
 public class GameConnection : MonoBehaviour
 {
-    public InputField nickInputField;
     public Button joinButton;
     public Button sendButton;
     public Text informationText;
@@ -26,12 +25,18 @@ public class GameConnection : MonoBehaviour
         string serverAddress = Adres;
 
         connection = new HubConnectionBuilder()
-            .WithUrl(serverAddress + "/gamehub")
+            .WithUrl(serverAddress + "/gameHub")
             .Build();
 
         connection.On<string, string>("ReceiveMessage", (user, message) =>
         {
             DisplayMessage($"{user}: {message}");
+        });
+
+        connection.On<string>("ReceiveToken", (token) =>
+        {
+            DisplayMessage($"Token received: {token}");
+            CurrentUser.Instance.Token = token;
         });
 
         try
@@ -66,8 +71,10 @@ public class GameConnection : MonoBehaviour
         }
     }
 
+    
     void DisplayMessage(string message)
     {
         informationText.text = message;
+        Debug.Log(message);
     }
 }
