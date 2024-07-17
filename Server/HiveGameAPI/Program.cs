@@ -1,6 +1,6 @@
 using HiveGame.BusinessLogic.Factories;
-using HiveGame.BusinessLogic.Managers;
-using HiveGame.BusinessLogic.Models.Game.Graph;
+using HiveGame.BusinessLogic.Models.Graph;
+using HiveGame.BusinessLogic.Repositories;
 using HiveGame.BusinessLogic.Services;
 using HiveGame.BusinessLogic.Utils;
 using HiveGame.Hubs;
@@ -21,16 +21,18 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddSignalR();
 
 //Services
-builder.Services.AddScoped<IHiveGameService, HiveGameService>();
+//builder.Services.AddScoped<IHiveGameService, HiveGameService>();
+builder.Services.AddScoped<IMatchmakingService, MatchmakingService>();
 
-//Managers
-builder.Services.AddSingleton<IConnectedPlayerManager, ConnectedPlayerManager>();
+//Repository
+builder.Services.AddScoped<IMatchmakingRepository, MatchmakingRepository>();
+builder.Services.AddScoped<IGameRepository, GameRepository>();
 
 //Factories
 builder.Services.AddScoped<IInsectFactory, InsectFactory>();
+builder.Services.AddScoped<IGameFactory, GameFactory>();
 
 //Others
-builder.Services.AddScoped<HiveBoard, HiveBoard>();
 builder.Services.AddScoped<ITokenUtils, TokenUtils>();
 
 
@@ -68,7 +70,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapHub<GameHub>("gamehub");
 app.MapHub<MatchmakingHub>("matchmakinghub");
 
 app.Run();

@@ -25,7 +25,6 @@ public class CurrentUser
                 {
                     if (_instance == null)
                     {
-                        Debug.LogWarning("Invalid or empty token");
                         _instance = new CurrentUser();
                     }
                 }
@@ -49,7 +48,7 @@ public class CurrentUser
         _cachedTokenData = new TokenDatas()
         {
             PlayerId = claims.FirstOrDefault(x => x.Type == "playerId")?.Value,
-            GameId = long.TryParse(claims.FirstOrDefault(x => x.Type == "gameId")?.Value, out long gameId) ? gameId : (long?)null
+            GameId = claims.FirstOrDefault(x => x.Type == "gameId")?.Value
         };
 
         Debug.Log("Decoded token data:");
@@ -67,7 +66,7 @@ public class CurrentUser
         return _cachedTokenData;
     }
 
-    public long? GameId
+    public string GameId
     {
         get
         {

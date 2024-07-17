@@ -8,29 +8,39 @@ using System.Net.WebSockets;
 using HiveGame.BusinessLogic.Models.WebSocketModels;
 using HiveGame.BusinessLogic.Factories;
 using HiveGame.BusinessLogic.Models.Game.Graph;
+using HiveGame.BusinessLogic.Repositories;
 
 namespace HiveGame.BusinessLogic.Services
 {
     public interface IMatchmakingService
     {
-        Task<string[]?> JoinQueue(string clientId);
+        string[]? JoinQueue(string clientId);
     }
 
     public class MatchmakingService : IMatchmakingService
     {
-        private readonly Queue<string> _queue = new Queue<string>();
-        public MatchmakingService()
+        private readonly IMatchmakingRepository _matchmakingRepository;
+        private readonly IGameRepository _gameRepository;
+        private readonly IGameFactory _gameFactory;
+        public MatchmakingService(IMatchmakingRepository matchmakingRepository, IGameRepository gameRepository, IGameFactory gameFactory)
         {
-
+            _matchmakingRepository = matchmakingRepository;
+            _gameRepository = gameRepository;
+            _gameFactory = gameFactory;
         }
 
-        public async Task<string[]?> JoinQueue(string clientId)
+        public string[]? JoinQueue(string clientId)
         {
-            _queue.Enqueue(clientId);
-            while(_queue.Count >= 2)
+            _matchmakingRepository.Add(new Player { PlayerId = clientId });
+
+            if (_matchmakingRepository.Count >= 2)
             {
-                return new string[] {_queue.Dequeue(), _queue.Dequeue};
+                var players = _matchmakingRepository.GetAndRemoveFirstTwo().ToArray();
+                var game = _gameFactory.CreateGame(players);
+                _gameRepository.Add(game);
+                return players.Select(x => x.PlayerId).ToArray();
             }
+
             return null;
         }
     }

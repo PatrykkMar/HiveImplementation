@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HiveGame.BusinessLogic.Models.Game.Graph
+namespace HiveGame.BusinessLogic.Models.Graph
 {
     [Serializable]
     public class VertexDTO

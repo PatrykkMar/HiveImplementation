@@ -39,8 +39,7 @@ namespace HiveGame.BusinessLogic.Utils
             var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
             var claims = new List<Claim>
             {
-                new Claim(type: "playerId",value: player.PlayerId),
-                new Claim(type: "gameId",value: player.GameId.ToString())
+                new Claim(type: "playerId",value: player.PlayerId)
             };
 
             var tokenOptions = new JwtSecurityToken(
@@ -68,8 +67,7 @@ namespace HiveGame.BusinessLogic.Utils
             var claims = decodedValue.Claims;
             var datas = new Player()
             {
-                PlayerId = claims.FirstOrDefault(x => x.Type == "playerId").Value,
-                GameId = long.Parse(claims.FirstOrDefault(x => x.Type == "gameId").Value)
+                PlayerId = claims.FirstOrDefault(x => x.Type == "playerId").Value
             };
             return datas;
         }

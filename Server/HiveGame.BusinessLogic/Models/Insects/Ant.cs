@@ -1,4 +1,4 @@
-﻿using HiveGame.BusinessLogic.Models.Game.Graph;
+﻿using HiveGame.BusinessLogic.Models.Graph;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;

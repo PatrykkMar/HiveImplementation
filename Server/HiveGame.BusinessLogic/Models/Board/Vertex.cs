@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static HiveGame.BusinessLogic.Models.Game.Graph.DirectionConsts;
 
-namespace HiveGame.BusinessLogic.Models.Game.Graph
+namespace HiveGame.BusinessLogic.Models.Graph
 {
     public class Vertex
     {

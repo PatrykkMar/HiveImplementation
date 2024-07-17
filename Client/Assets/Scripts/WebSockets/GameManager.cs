@@ -5,49 +5,26 @@ using UnityEngine.UI;
 using Microsoft.AspNetCore.SignalR.Client;
 using TMPro;
 
-public class GameConnection : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
     public Button joinButton;
     public Button sendButton;
     public Text informationText;
     private HubConnection connection;
+    [SerializeField] private MatchmakingHubService _service;
+    [SerializeField] private TokenService _token;
 
-    private string Adres = "http://localhost:7200";
-
-    void Start()
+    async void Awake()
     {
-        joinButton.onClick.AddListener(ConnectToServer);
+        joinButton.onClick.AddListener(JoinQueue);
         sendButton.onClick.AddListener(SendMessageToServer);
+        StartCoroutine(_token.GetToken());
+        await _service.InitializeAsync();
     }
 
-    async void ConnectToServer()
+    async void JoinQueue()
     {
-        string serverAddress = Adres;
-
-        connection = new HubConnectionBuilder()
-            .WithUrl(serverAddress + "/gameHub")
-            .Build();
-
-        connection.On<string, string>("ReceiveMessage", (user, message) =>
-        {
-            DisplayMessage($"{user}: {message}");
-        });
-
-        connection.On<string>("ReceiveToken", (token) =>
-        {
-            DisplayMessage($"Token received: {token}");
-            CurrentUser.Instance.Token = token;
-        });
-
-        try
-        {
-            await connection.StartAsync();
-            DisplayMessage("Connected to the server.");
-        }
-        catch (Exception ex)
-        {
-            DisplayMessage($"Connection failed: {ex.Message}");
-        }
+        await _service.JoinQueueAsync();
     }
 
     async void SendMessageToServer()

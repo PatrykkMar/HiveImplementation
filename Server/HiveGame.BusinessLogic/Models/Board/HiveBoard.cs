@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using static HiveGame.BusinessLogic.Models.Game.Graph.DirectionConsts;
 
-namespace HiveGame.BusinessLogic.Models.Game.Graph
+namespace HiveGame.BusinessLogic.Models.Graph
 {
     public class HiveBoard
     {
