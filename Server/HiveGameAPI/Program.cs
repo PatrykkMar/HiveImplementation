@@ -25,8 +25,8 @@ builder.Services.AddSignalR();
 builder.Services.AddScoped<IMatchmakingService, MatchmakingService>();
 
 //Repository
-builder.Services.AddScoped<IMatchmakingRepository, MatchmakingRepository>();
-builder.Services.AddScoped<IGameRepository, GameRepository>();
+builder.Services.AddSingleton<IMatchmakingRepository, MatchmakingRepository>();
+builder.Services.AddSingleton<IGameRepository, GameRepository>();
 
 //Factories
 builder.Services.AddScoped<IInsectFactory, InsectFactory>();

@@ -433,6 +433,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _serverUrl: http://localhost:7200/matchmakinghub
+  _informationText: {fileID: 970754100}
 --- !u!1 &831407544
 GameObject:
   m_ObjectHideFlags: 0

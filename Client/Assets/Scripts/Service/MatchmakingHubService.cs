@@ -2,12 +2,14 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MatchmakingHubService : MonoBehaviour
 {
     private HubConnection _hubConnection;
 
     [SerializeField] private string _serverUrl = "ws://localhost:7200/matchmakinghub";
+    [SerializeField] private Text _informationText;
 
 
     public async Task InitializeAsync()
@@ -21,8 +23,14 @@ public class MatchmakingHubService : MonoBehaviour
         })
         .Build();
 
+        _hubConnection.On<string, string>("ReceiveMessage", (player, message) =>
+        {
+            Debug.Log($"Player: {player}. Message from server: " + message);
+            _informationText.text = message;
+        });
+
         await _hubConnection.StartAsync();
-        Debug.Log("Connection started");
+        _informationText.text = "Connection started";
     }
 
     public async Task JoinQueueAsync()

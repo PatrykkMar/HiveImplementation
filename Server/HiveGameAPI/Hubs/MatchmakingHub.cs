@@ -22,6 +22,7 @@ namespace HiveGame.Hubs
 
         private static ConcurrentDictionary<string, string> ConnectedClients = new ConcurrentDictionary<string, string>(); //client, connection
 
+        [Authorize]
         public override async Task OnConnectedAsync()
         {
             string connectionId = Context.ConnectionId;
@@ -60,7 +61,7 @@ namespace HiveGame.Hubs
 
             if(players != null)
             {
-                await Clients.All.SendAsync("ReceiveMessage", playerId, "Player found");
+                await Clients.Clients(players.Select(x => ConnectedClients[x])).SendAsync("ReceiveMessage", playerId, "Player found");
             }
             else
             {

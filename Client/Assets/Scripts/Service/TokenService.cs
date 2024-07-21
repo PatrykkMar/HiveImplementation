@@ -11,12 +11,9 @@ public class TokenService : MonoBehaviour
 
     public IEnumerator GetToken()
     {
-        Debug.Log(12);
         using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
-        Debug.Log(2);
             yield return request.SendWebRequest();
-        Debug.Log(3);
             if (request.result != UnityWebRequest.Result.Success)
             {
                 Debug.LogError("Error");
