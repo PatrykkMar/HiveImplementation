@@ -1,6 +1,7 @@
 using HiveGame.BusinessLogic.Models.Requests;
 using HiveGame.BusinessLogic.Services;
 using HiveGame.BusinessLogic.Utils;
+using HiveGame.Models;
 using HiveGameAPI.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -61,11 +62,11 @@ namespace HiveGame.Hubs
 
             if(players != null)
             {
-                await Clients.Clients(players.Select(x => ConnectedClients[x])).SendAsync("ReceiveMessage", playerId, "Player found");
+                await Clients.Clients(players.Select(x => ConnectedClients[x])).SendAsync("ReceiveMessage", playerId, "Player found", Trigger.FoundGame);
             }
             else
             {
-                await Clients.Caller.SendAsync("ReceiveMessage", playerId, "Waiting for player");
+                await Clients.Caller.SendAsync("ReceiveMessage", playerId, "Waiting for player", Trigger.JoinedQueue);
             }
         }
 

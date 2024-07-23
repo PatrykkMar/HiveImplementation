@@ -10,12 +10,11 @@ public class MatchmakingHubService : MonoBehaviour
 
     [SerializeField] private string _serverUrl = "ws://localhost:7200/matchmakinghub";
     [SerializeField] private Text _informationText;
+    [SerializeField] private ClientStateMachine _clientStateMachine;
 
 
-    public async Task InitializeAsync()
+    public async Task InitializeMatchmakingServiceAsync()
     {
-        Debug.Log(_serverUrl);
-        Debug.Log(CurrentUser.Instance.Token);
         _hubConnection = new HubConnectionBuilder()
         .WithUrl(_serverUrl, options =>
         {
@@ -23,10 +22,14 @@ public class MatchmakingHubService : MonoBehaviour
         })
         .Build();
 
-        _hubConnection.On<string, string>("ReceiveMessage", (player, message) =>
+        _hubConnection.On<string, string, Trigger?>("ReceiveMessage", (player, message, trigger) =>
         {
-            Debug.Log($"Player: {player}. Message from server: " + message);
+            Debug.Log($"Player: {player}. Message from server: {message}. Has trigger: {trigger.HasValue}");
             _informationText.text = message;
+            if(trigger.HasValue)
+            {
+                _clientStateMachine.Fire(trigger.Value);
+            }
         });
 
         await _hubConnection.StartAsync();
