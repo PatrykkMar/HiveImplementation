@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 using TMPro;
 using Stateless;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 public class UIManager : MonoBehaviour
 {
@@ -13,6 +14,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private MatchmakingHubService hub;
     [SerializeField] private TokenService tokenService;
     [SerializeField] private Text informationText;
+    private string? textToChange;
+    private ClientState? stateToChange;
 
     public List<ButtonHelper> GetAvailableButtonsList(ClientState state)
     {
@@ -28,7 +31,7 @@ public class UIManager : MonoBehaviour
             case ClientState.Connected:
                 btnList = new List<ButtonHelper>
                 {
-                    new ButtonHelper("Join the queue", async() => await hub.JoinQueueAsync())
+                    new ButtonHelper("Join the queue", async () => await hub.JoinQueueAsync())
                 };
 
                 break;
@@ -36,6 +39,7 @@ public class UIManager : MonoBehaviour
                 //TODO: Leave the queue method and button
                 btnList = new List<ButtonHelper>
                 {
+                    new ButtonHelper("Leave the queue", async () => await hub.LeaveQueueAsync())
                 };
                 break;
                         
@@ -45,20 +49,21 @@ public class UIManager : MonoBehaviour
 
     public void SetInformationText(ClientState state)
     {
-        var btnList = new List<ButtonHelper>();
+        string text = "";
         switch (state)
         {
             case ClientState.Nothing:
-                informationText.text = "You are disconnected. Click a button to get a token and connect";
+                text = "You are disconnected. Click a button to get a token and connect";
                 break;
             case ClientState.Connected:
-                informationText.text = "You are connected. Click a button to join a queue";
+                text = "You are connected. Click a button to join a queue";
                 break;
             case ClientState.WaitingForPlayers:
-                informationText.text = "You are in a queue, wait for another player."; //You can click a button to leave a queue";
+                text = "You are in a queue, wait for another player. You can click a button to leave a queue";
                 break;
 
         }
+        textToChange = text;
     }
 
     public void ConfigureUIForState(ClientState state)
@@ -78,6 +83,26 @@ public class UIManager : MonoBehaviour
             {
                 buttons[i].gameObject.SetActive(false);
             }
+        }
+    }
+
+    public void SetStateToChange(ClientState state)
+    {
+        stateToChange = state;
+    }
+
+    private void Update()
+    {
+        if(textToChange!= null) 
+        {
+            informationText.text = textToChange;
+            textToChange = null;
+        }
+
+        if(stateToChange!= null)
+        {
+            ConfigureUIForState(stateToChange.Value);
+            stateToChange = null;
         }
     }
 

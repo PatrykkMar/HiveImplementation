@@ -23,23 +23,23 @@ public class ClientStateMachine : MonoBehaviour
         _machine = new StateMachine<ClientState, Trigger>(ClientState.Nothing);
 
         _machine.Configure(ClientState.Nothing)
-            .OnEntry(() => _ui.ConfigureUIForState(ClientState.Nothing))
             .Permit(Trigger.ReceivedToken, ClientState.Connected)
             .PermitReentry(Trigger.Started);
 
         _machine.Configure(ClientState.Connected)
-            .OnEntry(() => _ui.ConfigureUIForState(ClientState.Connected))
             .Permit(Trigger.JoinedQueue, ClientState.WaitingForPlayers);
 
         _machine.Configure(ClientState.WaitingForPlayers)
-            .OnEntry(() => _ui.ConfigureUIForState(ClientState.WaitingForPlayers))
             .Permit(Trigger.LeftQueue, ClientState.Connected)
             .Permit(Trigger.FoundGame, ClientState.InGame);
 
-        _machine.Configure(ClientState.InGame)
-            .OnEntry(() => _ui.ConfigureUIForState(ClientState.InGame));
+        _machine.Configure(ClientState.InGame);
 
-        _machine.OnTransitioned(transition => Debug.Log($"{transition.Source} -[{transition.Trigger}]-> {transition.Destination}"));
+        _machine.OnTransitioned(transition =>
+        {
+            Debug.Log($"{transition.Source} -[{transition.Trigger}]-> {transition.Destination}");
+            _ui.SetStateToChange(transition.Destination);
+        });
     }
 
     public void Fire(Trigger trigger)

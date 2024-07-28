@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace HiveGame.Hubs
 {
@@ -36,7 +37,14 @@ namespace HiveGame.Hubs
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
             string connectionId = Context.ConnectionId;
-            ConnectedClients.TryRemove(connectionId, out _);
+
+            var keysToRemove = ConnectedClients.Where(kvp => kvp.Value.Equals(connectionId)).Select(kvp => kvp.Key).ToList();
+
+            foreach (var key in keysToRemove)
+            {
+                ConnectedClients.TryRemove(connectionId, out _);
+            }
+
             await base.OnDisconnectedAsync(exception);
         }
 
@@ -53,7 +61,7 @@ namespace HiveGame.Hubs
         }
 
         [Authorize]
-        public async Task JoinQueue() //Request
+        public async Task JoinQueue()
         {
 
             var playerId = GetPlayerIdFromToken();
@@ -68,6 +76,17 @@ namespace HiveGame.Hubs
             {
                 await Clients.Caller.SendAsync("ReceiveMessage", playerId, "Waiting for player", Trigger.JoinedQueue);
             }
+        }
+
+        [Authorize]
+        public async Task LeaveQueue()
+        {
+
+            var playerId = GetPlayerIdFromToken();
+
+            _service.LeaveQueue(playerId);
+
+            await Clients.Caller.SendAsync("ReceiveMessage", playerId, "Left the queue", Trigger.LeftQueue);
         }
 
         private string GetPlayerIdFromToken()

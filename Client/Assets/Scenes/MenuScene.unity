@@ -671,6 +671,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _serverUrl: http://localhost:7200/matchmakinghub
   _informationText: {fileID: 970754100}
+  _clientStateMachine: {fileID: 1083133182}
 --- !u!1 &831407544
 GameObject:
   m_ObjectHideFlags: 0
@@ -929,6 +930,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   url: http://localhost:7200/Token/token
+  stateMachine: {fileID: 1083133182}
 --- !u!1 &970754098
 GameObject:
   m_ObjectHideFlags: 0

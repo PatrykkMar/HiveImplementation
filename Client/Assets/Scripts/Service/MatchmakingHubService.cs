@@ -25,7 +25,6 @@ public class MatchmakingHubService : MonoBehaviour
         _hubConnection.On<string, string, Trigger?>("ReceiveMessage", (player, message, trigger) =>
         {
             Debug.Log($"Player: {player}. Message from server: {message}. Has trigger: {trigger.HasValue}");
-            _informationText.text = message;
             if(trigger.HasValue)
             {
                 _clientStateMachine.Fire(trigger.Value);
@@ -39,5 +38,10 @@ public class MatchmakingHubService : MonoBehaviour
     public async Task JoinQueueAsync()
     {
         await _hubConnection.InvokeAsync("JoinQueue");
+    }
+
+    public async Task LeaveQueueAsync()
+    {
+        await _hubConnection.InvokeAsync("LeaveQueue");
     }
 }
