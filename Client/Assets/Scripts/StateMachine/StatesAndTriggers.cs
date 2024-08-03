@@ -1,7 +1,7 @@
 
 public enum ClientState
 {
-    Nothing,
+    Disconnected,
     Connected,
     WaitingForPlayers,
     InGame

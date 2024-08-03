@@ -12,6 +12,7 @@ using HiveGame.BusinessLogic.Repositories;
 
 namespace HiveGame.BusinessLogic.Services
 {
+
     public interface IMatchmakingService
     {
         string[]? JoinQueue(string clientId);
@@ -20,6 +21,8 @@ namespace HiveGame.BusinessLogic.Services
 
     public class MatchmakingService : IMatchmakingService
     {
+        private const int PLAYERS_TO_START_GAME = 1;
+
         private readonly IMatchmakingRepository _matchmakingRepository;
         private readonly IGameRepository _gameRepository;
         private readonly IGameFactory _gameFactory;
@@ -32,10 +35,10 @@ namespace HiveGame.BusinessLogic.Services
 
         public string[]? JoinQueue(string clientId)
         {
-            if(_matchmakingRepository.GetByPlayerId(clientId) != null)
+            if(_matchmakingRepository.GetByPlayerId(clientId) == null)
                 _matchmakingRepository.Add(new Player { PlayerId = clientId });
 
-            if (_matchmakingRepository.Count >= 2)
+            if (_matchmakingRepository.Count >= PLAYERS_TO_START_GAME)
             {
                 var players = _matchmakingRepository.GetAndRemoveFirstTwo().ToArray();
                 var game = _gameFactory.CreateGame(players);

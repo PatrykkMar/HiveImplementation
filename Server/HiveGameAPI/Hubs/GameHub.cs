@@ -11,15 +11,17 @@ using System.Collections.Generic;
 
 namespace HiveGame.Hubs
 {
-    public class MatchmakingHub : Hub
+    public class GameHub : Hub
     {
         private readonly ITokenUtils _utils;
-        private readonly IMatchmakingService _service;
+        private readonly IMatchmakingService _matchmakingService;
+        //private readonly IHiveGameService _gameService;
 
-        public MatchmakingHub(ITokenUtils utils, IMatchmakingService service)
+        public GameHub(ITokenUtils utils, IMatchmakingService matchmakingService)//, IHiveGameService gameService)
         {
             _utils = utils;
-            _service = service;
+            _matchmakingService = matchmakingService;
+            //_gameService = gameService;
         }
 
         private static ConcurrentDictionary<string, string> ConnectedClients = new ConcurrentDictionary<string, string>(); //client, connection
@@ -66,7 +68,7 @@ namespace HiveGame.Hubs
 
             var playerId = GetPlayerIdFromToken();
 
-            var players = _service.JoinQueue(playerId);
+            var players = _matchmakingService.JoinQueue(playerId);
 
             if(players != null)
             {
@@ -84,7 +86,7 @@ namespace HiveGame.Hubs
 
             var playerId = GetPlayerIdFromToken();
 
-            _service.LeaveQueue(playerId);
+            _matchmakingService.LeaveQueue(playerId);
 
             await Clients.Caller.SendAsync("ReceiveMessage", playerId, "Left the queue", Trigger.LeftQueue);
         }

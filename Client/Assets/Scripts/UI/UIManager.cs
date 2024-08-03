@@ -7,14 +7,17 @@ using TMPro;
 using Stateless;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class UIManager : MonoBehaviour
 {
     public Button[] buttons;
-    [SerializeField] private MatchmakingHubService hub;
+    [SerializeField] private HubService hub;
     [SerializeField] private TokenService tokenService;
     [SerializeField] private Text informationText;
-    private string? textToChange;
+    private string textToChange;
+    private string stateScene;
     private ClientState? stateToChange;
 
     public List<ButtonHelper> GetAvailableButtonsList(ClientState state)
@@ -22,7 +25,7 @@ public class UIManager : MonoBehaviour
         var btnList = new List<ButtonHelper>();
         switch(state)
         {
-            case ClientState.Nothing:
+            case ClientState.Disconnected:
                 btnList = new List<ButtonHelper>
                 {
                     new ButtonHelper("Get token", () => tokenService.GetToken(true))
@@ -36,7 +39,6 @@ public class UIManager : MonoBehaviour
 
                 break;
             case ClientState.WaitingForPlayers:
-                //TODO: Leave the queue method and button
                 btnList = new List<ButtonHelper>
                 {
                     new ButtonHelper("Leave the queue", async () => await hub.LeaveQueueAsync())
@@ -52,7 +54,7 @@ public class UIManager : MonoBehaviour
         string text = "";
         switch (state)
         {
-            case ClientState.Nothing:
+            case ClientState.Disconnected:
                 text = "You are disconnected. Click a button to get a token and connect";
                 break;
             case ClientState.Connected:
@@ -61,6 +63,9 @@ public class UIManager : MonoBehaviour
             case ClientState.WaitingForPlayers:
                 text = "You are in a queue, wait for another player. You can click a button to leave a queue";
                 break;
+            case ClientState.InGame:
+                text = "Found the player. The game starts.";
+                break;
 
         }
         textToChange = text;
@@ -68,6 +73,7 @@ public class UIManager : MonoBehaviour
 
     public void ConfigureUIForState(ClientState state)
     {
+        stateScene = Scenes.GetSceneByState(state);
         SetInformationText(state);
         List<ButtonHelper> btnHelperList = GetAvailableButtonsList(state);
         for(int i = 0; i<buttons.Length; i++)
@@ -86,13 +92,26 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void SetStateToChange(ClientState state)
+    private IEnumerator LoadAsyncScene(string scene)
     {
-        stateToChange = state;
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(scene);
+        while (!asyncLoad.isDone)
+        {
+            yield return null;
+        }
     }
 
     private void Update()
     {
+        if(stateScene != null) 
+        {
+            var currentScene = SceneManager.GetActiveScene().name;
+            if (currentScene != stateScene)
+            {
+                SceneManager.LoadScene(stateScene);
+            }
+        }
+
         if(textToChange!= null) 
         {
             informationText.text = textToChange;

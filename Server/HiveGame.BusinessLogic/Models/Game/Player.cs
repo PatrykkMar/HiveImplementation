@@ -11,6 +11,7 @@ namespace HiveGame.BusinessLogic.Models
     {
         public string? GameId { get; set; }
         public string? PlayerId { get; set; }
+        public PlayerColor PlayerColor { get; set; }
     }
 
     public enum PlayerColor

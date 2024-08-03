@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MatchmakingHubService : MonoBehaviour
+public class HubService : MonoBehaviour
 {
     private HubConnection _hubConnection;
 

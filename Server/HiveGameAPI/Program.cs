@@ -23,6 +23,7 @@ builder.Services.AddSignalR();
 //Services
 //builder.Services.AddScoped<IHiveGameService, HiveGameService>();
 builder.Services.AddScoped<IMatchmakingService, MatchmakingService>();
+//builder.Services.AddScoped<IHiveGameService, HiveGameService>();
 
 //Repository
 builder.Services.AddSingleton<IMatchmakingRepository, MatchmakingRepository>();
@@ -51,7 +52,7 @@ builder.Services
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
 
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("Jwt:AuthKey")))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("Jwt:AuthKey") ?? throw new Exception("Auth key not found")))
         };
     });
 
@@ -70,6 +71,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapHub<MatchmakingHub>("matchmakinghub");
+app.MapHub<GameHub>("matchmakinghub");
 
 app.Run();
