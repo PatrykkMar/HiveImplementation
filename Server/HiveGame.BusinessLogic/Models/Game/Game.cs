@@ -12,25 +12,21 @@ namespace HiveGame.BusinessLogic.Models.Game
 {
     public class Game
     {
-        public Game(HiveBoard board, string gameId, Player[] players, PlayerColor startingColor = PlayerColor.White)
+        public Game(Player[] players, IInsectFactory factory, PlayerColor startingColor = PlayerColor.White)
         {
-            Graph = board;
+            Board = new HiveBoard(factory);
             Players = players;
-            GameId = gameId;
-            StartingColor = startingColor;
+            CurrentColorMove = startingColor;
+            players[0].PlayerColor = PlayerColor.White;
+            players[1].PlayerColor = PlayerColor.Black;
         }
 
-        public Game(string gameId, Player[] players, IInsectFactory factory, PlayerColor startingColor = PlayerColor.White)
-        {
-            Graph = new HiveBoard(factory);
-            Players = players;
-            GameId = gameId;
-            StartingColor = startingColor;
-        }
-
-        public HiveBoard Graph { get; set; }
-        public string GameId { get; set; }
+        public HiveBoard Board { get; set; }
         public Player[] Players { get; set; }
-        public PlayerColor StartingColor { get; set; }
+        public PlayerColor CurrentColorMove { get; set; }
+        public Player GetCurrentPlayer()
+        {
+            return Players.FirstOrDefault(x => x.PlayerColor == CurrentColorMove);
+        }
     }
 }

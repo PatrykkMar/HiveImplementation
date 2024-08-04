@@ -13,6 +13,7 @@ namespace HiveGame.BusinessLogic.Repositories
         IEnumerable<Game> GetAll();
 
         Game? GetByGameId(string gameId);
+        Game? GetByPlayerId(string playerId);
 
         bool Update(string gameId, Game updatedItem);
 
@@ -45,31 +46,22 @@ namespace HiveGame.BusinessLogic.Repositories
 
         public Game? GetByGameId(string gameId)
         {
-            return _items.FirstOrDefault(x => x.GameId == gameId);
+            throw new NotImplementedException();
         }
 
         public bool Update(string gameId, Game updatedItem)
         {
-            var index = _items.FindIndex(x => x.GameId == gameId);
-            if (index == -1)
-            {
-                return false;
-            }
-
-            _items[index] = updatedItem;
-            return true;
+            throw new NotImplementedException();
         }
 
         public bool Remove(string gameId)
         {
-            var item = _items.FirstOrDefault(x => x.GameId == gameId);
-            if (item == null)
-            {
-                return false;
-            }
+            throw new NotImplementedException();
+        }
 
-            _items.Remove(item);
-            return true;
+        public Game? GetByPlayerId(string playerId)
+        {
+            return _items.FirstOrDefault(x => x.Players.Select(x => x.PlayerId).Contains(playerId));
         }
     }
 }

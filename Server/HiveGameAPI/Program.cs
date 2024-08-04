@@ -21,9 +21,8 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddSignalR();
 
 //Services
-//builder.Services.AddScoped<IHiveGameService, HiveGameService>();
+builder.Services.AddScoped<IHiveGameService, HiveGameService>();
 builder.Services.AddScoped<IMatchmakingService, MatchmakingService>();
-//builder.Services.AddScoped<IHiveGameService, HiveGameService>();
 
 //Repository
 builder.Services.AddSingleton<IMatchmakingRepository, MatchmakingRepository>();

@@ -44,6 +44,11 @@ public class ClientStateMachine : MonoBehaviour
         _machine.OnTransitioned(transition => Debug.Log($"{transition.Source} -[{transition.Trigger}]-> {transition.Destination}"));
     }
 
+    public void SetForCurrentState()
+    {
+        _ui.ConfigureUIForState(_machine.State);
+    }
+
     public void Fire(Trigger trigger)
     {
         _machine.Fire(trigger);

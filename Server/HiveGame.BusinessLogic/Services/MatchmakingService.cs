@@ -21,7 +21,7 @@ namespace HiveGame.BusinessLogic.Services
 
     public class MatchmakingService : IMatchmakingService
     {
-        private const int PLAYERS_TO_START_GAME = 1;
+        private const int PLAYERS_TO_START_GAME = 2;
 
         private readonly IMatchmakingRepository _matchmakingRepository;
         private readonly IGameRepository _gameRepository;

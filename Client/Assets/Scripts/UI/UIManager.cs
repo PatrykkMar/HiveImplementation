@@ -44,7 +44,6 @@ public class UIManager : MonoBehaviour
                     new ButtonHelper("Leave the queue", async () => await hub.LeaveQueueAsync())
                 };
                 break;
-                        
         }
         return btnList;
     }
@@ -89,15 +88,6 @@ public class UIManager : MonoBehaviour
             {
                 buttons[i].gameObject.SetActive(false);
             }
-        }
-    }
-
-    private IEnumerator LoadAsyncScene(string scene)
-    {
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(scene);
-        while (!asyncLoad.isDone)
-        {
-            yield return null;
         }
     }
 

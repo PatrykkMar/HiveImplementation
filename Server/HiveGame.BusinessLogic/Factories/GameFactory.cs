@@ -1,5 +1,6 @@
 ﻿using HiveGame.BusinessLogic.Models;
 using HiveGame.BusinessLogic.Models.Game;
+using HiveGame.BusinessLogic.Models.Graph;
 using HiveGame.BusinessLogic.Models.Insects;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace HiveGame.BusinessLogic.Factories
 
         public Game CreateGame(Player[] players)
         {
-            var game = new Game(Guid.NewGuid().ToString(), players, _insectFactory);
+            var game = new Game(players, _insectFactory);
             return game;
         }
     }

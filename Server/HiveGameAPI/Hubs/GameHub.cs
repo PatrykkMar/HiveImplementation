@@ -1,3 +1,4 @@
+using HiveGame.BusinessLogic.Models.Insects;
 using HiveGame.BusinessLogic.Models.Requests;
 using HiveGame.BusinessLogic.Services;
 using HiveGame.BusinessLogic.Utils;
@@ -15,13 +16,13 @@ namespace HiveGame.Hubs
     {
         private readonly ITokenUtils _utils;
         private readonly IMatchmakingService _matchmakingService;
-        //private readonly IHiveGameService _gameService;
+        private readonly IHiveGameService _gameService;
 
-        public GameHub(ITokenUtils utils, IMatchmakingService matchmakingService)//, IHiveGameService gameService)
+        public GameHub(ITokenUtils utils, IMatchmakingService matchmakingService, IHiveGameService gameService)
         {
             _utils = utils;
             _matchmakingService = matchmakingService;
-            //_gameService = gameService;
+            _gameService = gameService;
         }
 
         private static ConcurrentDictionary<string, string> ConnectedClients = new ConcurrentDictionary<string, string>(); //client, connection
@@ -72,11 +73,11 @@ namespace HiveGame.Hubs
 
             if(players != null)
             {
-                await Clients.Clients(players.Select(x => ConnectedClients[x])).SendAsync("ReceiveMessage", playerId, "Player found", Trigger.FoundGame);
+                await Clients.Clients(players.Select(x => ConnectedClients[x])).SendAsync("ReceiveMessage", playerId, "Player found", Trigger.FoundGame, null);
             }
             else
             {
-                await Clients.Caller.SendAsync("ReceiveMessage", playerId, "Waiting for player", Trigger.JoinedQueue);
+                await Clients.Caller.SendAsync("ReceiveMessage", playerId, "Waiting for player", Trigger.JoinedQueue, null);
             }
         }
 
@@ -88,7 +89,19 @@ namespace HiveGame.Hubs
 
             _matchmakingService.LeaveQueue(playerId);
 
-            await Clients.Caller.SendAsync("ReceiveMessage", playerId, "Left the queue", Trigger.LeftQueue);
+            await Clients.Caller.SendAsync("ReceiveMessage", playerId, "Left the queue", Trigger.LeftQueue, null);
+        }
+
+        [Authorize]
+        public async Task PutFirstInsect(InsectType type)
+        {
+            var request = new PutFirstInsectRequest()
+            {
+                InsectToPut = type,
+                PlayerId = GetPlayerIdFromToken()
+            };
+
+            _gameService.PutFirstInsect(request);
         }
 
         private string GetPlayerIdFromToken()

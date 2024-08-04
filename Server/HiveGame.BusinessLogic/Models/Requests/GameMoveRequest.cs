@@ -9,13 +9,7 @@ namespace HiveGame.BusinessLogic.Models.Requests
 {
     public class GameMoveRequest
     {
-        public long PlayerId { get; set; }
+        public string PlayerId { get; set; }
         public long? GameId { get; set; }
-
-        public void ReadDataFromJWT(TokenDatas tokenDatas)
-        {
-            PlayerId = tokenDatas.PlayerId;
-            GameId = tokenDatas.GameId;
-        }
     }
 }

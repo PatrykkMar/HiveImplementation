@@ -1126,8 +1126,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 320}
-  m_SizeDelta: {x: 160, y: 30}
+  m_AnchoredPosition: {x: 0, y: 250}
+  m_SizeDelta: {x: 400, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1282839293
 MonoBehaviour:
@@ -1156,7 +1156,7 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 2
     m_MaxSize: 40
-    m_Alignment: 0
+    m_Alignment: 1
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
@@ -1685,6 +1685,7 @@ MonoBehaviour:
   _serverUrl: http://localhost:7200/matchmakinghub
   _informationText: {fileID: 1282839293}
   _clientStateMachine: {fileID: 1305284441}
+  _gridGenerator: {fileID: 507528058}
 --- !u!4 &1773386115
 Transform:
   m_ObjectHideFlags: 0
@@ -1751,7 +1752,7 @@ MonoBehaviour:
   - {fileID: 1372892048}
   hub: {fileID: 1773386114}
   tokenService: {fileID: 1183686187}
-  informationText: {fileID: 0}
+  informationText: {fileID: 1282839293}
 --- !u!1 &2065307441
 GameObject:
   m_ObjectHideFlags: 0

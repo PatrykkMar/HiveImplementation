@@ -11,15 +11,9 @@ public class HexGridGenerator : MonoBehaviour
     public List<InsectObjectPair> insectObjectPairs;
     private Dictionary<(PlayerColor,InsectType),Material> materialDictionary;
 
-    async void Start()
+    void Start()
     {
-        gameService = new HiveGameService();
-        List<VertexDTO> vertices = await gameService.GetVerticesDataAsync();
         CreateMaterialDictionary();
-        if (vertices != null)
-        {
-            OnVerticesDataReceived(vertices);
-        }
     }
 
     private void CreateMaterialDictionary()
@@ -32,7 +26,7 @@ public class HexGridGenerator : MonoBehaviour
         }
     }
 
-    private void OnVerticesDataReceived(List<VertexDTO> vertices)
+    public void GenerateVertices(List<VertexDTO> vertices)
     {
         foreach (var vertex in vertices)
         {

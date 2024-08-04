@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Microsoft.AspNetCore.SignalR.Client;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -15,13 +16,14 @@ public class GameManager : MonoBehaviour
 
     async void Awake()
     {
-        if(Initiated == false)
+        Debug.Log("Scene started");
+        if (Initiated == false)
         {
             _stateMachine.InitiateStateMachine();
-            _stateMachine.Fire(Trigger.Started);
             StartCoroutine(_token.GetToken(true));
             await _service.InitializeMatchmakingServiceAsync();
             Initiated = true;
         }
+        _stateMachine.SetForCurrentState();
     }
 }
