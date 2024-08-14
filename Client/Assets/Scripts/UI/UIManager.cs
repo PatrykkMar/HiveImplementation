@@ -44,6 +44,20 @@ public class UIManager : MonoBehaviour
                     new ButtonHelper("Leave the queue", async () => await hub.LeaveQueueAsync())
                 };
                 break;
+
+            case ClientState.InGamePlayerMove:
+                btnList = new List<ButtonHelper>
+                {
+                    new ButtonHelper("Put insect", async () => await hub.PutInsectAsync(InsectType.Nothing, null)), //TODO: Put method for client
+                    new ButtonHelper("Move insect", async () => await hub.MoveInsectAsync()) //TODO: Move method for client
+                };
+                break;
+
+            case ClientState.InGameOpponentMove:
+                btnList = new List<ButtonHelper>
+                {
+                };
+                break;
         }
         return btnList;
     }
@@ -62,8 +76,11 @@ public class UIManager : MonoBehaviour
             case ClientState.WaitingForPlayers:
                 text = "You are in a queue, wait for another player. You can click a button to leave a queue";
                 break;
-            case ClientState.InGame:
-                text = "Found the player. The game starts.";
+            case ClientState.InGamePlayerMove:
+                text = "Your move";
+                break;
+            case ClientState.InGameOpponentMove:
+                text = "Opponent's move";
                 break;
 
         }

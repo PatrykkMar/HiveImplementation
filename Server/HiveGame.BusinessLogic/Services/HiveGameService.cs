@@ -13,9 +13,8 @@ namespace HiveGame.BusinessLogic.Services
     {
         public IList<VertexDTO> Move(MoveInsectRequest request);
 
-        public IList<VertexDTO> Put(PutInsectRequest request);
+        public HiveActionResult Put(PutInsectRequest request);
 
-        public IList<VertexDTO> PutFirstInsect(PutFirstInsectRequest request);
         IList<VertexDTO> GetTestGrid();
         string GetTestGridPrint();
     }
@@ -36,8 +35,8 @@ namespace HiveGame.BusinessLogic.Services
             //_board.PutFirstInsect(InsectType.Ant, null);
             //_board.Put(InsectType.Queen, _board.GetVertexByCoord(1, -1, 0), null);
             //_board.Move(_board.GetVertexByCoord(0, 0, 0), _board.GetVertexByCoord(2, -2 ,0), null);
-            var dtos = GetVerticesDTOFromGraph();
-            return dtos;
+            //var dtos = GetVerticesDTOFromGraph();
+            //return dtos;
         }
 
         public string GetTestGridPrint()
@@ -64,26 +63,40 @@ namespace HiveGame.BusinessLogic.Services
             //return GetVerticesDTOFromGraph();
         }
 
-        public IList<VertexDTO> Put(PutInsectRequest request)
-        {
-            throw new NotImplementedException();
-            //var vertexFrom = _board.GetVertexByCoord(request.WhereToPut);
-            //_board.Put(request.InsectToPut, vertexFrom, null);
-            //return GetVerticesDTOFromGraph();
-        }
-
-        public IList<VertexDTO> PutFirstInsect(PutFirstInsectRequest request)
+        public HiveActionResult Put(PutInsectRequest request)
         {
             var game = GetGame(request.PlayerId);
-            game.Board.PutFirstInsect(request.InsectToPut, null);
-            return GetVerticesDTOFromGraph();
+
+            if (game == null)
+                throw new Exception("Game not found");
+
+            if (request.PlayerId != game?.GetCurrentPlayer().PlayerId)
+                throw new Exception("It's not your move");
+
+            game.Board.Put(request.InsectToPut, request.WhereToPut);
+
+            var result = new HiveActionResult(game, GetVerticesDTOFromGraph(game));
+
+            return result;
         }
 
-        private IList<VertexDTO> GetVerticesDTOFromGraph()
+        //There is no need for additional put method
+        //public IList<VertexDTO> PutFirstInsect(PutFirstInsectRequest request)
+        //{
+        //    var game = GetGame(request.PlayerId);
+        //    if(request.PlayerId != game?.GetCurrentPlayer().PlayerId)
+        //    {
+        //        throw new Exception("It's not your move");
+        //    }
+
+        //    game.Board.PutFirstInsects(request.InsectToPut, null);
+        //    return GetVerticesDTOFromGraph();
+        //}
+
+        private List<VertexDTO> GetVerticesDTOFromGraph(Game game)
         {
-            throw new NotImplementedException();
-            //var verticesDTO = _mapper.Map<IList<VertexDTO>>(_board.Vertices);
-            //return verticesDTO;
+            var verticesDTO = _mapper.Map<List<VertexDTO>>(game.Board.Vertices);
+            return verticesDTO;
         }
 
         private Game? GetGame(string playerId)

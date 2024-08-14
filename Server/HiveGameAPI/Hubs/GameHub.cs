@@ -1,3 +1,5 @@
+using HiveGame.BusinessLogic.Models;
+using HiveGame.BusinessLogic.Models.Game;
 using HiveGame.BusinessLogic.Models.Insects;
 using HiveGame.BusinessLogic.Models.Requests;
 using HiveGame.BusinessLogic.Services;
@@ -5,8 +7,10 @@ using HiveGame.BusinessLogic.Utils;
 using HiveGame.Models;
 using HiveGameAPI.Controllers;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json.Linq;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
@@ -25,27 +29,41 @@ namespace HiveGame.Hubs
             _gameService = gameService;
         }
 
-        private static ConcurrentDictionary<string, string> ConnectedClients = new ConcurrentDictionary<string, string>(); //client, connection
+        private static ConcurrentDictionary<string, string> PlayerConnectionDict = new ConcurrentDictionary<string, string>(); //client, connection
+
+        private static ConcurrentDictionary<string, string> ConnectionPlayerDict
+        {
+            get
+            {
+                ConcurrentDictionary<string, string> reversedDict = new ConcurrentDictionary<string, string>();
+                foreach (var kvp in PlayerConnectionDict)
+                {
+                    reversedDict[kvp.Value] = kvp.Key;
+                }
+                return reversedDict;
+            }
+        }
+
 
         [Authorize]
         public override async Task OnConnectedAsync()
         {
             string connectionId = Context.ConnectionId;
-            string clientId = GetPlayerIdFromToken();
-            ConnectedClients.TryAdd(clientId, connectionId);
+            string playerId = GetPlayerIdFromToken();
+            PlayerConnectionDict.TryAdd(playerId, connectionId);
             await base.OnConnectedAsync();
-            await SendMessageAsync($"user: {clientId}", "You connected to the server hub");
+            await SendMessageAsync($"user: {playerId}", "You connected to the server hub");
         }
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
             string connectionId = Context.ConnectionId;
 
-            var keysToRemove = ConnectedClients.Where(kvp => kvp.Value.Equals(connectionId)).Select(kvp => kvp.Key).ToList();
+            var keysToRemove = PlayerConnectionDict.Where(kvp => kvp.Value.Equals(connectionId)).Select(kvp => kvp.Key).ToList();
 
             foreach (var key in keysToRemove)
             {
-                ConnectedClients.TryRemove(connectionId, out _);
+                PlayerConnectionDict.TryRemove(connectionId, out _);
             }
 
             await base.OnDisconnectedAsync(exception);
@@ -69,11 +87,24 @@ namespace HiveGame.Hubs
 
             var playerId = GetPlayerIdFromToken();
 
-            var players = _matchmakingService.JoinQueue(playerId);
+            var game = _matchmakingService.JoinQueue(playerId);
 
-            if(players != null)
+            if(game != null)
             {
-                await Clients.Clients(players.Select(x => ConnectedClients[x])).SendAsync("ReceiveMessage", playerId, "Player found", Trigger.FoundGame, null);
+                var players = game.Players.Select(x => x.PlayerId);
+
+                foreach(var player in players)
+                {
+                    var currentPlayer = game.GetCurrentPlayer().PlayerId;
+                    if (player == game.GetCurrentPlayer().PlayerId)
+                    {
+                        await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "Found the game. It's your move", Trigger.FoundGamePlayerStarts, null);
+                    }
+                    else
+                    {
+                        await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "Found the game. It's opponent's move", Trigger.FoundGameOpponentStarts, null);
+                    }
+                }
             }
             else
             {
@@ -93,15 +124,39 @@ namespace HiveGame.Hubs
         }
 
         [Authorize]
-        public async Task PutFirstInsect(InsectType type)
+        public async Task PutInsect(InsectType type, (int, int, int)? whereToPut)
         {
-            var request = new PutFirstInsectRequest()
+            var playerId = GetPlayerIdFromToken();
+
+            var request = new PutInsectRequest()
             {
                 InsectToPut = type,
-                PlayerId = GetPlayerIdFromToken()
+                PlayerId = playerId,
+                WhereToPut = whereToPut
             };
 
-            _gameService.PutFirstInsect(request);
+            var result = _gameService.Put(request);
+            var game = result.Game;
+
+            var players = game.Players.Select(x => x.PlayerId);
+
+            foreach (var player in players)
+            {
+                if (playerId == game.GetCurrentPlayer().PlayerId)
+                {
+                    await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "Found the game. It's your move", Trigger.FoundGamePlayerStarts, result.CurrentBoard);
+                }
+                else
+                {
+                    await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "Found the game. It's opponent's move", Trigger.FoundGameOpponentStarts, result.CurrentBoard);
+                }
+            }
+        }
+
+        [Authorize]
+        public async Task MoveInsect(InsectType type)
+        {
+            throw new NotImplementedException();
         }
 
         private string GetPlayerIdFromToken()

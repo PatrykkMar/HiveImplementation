@@ -31,15 +31,22 @@ public class ClientStateMachine : MonoBehaviour
         _machine.Configure(ClientState.Connected)
             .OnEntry(() => _ui.ConfigureUIForState(ClientState.Connected))
             .Permit(Trigger.JoinedQueue, ClientState.WaitingForPlayers)
-            .Permit(Trigger.FoundGame, ClientState.InGame);
+            .Permit(Trigger.FoundGamePlayerStarts, ClientState.InGamePlayerMove)
+            .Permit(Trigger.FoundGameOpponentStarts, ClientState.InGameOpponentMove);
 
         _machine.Configure(ClientState.WaitingForPlayers)
             .OnEntry(() => _ui.ConfigureUIForState(ClientState.WaitingForPlayers))
             .Permit(Trigger.LeftQueue, ClientState.Connected)
-            .Permit(Trigger.FoundGame, ClientState.InGame);
+            .Permit(Trigger.FoundGamePlayerStarts, ClientState.InGamePlayerMove)
+            .Permit(Trigger.FoundGameOpponentStarts, ClientState.InGameOpponentMove);
 
-        _machine.Configure(ClientState.InGame)
-            .OnEntry(() => _ui.ConfigureUIForState(ClientState.InGame));
+        _machine.Configure(ClientState.InGamePlayerMove)
+            .OnEntry(() => _ui.ConfigureUIForState(ClientState.InGamePlayerMove))
+            .Permit(Trigger.PlayerMadeMove, ClientState.InGameOpponentMove);
+
+        _machine.Configure(ClientState.InGameOpponentMove)
+            .OnEntry(() => _ui.ConfigureUIForState(ClientState.InGameOpponentMove))
+            .Permit(Trigger.OpponentMadeMove, ClientState.InGamePlayerMove);
 
         _machine.OnTransitioned(transition => Debug.Log($"{transition.Source} -[{transition.Trigger}]-> {transition.Destination}"));
     }

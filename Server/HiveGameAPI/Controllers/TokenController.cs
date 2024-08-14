@@ -21,7 +21,7 @@ namespace HiveGameAPI.Controllers
         public IActionResult GetJwtToken()
         {
 
-            var result = _utils.CreateToken(Guid.NewGuid().ToString());
+            var result = _utils.CreateToken("PlayerId" + Guid.NewGuid().ToString());
             return Ok(result);
         }
     }

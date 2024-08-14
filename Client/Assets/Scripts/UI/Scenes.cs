@@ -20,7 +20,8 @@ public class Scenes
             case ClientState.Connected:
             case ClientState.WaitingForPlayers:
                 return MenuScene;
-            case ClientState.InGame: 
+            case ClientState.InGamePlayerMove:
+            case ClientState.InGameOpponentMove:
                 return GameScene;
             default:
                 throw new NotImplementedException("Scene for this state not found");

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using static HiveGame.BusinessLogic.Models.Game.Graph.DirectionConsts;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace HiveGame.BusinessLogic.Models.Graph
 {
@@ -22,6 +23,22 @@ namespace HiveGame.BusinessLogic.Models.Graph
             get
             {
                 return _board.Values.ToList();
+            }
+        }
+
+        public List<Vertex> NotEmptyVertices
+        {
+            get
+            {
+                return _board.Values.Where(x => !x.IsEmpty).ToList();
+            }
+        }
+
+        public bool FirstMoves
+        {
+            get
+            {
+                return NotEmptyVertices.Count < 2;
             }
         }
 
@@ -48,10 +65,15 @@ namespace HiveGame.BusinessLogic.Models.Graph
             return true;
         }
 
-        public bool Put(InsectType? insectType, Vertex where, Player player)
+        public bool Put(InsectType insectType, (int, int, int)? whereToPut)
         {
-            if (insectType == null)
-                throw new ArgumentNullException("Vertex cannot be null");
+            if(FirstMoves)
+            {
+                return PutFirstInsects(insectType);
+            }
+
+            if (insectType == InsectType.Nothing)
+                throw new ArgumentNullException("Insect not specified");
             if (!_board.Keys.Any())
                 throw new Exception("Cannot put insect on the empty board");
 
@@ -59,7 +81,11 @@ namespace HiveGame.BusinessLogic.Models.Graph
 
             //check if "where" vertex is empty
 
-            var insect = _factory.CreateInsect(insectType.Value);
+            var insect = _factory.CreateInsect(insectType);
+            var where = GetVertexByCoord(whereToPut);
+
+            if (where == null)
+                throw new Exception("Vertex not found");
 
             where.CurrentInsect = insect;
             AddVertex(where);
@@ -72,15 +98,17 @@ namespace HiveGame.BusinessLogic.Models.Graph
             _board[(vertex.X, vertex.Y, vertex.Z)] = vertex;
         }
 
-        public bool PutFirstInsect(InsectType insectType, Player player)
+        public bool PutFirstInsects(InsectType insectType)
         {
             Vertex vertex;
             Insect insect = _factory.CreateInsect(insectType);
 
             if (_board.Count == 0)
                 vertex = new Vertex(0, 0, 0, insect);
+            else if (_board.Count == 1)
+                vertex = new Vertex(1, 0, 0, insect);
             else
-                throw new Exception("First insect is put");
+                throw new Exception("It's not first insect");
 
             AddVertex(vertex);
             AddEmptyVerticesAround(vertex);

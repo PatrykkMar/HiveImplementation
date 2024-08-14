@@ -28,5 +28,10 @@ namespace HiveGame.BusinessLogic.Models.Game
         {
             return Players.FirstOrDefault(x => x.PlayerColor == CurrentColorMove);
         }
+        public Player GetOtherPlayer()
+        {
+            return Players.FirstOrDefault(x => x.PlayerColor != CurrentColorMove);
+        }
+
     }
 }

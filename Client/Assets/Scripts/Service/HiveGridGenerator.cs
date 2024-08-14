@@ -7,7 +7,7 @@ public class HexGridGenerator : MonoBehaviour
     public GameObject hexPrismPrefab;
     public GameObject hexPrismInsectPrefab;
     public float radius = 1.0f;
-    private HiveGameService gameService;
+    private List<GameObject> generatedVertices = new List<GameObject>();
     public List<InsectObjectPair> insectObjectPairs;
     private Dictionary<(PlayerColor,InsectType),Material> materialDictionary;
 
@@ -28,12 +28,18 @@ public class HexGridGenerator : MonoBehaviour
 
     public void GenerateVertices(List<VertexDTO> vertices)
     {
+        foreach(var genVertex in generatedVertices)
+        {
+            Destroy(genVertex);
+        }
+        generatedVertices.Clear();
+
         foreach (var vertex in vertices)
         {
             var log = $"Hex_{vertex.x}_{vertex.y}_{vertex.z}_" + (vertex.insect == InsectType.Nothing ? "no insect" : "insect");
             Vector3 position = CalculatePosition(vertex.x, vertex.y, vertex.z);
             GameObject hexPrism = Instantiate(vertex.insect == InsectType.Nothing ? hexPrismPrefab : hexPrismInsectPrefab, position, Quaternion.identity);
-
+            generatedVertices.Add(hexPrism);
             if(vertex.insect != InsectType.Nothing)
             {
                 Renderer hexPrismRenderer = hexPrism.GetComponent<Renderer>();

@@ -53,4 +53,15 @@ public class HubService : MonoBehaviour
     {
         await _hubConnection.InvokeAsync("LeaveQueue");
     }
+
+    public async Task PutInsectAsync(InsectType insect, (int,int,int)? position)
+    {
+        await _hubConnection.InvokeAsync("JoinQueue", insect, position);
+    }
+
+    public async Task MoveInsectAsync()
+    {
+        throw new NotImplementedException();
+        await _hubConnection.InvokeAsync("MoveInsectAsync");
+    }
 }
