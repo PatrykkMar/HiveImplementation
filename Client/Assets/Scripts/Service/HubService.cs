@@ -14,7 +14,6 @@ public class HubService : MonoBehaviour
     [SerializeField] private string _serverUrl = "ws://localhost:7200/matchmakinghub";
     [SerializeField] private Text _informationText;
     [SerializeField] private ClientStateMachine _clientStateMachine;
-    [SerializeField] private HexGridGenerator _gridGenerator;
 
 
     public async Task InitializeMatchmakingServiceAsync()
@@ -26,18 +25,21 @@ public class HubService : MonoBehaviour
         })
         .Build();
 
-        _hubConnection.On<string, string, Trigger?, List<VertexDTO>>("ReceiveMessage", (player, message, trigger, vertices) =>
+        _hubConnection.On<string, string, Trigger?, PlayerViewDTO>("ReceiveMessage", (player, message, trigger, playerView) =>
         {
-            Debug.Log($"Player: {player}. Message from server: {message}. Has trigger: {trigger.HasValue}");
-            if(trigger.HasValue)
+            Debug.Log($"Player: {player}. Message from server: {message}. Has trigger: {trigger.HasValue}. Has vertices: {(playerView != null ? 1 : 0)}");
+
+            if (playerView != null)
+            {
+                PlayerView.Board = playerView.Board;
+                PlayerView.PlayerInsects = playerView.PlayerInsects;
+            }
+
+            if (trigger.HasValue)
             {
                 _clientStateMachine.Fire(trigger.Value);
             }
 
-            if(vertices != null && _gridGenerator != null)
-            {
-                _gridGenerator.GenerateVertices(vertices);
-            }
         });
 
         await _hubConnection.StartAsync();

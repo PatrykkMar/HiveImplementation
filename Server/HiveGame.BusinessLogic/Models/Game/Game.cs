@@ -1,4 +1,5 @@
-﻿using HiveGame.BusinessLogic.Factories;
+﻿using AutoMapper;
+using HiveGame.BusinessLogic.Factories;
 using HiveGame.BusinessLogic.Models.Game.Graph;
 using HiveGame.BusinessLogic.Models.Graph;
 using System;
@@ -12,9 +13,9 @@ namespace HiveGame.BusinessLogic.Models.Game
 {
     public class Game
     {
-        public Game(Player[] players, IInsectFactory factory, PlayerColor startingColor = PlayerColor.White)
+        public Game(Player[] players, IInsectFactory factory, IMapper mapper, PlayerColor startingColor = PlayerColor.White)
         {
-            Board = new HiveBoard(factory);
+            Board = new HiveBoard(factory, mapper);
             Players = players;
             CurrentColorMove = startingColor;
             players[0].PlayerColor = PlayerColor.White;
@@ -31,6 +32,15 @@ namespace HiveGame.BusinessLogic.Models.Game
         public Player GetOtherPlayer()
         {
             return Players.FirstOrDefault(x => x.PlayerColor != CurrentColorMove);
+        }
+
+        public PlayerViewDTO GetPlayerView(string playerId)
+        {
+            var playerViewDTO = new PlayerViewDTO();
+            var player = Players.FirstOrDefault(x=>x.PlayerId == playerId);
+            playerViewDTO.PlayerInsects = player.PlayerInsects;
+            playerViewDTO.Board = Board.VerticesDTO;
+            return playerViewDTO;
         }
 
     }

@@ -1,4 +1,5 @@
-﻿using HiveGame.BusinessLogic.Factories;
+﻿using AutoMapper;
+using HiveGame.BusinessLogic.Factories;
 using HiveGame.BusinessLogic.Models.Insects;
 using System;
 using System.Collections.Generic;
@@ -12,10 +13,12 @@ namespace HiveGame.BusinessLogic.Models.Graph
     {
         private Dictionary<(int, int, int), Vertex> _board;
         private readonly IInsectFactory _factory;
-        public HiveBoard(IInsectFactory factory)
+        private readonly IMapper _mapper;
+        public HiveBoard(IInsectFactory factory, IMapper mapper)
         {
             _factory = factory;
             _board = new Dictionary<(int, int, int), Vertex>();
+            _mapper = mapper;
         }
 
         public List<Vertex> Vertices
@@ -23,6 +26,14 @@ namespace HiveGame.BusinessLogic.Models.Graph
             get
             {
                 return _board.Values.ToList();
+            }
+        }
+
+        public List<VertexDTO> VerticesDTO
+        {
+            get
+            {
+                return _mapper.Map<List<VertexDTO>>(_board.Values.ToList());
             }
         }
 

@@ -95,14 +95,20 @@ namespace HiveGame.Hubs
 
                 foreach(var player in players)
                 {
+                    PlayerViewDTO playerView = game.GetPlayerView(player);
                     var currentPlayer = game.GetCurrentPlayer().PlayerId;
-                    if (player == game.GetCurrentPlayer().PlayerId)
+                    var otherPlayer = game.GetOtherPlayer().PlayerId;
+                    if (player == currentPlayer)
                     {
-                        await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "Found the game. It's your move", Trigger.FoundGamePlayerStarts, null);
+                        await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "Found the game. It's your move", Trigger.FoundGamePlayerStarts, playerView);
+                    }
+                    else if (player == otherPlayer)
+                    {
+                        await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "Found the game. It's opponent's move", Trigger.FoundGameOpponentStarts, playerView);
                     }
                     else
                     {
-                        await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "Found the game. It's opponent's move", Trigger.FoundGameOpponentStarts, null);
+                        throw new Exception("Message sent to a player which is not a participant of a game");
                     }
                 }
             }

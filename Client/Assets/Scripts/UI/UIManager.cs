@@ -16,6 +16,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private HubService hub;
     [SerializeField] private TokenService tokenService;
     [SerializeField] private Text informationText;
+    [SerializeField] private HexGridGenerator _gridGenerator;
+    [SerializeField] private PlayerInsectView _playerInsectView;
+
     private string textToChange;
     private string stateScene;
     private ClientState? stateToChange;
@@ -105,6 +108,16 @@ public class UIManager : MonoBehaviour
             {
                 buttons[i].gameObject.SetActive(false);
             }
+        }
+
+        if(_gridGenerator != null)
+        {
+            _gridGenerator.GenerateVertices(PlayerView.Board);
+        }
+
+        if (_playerInsectView != null)
+        {
+            _playerInsectView.SetInsects(PlayerView.PlayerInsects);
         }
     }
 
