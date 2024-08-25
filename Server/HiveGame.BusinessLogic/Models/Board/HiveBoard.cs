@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using static HiveGame.BusinessLogic.Models.Game.Graph.DirectionConsts;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace HiveGame.BusinessLogic.Models.Graph
 {
@@ -80,7 +79,7 @@ namespace HiveGame.BusinessLogic.Models.Graph
         {
             if(FirstMoves)
             {
-                return PutFirstInsects(insectType);
+                throw new Exception("You have to put first insects first");
             }
 
             if (insectType == InsectType.Nothing)
@@ -109,8 +108,13 @@ namespace HiveGame.BusinessLogic.Models.Graph
             _board[(vertex.X, vertex.Y, vertex.Z)] = vertex;
         }
 
-        public bool PutFirstInsects(InsectType insectType)
+        public bool PutFirstInsect(InsectType insectType)
         {
+            if (!FirstMoves)
+            {
+                throw new Exception("There are first insects put");
+            }
+
             Vertex vertex;
             Insect insect = _factory.CreateInsect(insectType);
 

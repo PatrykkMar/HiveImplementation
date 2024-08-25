@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json.Linq;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Numerics;
 
 namespace HiveGame.Hubs
 {
@@ -130,6 +131,21 @@ namespace HiveGame.Hubs
         }
 
         [Authorize]
+        public async Task PutFirstInsect(InsectType type)
+        {
+            var playerId = GetPlayerIdFromToken();
+
+            var request = new PutFirstInsectRequest()
+            {
+                InsectToPut = type,
+                PlayerId = playerId
+            };
+
+            var result = _gameService.PutFirstInsect(request);
+            await SendGameActionInformation(result);
+        }
+
+        [Authorize]
         public async Task PutInsect(InsectType type, (int, int, int)? whereToPut)
         {
             var playerId = GetPlayerIdFromToken();
@@ -142,21 +158,7 @@ namespace HiveGame.Hubs
             };
 
             var result = _gameService.Put(request);
-            var game = result.Game;
-
-            var players = game.Players.Select(x => x.PlayerId);
-
-            foreach (var player in players)
-            {
-                if (playerId == game.GetCurrentPlayer().PlayerId)
-                {
-                    await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "Found the game. It's your move", Trigger.FoundGamePlayerStarts, result.CurrentBoard);
-                }
-                else
-                {
-                    await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "Found the game. It's opponent's move", Trigger.FoundGameOpponentStarts, result.CurrentBoard);
-                }
-            }
+            await SendGameActionInformation(result);
         }
 
         [Authorize]
@@ -169,6 +171,30 @@ namespace HiveGame.Hubs
         {
             var playerIdClaim = Context.User?.FindFirst("PlayerId");
             return playerIdClaim?.Value;
+        }
+
+        private async Task SendGameActionInformation(HiveActionResult result)
+        {
+            var game = result.Game;
+
+            var players = game.Players.Select(x => x.PlayerId);
+            var playerId = GetPlayerIdFromToken();
+
+            foreach (var player in players)
+            {
+                PlayerViewDTO playerView = game.GetPlayerView(player);
+                if (player == game.GetCurrentPlayer().PlayerId)
+                {
+                    if(game.Board.FirstMoves)
+                        await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "It's your first move", Trigger.PlayerFirstMove, playerView);
+                    else
+                        await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "It's your move", Trigger.OpponentMadeMove, playerView);
+                }
+                else
+                {
+                    await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "It's opponent's move", Trigger.PlayerMadeMove, playerView);
+                }
+            }
         }
     }
 }

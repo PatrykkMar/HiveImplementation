@@ -51,8 +51,15 @@ public class UIManager : MonoBehaviour
             case ClientState.InGamePlayerMove:
                 btnList = new List<ButtonHelper>
                 {
-                    new ButtonHelper("Put insect", async () => await hub.PutInsectAsync(InsectType.Nothing, null)), //TODO: Put method for client
-                    new ButtonHelper("Move insect", async () => await hub.MoveInsectAsync()) //TODO: Move method for client
+                    new ButtonHelper("Put insect", async () => await hub.PutInsectAsync(PlayerView.ChosenInsect, null)),
+                    new ButtonHelper("Move insect", async () => await hub.MoveInsectAsync())
+                };
+                break;
+
+            case ClientState.InGamePlayerFirstMove:
+                btnList = new List<ButtonHelper>
+                {
+                    new ButtonHelper("Put first insect", async () => await hub.PutFirstInsectAsync(PlayerView.ChosenInsect)),
                 };
                 break;
 
@@ -61,8 +68,16 @@ public class UIManager : MonoBehaviour
                 {
                 };
                 break;
+            default:
+                Debug.LogError("Buttons not implemented for state: " + Enum.GetName(typeof(ClientState), state));
+                break;
         }
         return btnList;
+    }
+
+    public void SetStateToChange(ClientState state)
+    {
+        stateToChange = state;
     }
 
     public void SetInformationText(ClientState state)
@@ -80,10 +95,14 @@ public class UIManager : MonoBehaviour
                 text = "You are in a queue, wait for another player. You can click a button to leave a queue";
                 break;
             case ClientState.InGamePlayerMove:
+            case ClientState.InGamePlayerFirstMove:
                 text = "Your move";
                 break;
             case ClientState.InGameOpponentMove:
                 text = "Opponent's move";
+                break;
+            default:
+                Debug.LogError("Information not implemented for state: " + Enum.GetName(typeof(ClientState), state));
                 break;
 
         }
@@ -129,17 +148,20 @@ public class UIManager : MonoBehaviour
             if (currentScene != stateScene)
             {
                 SceneManager.LoadScene(stateScene);
+                return;
             }
         }
 
         if(textToChange!= null) 
         {
+            Debug.Log("Text to change: "+textToChange);
             informationText.text = textToChange;
             textToChange = null;
         }
 
         if(stateToChange!= null)
         {
+            Debug.Log("State to change: " + Enum.GetName(typeof(ClientState), stateToChange.Value));
             ConfigureUIForState(stateToChange.Value);
             stateToChange = null;
         }

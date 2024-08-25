@@ -43,5 +43,10 @@ namespace HiveGame.BusinessLogic.Models.Game
             return playerViewDTO;
         }
 
+        public void AfterActionMade()
+        {
+            CurrentColorMove = (PlayerColor)(((int)(CurrentColorMove + 1)) % 2);
+        }
+
     }
 }

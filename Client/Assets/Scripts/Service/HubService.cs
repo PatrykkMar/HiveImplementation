@@ -9,7 +9,7 @@ public class HubService : MonoBehaviour
 {
     public const string ChosenVertexKey = "ChosenVertexKey";
 
-    private HubConnection _hubConnection;
+    private static HubConnection _hubConnection;
 
     [SerializeField] private string _serverUrl = "ws://localhost:7200/matchmakinghub";
     [SerializeField] private Text _informationText;
@@ -58,7 +58,12 @@ public class HubService : MonoBehaviour
 
     public async Task PutInsectAsync(InsectType insect, (int,int,int)? position)
     {
-        await _hubConnection.InvokeAsync("JoinQueue", insect, position);
+        await _hubConnection.InvokeAsync("PutInsect", insect, position);
+    }
+
+    public async Task PutFirstInsectAsync(InsectType insect)
+    {
+        await _hubConnection.InvokeAsync("PutFirstInsect", insect);
     }
 
     public async Task MoveInsectAsync()

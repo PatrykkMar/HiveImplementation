@@ -8,7 +8,8 @@
         LeftQueue = 4,
         FoundGamePlayerStarts = 5,
         FoundGameOpponentStarts = 51,
-        PlayerMadeMove = 6,
-        OpponentMadeMove = 61
+        OpponentMadeMove = 6,
+        PlayerFirstMove = 60,
+        PlayerMadeMove = 61
     }
 }

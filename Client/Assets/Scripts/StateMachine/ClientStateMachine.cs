@@ -24,31 +24,35 @@ public class ClientStateMachine : MonoBehaviour
         _machine = new StateMachine<ClientState, Trigger>(ClientState.Disconnected);
 
         _machine.Configure(ClientState.Disconnected)
-            .OnEntry(() => _ui.ConfigureUIForState(ClientState.Disconnected))
             .Permit(Trigger.ReceivedToken, ClientState.Connected)
             .PermitReentry(Trigger.Started);
 
         _machine.Configure(ClientState.Connected)
-            .OnEntry(() => _ui.ConfigureUIForState(ClientState.Connected))
             .Permit(Trigger.JoinedQueue, ClientState.WaitingForPlayers)
             .Permit(Trigger.FoundGamePlayerStarts, ClientState.InGamePlayerMove)
             .Permit(Trigger.FoundGameOpponentStarts, ClientState.InGameOpponentMove);
 
         _machine.Configure(ClientState.WaitingForPlayers)
-            .OnEntry(() => _ui.ConfigureUIForState(ClientState.WaitingForPlayers))
             .Permit(Trigger.LeftQueue, ClientState.Connected)
-            .Permit(Trigger.FoundGamePlayerStarts, ClientState.InGamePlayerMove)
+            .Permit(Trigger.FoundGamePlayerStarts, ClientState.InGamePlayerFirstMove)
             .Permit(Trigger.FoundGameOpponentStarts, ClientState.InGameOpponentMove);
 
+        _machine.Configure(ClientState.InGamePlayerFirstMove)
+            .Permit(Trigger.PlayerMadeMove, ClientState.InGameOpponentMove);
+
         _machine.Configure(ClientState.InGamePlayerMove)
-            .OnEntry(() => _ui.ConfigureUIForState(ClientState.InGamePlayerMove))
             .Permit(Trigger.PlayerMadeMove, ClientState.InGameOpponentMove);
 
         _machine.Configure(ClientState.InGameOpponentMove)
-            .OnEntry(() => _ui.ConfigureUIForState(ClientState.InGameOpponentMove))
-            .Permit(Trigger.OpponentMadeMove, ClientState.InGamePlayerMove);
+            .Permit(Trigger.OpponentMadeMove, ClientState.InGamePlayerMove)
+            .Permit(Trigger.PlayerFirstMove, ClientState.InGamePlayerFirstMove);
 
-        _machine.OnTransitioned(transition => Debug.Log($"{transition.Source} -[{transition.Trigger}]-> {transition.Destination}"));
+        _machine.OnTransitioned(transition =>
+            {
+                Debug.Log($"{transition.Source} -[{transition.Trigger}]-> {transition.Destination}");
+                _ui.SetStateToChange(transition.Destination);
+            }
+        );
     }
 
     public void SetForCurrentState()

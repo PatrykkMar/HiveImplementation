@@ -21,6 +21,7 @@ public class Scenes
             case ClientState.WaitingForPlayers:
                 return MenuScene;
             case ClientState.InGamePlayerMove:
+            case ClientState.InGamePlayerFirstMove:
             case ClientState.InGameOpponentMove:
                 return GameScene;
             default:

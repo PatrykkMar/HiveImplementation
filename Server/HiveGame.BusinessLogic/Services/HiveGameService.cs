@@ -13,6 +13,7 @@ namespace HiveGame.BusinessLogic.Services
         public IList<VertexDTO> Move(MoveInsectRequest request);
 
         public HiveActionResult Put(PutInsectRequest request);
+        public HiveActionResult PutFirstInsect(PutFirstInsectRequest request);
 
         IList<VertexDTO> GetTestGrid();
         string GetTestGridPrint();
@@ -74,23 +75,27 @@ namespace HiveGame.BusinessLogic.Services
 
             game.Board.Put(request.InsectToPut, request.WhereToPut);
 
+            game.GetCurrentPlayer().NumberOfMove++;
+
             var result = new HiveActionResult(game, GetVerticesDTOFromGraph(game));
 
             return result;
         }
 
-        //There is no need for additional put method
-        //public IList<VertexDTO> PutFirstInsect(PutFirstInsectRequest request)
-        //{
-        //    var game = GetGame(request.PlayerId);
-        //    if(request.PlayerId != game?.GetCurrentPlayer().PlayerId)
-        //    {
-        //        throw new Exception("It's not your move");
-        //    }
+        public HiveActionResult PutFirstInsect(PutFirstInsectRequest request)
+        {
+            var game = GetGame(request.PlayerId);
+            if (request.PlayerId != game?.GetCurrentPlayer().PlayerId)
+            {
+                throw new Exception("It's not your move");
+            }
 
-        //    game.Board.PutFirstInsects(request.InsectToPut, null);
-        //    return GetVerticesDTOFromGraph();
-        //}
+            game.Board.PutFirstInsect(request.InsectToPut);
+            game.AfterActionMade();
+            var result = new HiveActionResult(game, GetVerticesDTOFromGraph(game));
+
+            return result;
+        }
 
         private List<VertexDTO> GetVerticesDTOFromGraph(Game game)
         {
