@@ -13,15 +13,20 @@ using System.Collections;
 public class UIManager : MonoBehaviour
 {
     public Button[] buttons;
-    [SerializeField] private HubService hub;
-    [SerializeField] private TokenService tokenService;
-    [SerializeField] private Text informationText;
-    [SerializeField] private HexGridGenerator _gridGenerator;
-    [SerializeField] private PlayerInsectView _playerInsectView;
+    [SerializeField] protected HubService hub;
+    [SerializeField] protected TokenService tokenService;
+    [SerializeField] protected Text informationText;
 
-    private string textToChange;
-    private string stateScene;
-    private ClientState? stateToChange;
+    protected string textToChange;
+    protected  string stateScene;
+    protected ClientState? stateToChange;
+    public virtual string Name
+    {
+        get
+        {
+            return "Base";
+        }
+    }
 
     public List<ButtonHelper> GetAvailableButtonsList(ClientState state)
     {
@@ -109,7 +114,7 @@ public class UIManager : MonoBehaviour
         textToChange = text;
     }
 
-    public void ConfigureUIForState(ClientState state)
+    public virtual void ConfigureUIForState(ClientState state)
     {
         stateScene = Scenes.GetSceneByState(state);
         SetInformationText(state);
@@ -127,16 +132,6 @@ public class UIManager : MonoBehaviour
             {
                 buttons[i].gameObject.SetActive(false);
             }
-        }
-
-        if(_gridGenerator != null)
-        {
-            _gridGenerator.GenerateVertices(PlayerView.Board);
-        }
-
-        if (_playerInsectView != null)
-        {
-            _playerInsectView.SetInsects(PlayerView.PlayerInsects);
         }
     }
 
