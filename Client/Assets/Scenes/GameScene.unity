@@ -628,12 +628,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1327089405}
-  - {fileID: 1183686188}
-  - {fileID: 1305284442}
   - {fileID: 1815697078}
   - {fileID: 507528057}
-  - {fileID: 834209453}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &506143005
@@ -1471,53 +1467,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 781214840}
   m_CullTransparentMesh: 1
---- !u!1 &834209452
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 834209453}
-  - component: {fileID: 834209454}
-  m_Layer: 0
-  m_Name: MatchmakingHubService
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &834209453
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 834209452}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 401018581}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &834209454
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 834209452}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 46fd9863436c4a74790f5bdd127bd1e1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _serverUrl: ws://localhost:7200/matchmakinghub
-  _informationText: {fileID: 1282839293}
-  _clientStateMachine: {fileID: 1305284441}
 --- !u!1 &886811813
 GameObject:
   m_ObjectHideFlags: 0
@@ -1852,52 +1801,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1017114420}
   m_CullTransparentMesh: 1
---- !u!1 &1183686186
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1183686188}
-  - component: {fileID: 1183686187}
-  m_Layer: 0
-  m_Name: TokenService
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1183686187
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1183686186}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cdcaf90a9dbc58d4a9970631bfbf435f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  url: http://localhost:7200/Token/token
-  stateMachine: {fileID: 1305284441}
---- !u!4 &1183686188
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1183686186}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 401018581}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1218394471
 GameObject:
   m_ObjectHideFlags: 0
@@ -2098,56 +2001,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1282839291}
   m_CullTransparentMesh: 1
---- !u!1 &1305284440
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1305284442}
-  - component: {fileID: 1305284441}
-  m_Layer: 0
-  m_Name: ClientStateMachine
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1305284441
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1305284440}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac19fcb334dfa72439c04f0a935e8900, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  buttons:
-  - {fileID: 307044981}
-  - {fileID: 1730002766}
-  - {fileID: 886811815}
-  - {fileID: 1372892048}
-  _ui: {fileID: 1815697079}
---- !u!4 &1305284442
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1305284440}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 401018581}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1327089404
 GameObject:
   m_ObjectHideFlags: 0
@@ -2174,11 +2027,11 @@ Transform:
   m_GameObject: {fileID: 1327089404}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -831.04926, y: -455.46777, z: 21.326843}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 401018581}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1327089406
 MonoBehaviour:
@@ -2192,9 +2045,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1747b5a86d2105c448f8b1f182f4e5b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _service: {fileID: 834209454}
-  _token: {fileID: 1183686187}
-  _stateMachine: {fileID: 1305284441}
 --- !u!1 &1359308712
 GameObject:
   m_ObjectHideFlags: 0
@@ -2871,11 +2721,7 @@ MonoBehaviour:
   - {fileID: 1730002766}
   - {fileID: 886811815}
   - {fileID: 1372892048}
-  hub: {fileID: 834209454}
-  tokenService: {fileID: 1183686187}
   informationText: {fileID: 1282839293}
-  _gridGenerator: {fileID: 507528058}
-  _playerInsectView: {fileID: 1218394474}
 --- !u!1 &2065307441
 GameObject:
   m_ObjectHideFlags: 0
@@ -2960,6 +2806,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 963194228}
+  - {fileID: 1327089405}
   - {fileID: 401018581}
   - {fileID: 705507995}
   - {fileID: 1479376088}

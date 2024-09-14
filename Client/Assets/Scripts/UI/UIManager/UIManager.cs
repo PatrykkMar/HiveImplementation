@@ -13,12 +13,9 @@ using System.Collections;
 public class UIManager : MonoBehaviour
 {
     public Button[] buttons;
-    [SerializeField] protected HubService hub;
-    [SerializeField] protected TokenService tokenService;
-    [SerializeField] protected Text informationText;
-
+    [SerializeField] private Text informationText;
     protected string textToChange;
-    protected  string stateScene;
+    protected string stateScene;
     protected ClientState? stateToChange;
     public virtual string Name
     {
@@ -28,43 +25,54 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    private void OnEnable()
+    {
+        ServiceLocator.Services.ClientStateMachine.OnStateChanged += UpdateUI;
+    }
+
+    private void OnDisable()
+    {
+        ServiceLocator.Services.ClientStateMachine.OnStateChanged -= UpdateUI;
+    }
+
     public List<ButtonHelper> GetAvailableButtonsList(ClientState state)
     {
+
         var btnList = new List<ButtonHelper>();
         switch(state)
         {
             case ClientState.Disconnected:
                 btnList = new List<ButtonHelper>
                 {
-                    new ButtonHelper("Get token", () => tokenService.GetToken(true))
+                    new ButtonHelper("Get token", () => ServiceLocator.Services.HttpService.GetToken())
                 };
                 break;
             case ClientState.Connected:
                 btnList = new List<ButtonHelper>
                 {
-                    new ButtonHelper("Join the queue", async () => await hub.JoinQueueAsync())
+                    new ButtonHelper("Join the queue", async () => await ServiceLocator.Services.HubService.JoinQueueAsync())
                 };
 
                 break;
             case ClientState.WaitingForPlayers:
                 btnList = new List<ButtonHelper>
                 {
-                    new ButtonHelper("Leave the queue", async () => await hub.LeaveQueueAsync())
+                    new ButtonHelper("Leave the queue", async () => await ServiceLocator.Services.HubService.LeaveQueueAsync())
                 };
                 break;
 
             case ClientState.InGamePlayerMove:
                 btnList = new List<ButtonHelper>
                 {
-                    new ButtonHelper("Put insect", async () => await hub.PutInsectAsync(PlayerView.ChosenInsect, null)),
-                    new ButtonHelper("Move insect", async () => await hub.MoveInsectAsync())
+                    new ButtonHelper("Put insect", async () => await ServiceLocator.Services.HubService.PutInsectAsync(PlayerInsectView.ChosenInsect.Value, null)),
+                    new ButtonHelper("Move insect", async () => await ServiceLocator.Services.HubService.MoveInsectAsync())
                 };
                 break;
 
             case ClientState.InGamePlayerFirstMove:
                 btnList = new List<ButtonHelper>
                 {
-                    new ButtonHelper("Put first insect", async () => await hub.PutFirstInsectAsync(PlayerView.ChosenInsect)),
+                    new ButtonHelper("Put first insect", async () => await ServiceLocator.Services.HubService.PutFirstInsectAsync(PlayerInsectView.ChosenInsect.Value)),
                 };
                 break;
 
@@ -88,6 +96,7 @@ public class UIManager : MonoBehaviour
     public void SetInformationText(ClientState state)
     {
         string text = "";
+        Debug.Log("Test");
         switch (state)
         {
             case ClientState.Disconnected:
@@ -114,7 +123,7 @@ public class UIManager : MonoBehaviour
         textToChange = text;
     }
 
-    public virtual void ConfigureUIForState(ClientState state)
+    public virtual void UpdateUI(ClientState state)
     {
         stateScene = Scenes.GetSceneByState(state);
         SetInformationText(state);
@@ -157,7 +166,7 @@ public class UIManager : MonoBehaviour
         if(stateToChange!= null)
         {
             Debug.Log("State to change: " + Enum.GetName(typeof(ClientState), stateToChange.Value));
-            ConfigureUIForState(stateToChange.Value);
+            UpdateUI(stateToChange.Value);
             stateToChange = null;
         }
     }

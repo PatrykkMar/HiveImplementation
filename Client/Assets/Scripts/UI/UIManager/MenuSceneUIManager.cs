@@ -20,9 +20,9 @@ public class MenuSceneUIManager : UIManager
         }
     }
 
-    public override void ConfigureUIForState(ClientState state)
+    public override void UpdateUI(ClientState state)
     {
-        base.ConfigureUIForState(state);
+        base.UpdateUI(state);
     }
 
 }

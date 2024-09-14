@@ -1,29 +1,25 @@
-using System;
-using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.UI;
-using Microsoft.AspNetCore.SignalR.Client;
-using TMPro;
-using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] private HubService _service;
-    [SerializeField] private TokenService _token;
-    [SerializeField] private ClientStateMachine _stateMachine;
-
-    public static bool Initiated = false;
-
-    async void Awake()
+    private void Awake()
     {
-        Debug.Log("Scene started");
-        if (Initiated == false)
-        {
-            _stateMachine.InitiateStateMachine();
-            StartCoroutine(_token.GetToken(true));
-            await _service.InitializeMatchmakingServiceAsync();
-            Initiated = true;
-        }
-        _stateMachine.SetForCurrentState();
+        DontDestroyOnLoad(gameObject);
+
+        InitializeServiceLocator();
+    }
+
+    private void Start()
+    {
+        ServiceLocator.Services.ClientStateMachine.Fire(Trigger.Started);
+
+        StartCoroutine(ServiceLocator.Services.HttpService.GetToken());
+    }
+
+    private void InitializeServiceLocator()
+    {
+        var services = ServiceLocator.Services;
+        Debug.Log("ServiceLocator initialized.");
     }
 }

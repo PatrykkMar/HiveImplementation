@@ -5,45 +5,60 @@ using Microsoft.AspNetCore.SignalR.Client;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HubService : MonoBehaviour
+public class HubService
 {
-    public const string ChosenVertexKey = "ChosenVertexKey";
+    public event Action<string> OnMessageReceived;
+    public event Action<Dictionary<InsectType, int>> OnPlayerInsectViewReceived;
+    public event Action<List<VertexDTO>> OnBoardReceived;
+    public event Action<Trigger> OnTriggerReceived;
 
-    private static HubConnection _hubConnection;
+    private readonly ConfigLoader _configLoader;
+    public HubService(ConfigLoader configLoader)
+    {
+        _configLoader = configLoader;
+    }
 
-    [SerializeField] private string _serverUrl = "ws://localhost:7200/matchmakinghub";
-    [SerializeField] private Text _informationText;
-    [SerializeField] private ClientStateMachine _clientStateMachine;
+    private HubConnection _hubConnection;
+
+    private string _serverUrl
+    {
+        get
+        {
+            return _configLoader.GetConfigValue(ConfigLoaderConsts.MatchmakingHubUrlKey);
+        }
+    }
 
 
-    public async Task InitializeMatchmakingServiceAsync()
+    public async Task InitializeMatchmakingServiceAsync(string token)
     {
         _hubConnection = new HubConnectionBuilder()
-        .WithUrl(_serverUrl, options =>
-        {
-            options.AccessTokenProvider = () => Task.FromResult(CurrentUser.Instance.Token);
-        })
-        .Build();
+            .WithUrl(_serverUrl, options =>
+            {
+                options.AccessTokenProvider = () => Task.FromResult(token);
+            })
+            .Build();
 
         _hubConnection.On<string, string, Trigger?, PlayerViewDTO>("ReceiveMessage", (player, message, trigger, playerView) =>
         {
             Debug.Log($"Player: {player}. Message from server: {message}. Has trigger: {trigger.HasValue}. Has vertices: {(playerView != null ? 1 : 0)}");
 
-            if (playerView != null)
+            if (playerView?.PlayerInsects != null)
             {
-                PlayerView.Board = playerView.Board;
-                PlayerView.PlayerInsects = playerView.PlayerInsects;
+                OnPlayerInsectViewReceived?.Invoke(playerView.PlayerInsects);
+            }
+
+            if (playerView?.Board != null)
+            {
+                OnBoardReceived?.Invoke(playerView?.Board);
             }
 
             if (trigger.HasValue)
             {
-                _clientStateMachine.Fire(trigger.Value);
+                OnTriggerReceived?.Invoke(trigger.Value);
             }
-
         });
 
         await _hubConnection.StartAsync();
-        _informationText.text = "Connection started";
     }
 
     public async Task JoinQueueAsync()
@@ -56,7 +71,7 @@ public class HubService : MonoBehaviour
         await _hubConnection.InvokeAsync("LeaveQueue");
     }
 
-    public async Task PutInsectAsync(InsectType insect, (int,int,int)? position)
+    public async Task PutInsectAsync(InsectType insect, (int, int, int)? position)
     {
         await _hubConnection.InvokeAsync("PutInsect", insect, position);
     }

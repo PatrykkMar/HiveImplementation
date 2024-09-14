@@ -6,21 +6,19 @@ using Microsoft.AspNetCore.SignalR.Client;
 using TMPro;
 using Stateless;
 
-public class ClientStateMachine : MonoBehaviour
-{
-    private static StateMachine<ClientState, Trigger> _machine;
-    public Button[] buttons;
-    [SerializeField] private UIManager _ui;
+public class ClientStateMachine
+{ 
+    public ClientStateMachine()
+    {
+        InitiateStateMachine();
+    }
 
+    private StateMachine<ClientState, Trigger> _machine;
+
+    public event Action<ClientState> OnStateChanged;
 
     public void InitiateStateMachine()
     {
-        if(_machine != null)
-        {
-            Debug.LogWarning("State machine was initiated");
-            return;
-        }
-
         _machine = new StateMachine<ClientState, Trigger>(ClientState.Disconnected);
 
         _machine.Configure(ClientState.Disconnected)
@@ -50,18 +48,29 @@ public class ClientStateMachine : MonoBehaviour
         _machine.OnTransitioned(transition =>
             {
                 Debug.Log($"{transition.Source} -[{transition.Trigger}]-> {transition.Destination}");
-                _ui.SetStateToChange(transition.Destination);
+                HandleStateChanged(transition.Destination);
             }
         );
-    }
-
-    public void SetForCurrentState()
-    {
-        _ui.ConfigureUIForState(_machine.State);
     }
 
     public void Fire(Trigger trigger)
     {
         _machine.Fire(trigger);
+    }
+
+
+    public ClientState GetCurrentState()
+    {
+        return _machine.State;
+    }
+
+    public void SetForCurrentState()
+    {
+        OnStateChanged?.Invoke(GetCurrentState());
+    }
+
+    private void HandleStateChanged(ClientState newState)
+    {
+        OnStateChanged?.Invoke(newState);
     }
 }

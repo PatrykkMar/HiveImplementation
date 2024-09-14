@@ -8,11 +8,27 @@ public class PlayerInsectView : MonoBehaviour
 {
     [SerializeField] private Button[] buttons;
     private Dictionary<InsectType, Button> InsectButtonDict;
+    public static InsectType? ChosenInsect;
 
 
     public void Awake()
     {
         buttons = gameObject.GetComponentsInChildren<Button>();
+    }
+
+    private void OnEnable()
+    {
+        ServiceLocator.Services.HubService.OnPlayerInsectViewReceived += UpdatePlayerInsectView;
+    }
+
+    private void OnDisable()
+    {
+        ServiceLocator.Services.HubService.OnPlayerInsectViewReceived -= UpdatePlayerInsectView;
+    }
+
+    public void UpdatePlayerInsectView(Dictionary<InsectType, int> dict)
+    {
+        SetInsects(dict);
     }
 
     public void SetInsects(Dictionary<InsectType, int> insectDict)
@@ -46,7 +62,7 @@ public class PlayerInsectView : MonoBehaviour
 
     public void ChooseInsect(InsectType insect)
     {
-        PlayerView.ChosenInsect = insect;
+        ChosenInsect = insect;
 
         foreach (var ins in InsectButtonDict.Keys)
         {
@@ -66,6 +82,5 @@ public class PlayerInsectView : MonoBehaviour
             }
 
         }
-
     }
 }

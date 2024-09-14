@@ -11,6 +11,18 @@ public class HexGridGenerator : MonoBehaviour
     public List<InsectObjectPair> insectObjectPairs;
     private Dictionary<(PlayerColor,InsectType),Material> materialDictionary;
 
+
+    private void OnEnable()
+    {
+        ServiceLocator.Services.HubService.OnBoardReceived += GenerateVertices;
+    }
+
+    private void OnDisable()
+    {
+        ServiceLocator.Services.HubService.OnBoardReceived -= GenerateVertices;
+    }
+
+
     void Start()
     {
         CreateMaterialDictionary();
@@ -36,7 +48,7 @@ public class HexGridGenerator : MonoBehaviour
 
         foreach (var vertex in vertices)
         {
-            var log = $"Hex_{vertex.x}_{vertex.y}_{vertex.z}_" + (vertex.insect == InsectType.Nothing ? "no insect" : "insect");
+            var name = $"Hex_{vertex.x}_{vertex.y}_{vertex.z}_" + (vertex.insect == InsectType.Nothing ? "no insect" : "insect");
             Vector3 position = CalculatePosition(vertex.x, vertex.y, vertex.z);
             GameObject hexPrism = Instantiate(vertex.insect == InsectType.Nothing ? hexPrismPrefab : hexPrismInsectPrefab, position, Quaternion.identity);
             generatedVertices.Add(hexPrism);
@@ -47,7 +59,7 @@ public class HexGridGenerator : MonoBehaviour
                 hexPrismRenderer.material = materialDictionary[tuple];
             }
 
-            hexPrism.name = log;
+            hexPrism.name = name;
         }
     }
 

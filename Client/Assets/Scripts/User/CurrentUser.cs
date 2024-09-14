@@ -6,32 +6,11 @@ using UnityEngine;
 
 public class CurrentUser
 {
-    private static readonly object lockObject = new object();
-    private static CurrentUser _instance;
     private TokenDatas _cachedTokenData;
     private const string TokenPrefix = "Bearer ";
 
     public string Token { get; set; }
 
-    private CurrentUser() { }
-
-    public static CurrentUser Instance
-    {
-        get
-        {
-            if (_instance == null)
-            {
-                lock (lockObject)
-                {
-                    if (_instance == null)
-                    {
-                        _instance = new CurrentUser();
-                    }
-                }
-            }
-            return _instance;
-        }
-    }
 
     private TokenDatas DecodeToken()
     {
@@ -57,20 +36,19 @@ public class CurrentUser
         return _cachedTokenData;
     }
 
-    private TokenDatas GetTokenData()
+    private TokenDatas TokenDatas
     {
-        if (_cachedTokenData == null || Token == null)
+        get
         {
-            DecodeToken();
+            return DecodeToken();
         }
-        return _cachedTokenData;
     }
 
     public string GameId
     {
         get
         {
-            return GetTokenData()?.GameId;
+            return TokenDatas?.GameId;
         }
     }
 
@@ -78,8 +56,7 @@ public class CurrentUser
     {
         get
         {
-            Debug.Log("Getting data: " + Token + "AND!!!");
-            return GetTokenData()?.PlayerId;
+            return TokenDatas?.PlayerId;
         }
     }
 }
