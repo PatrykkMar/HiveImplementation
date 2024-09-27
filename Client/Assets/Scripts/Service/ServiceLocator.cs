@@ -21,6 +21,7 @@ public class ServiceLocator
     public ConfigLoader ConfigLoader { get; private set; }
     public CurrentUser CurrentUser { get; private set; }
     public LogToFile LogToFile { get; private set; }
+    public SceneService SceneService { get; private set; }
 
     private ServiceLocator()
     {
@@ -31,11 +32,12 @@ public class ServiceLocator
     private void InitializeServices()
     {
         ConfigLoader = new ConfigLoader();
-        ClientStateMachine = new ClientStateMachine();
+        SceneService = new SceneService(Scenes.MenuScene);
+        CurrentUser = new CurrentUser();
+
+        ClientStateMachine = new ClientStateMachine(SceneService);
         HubService = new HubService(ConfigLoader);
         HttpService = new HttpService(ConfigLoader);
-        CurrentUser = new CurrentUser();
-        LogToFile = new LogToFile();
     }
 
     private void AddEvents()

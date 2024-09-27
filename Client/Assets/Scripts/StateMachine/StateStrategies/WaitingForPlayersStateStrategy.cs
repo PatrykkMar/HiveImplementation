@@ -11,4 +11,6 @@ public class WaitingForPlayersStateStrategy : IStateStrategy
     }
 
     public string InformationText => "You are in a queue, wait for another player. You can click a button to leave a queue";
+
+    public string Scene => Scenes.MenuScene;
 }

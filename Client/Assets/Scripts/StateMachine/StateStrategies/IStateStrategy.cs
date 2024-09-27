@@ -4,4 +4,5 @@ public interface IStateStrategy
 {
     List<ButtonHelper> GetAvailableButtonsList();
     string InformationText { get; }
+    string Scene { get; }
 }

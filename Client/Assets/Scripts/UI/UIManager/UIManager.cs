@@ -15,8 +15,7 @@ public class UIManager : MonoBehaviour
     public Button[] buttons;
     [SerializeField] private Text informationText;
     protected string textToChange;
-    protected string stateScene;
-    protected ClientState? stateToChange;
+
     public virtual string Name
     {
         get
@@ -51,7 +50,6 @@ public class UIManager : MonoBehaviour
 
     public virtual void UpdateUI(ClientState state)
     {
-        stateScene = Scenes.GetSceneByState(state);
         SetInformationText(state);
         List<ButtonHelper> btnHelperList = GetAvailableButtonsList(state);
         for(int i = 0; i<buttons.Length; i++)
@@ -72,28 +70,11 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
-        if(stateScene != null) 
-        {
-            var currentScene = SceneManager.GetActiveScene().name;
-            if (currentScene != stateScene)
-            {
-                SceneManager.LoadScene(stateScene);
-                return;
-            }
-        }
-
         if(textToChange!= null) 
         {
             Debug.Log("Text to change: "+textToChange);
             informationText.text = textToChange;
             textToChange = null;
-        }
-
-        if(stateToChange!= null)
-        {
-            Debug.Log("State to change: " + Enum.GetName(typeof(ClientState), stateToChange.Value));
-            UpdateUI(stateToChange.Value);
-            stateToChange = null;
         }
     }
 

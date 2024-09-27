@@ -12,4 +12,6 @@ public class InGamePlayerMoveStateStrategy : IStateStrategy
     }
 
     public string InformationText => "Your move";
+
+    public string Scene => Scenes.GameScene;
 }

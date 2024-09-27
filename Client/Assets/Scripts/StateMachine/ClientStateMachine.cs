@@ -5,12 +5,17 @@ using UnityEngine.UI;
 using Microsoft.AspNetCore.SignalR.Client;
 using TMPro;
 using Stateless;
+using UnityEngine.SceneManagement;
+using UnityEngine.Events;
 
 public class ClientStateMachine
-{ 
-    public ClientStateMachine()
+{
+    private readonly SceneService _sceneService;
+
+    public ClientStateMachine(SceneService sceneService)
     {
         InitiateStateMachine();
+        _sceneService = sceneService;
     }
 
     private StateMachine<ClientState, Trigger> _machine;
@@ -71,6 +76,20 @@ public class ClientStateMachine
 
     private void HandleStateChanged(ClientState newState)
     {
-        OnStateChanged?.Invoke(newState);
+        if(_sceneService.ChangeSceneForStateIfNecessary(newState))
+        {
+            //making the event to be emitted after loading the scene (executing OnEnable/OnDisable of all scripts)
+            void sceneLoadedHandler(Scene scene, LoadSceneMode mode)
+            {
+                OnStateChanged?.Invoke(newState);
+                SceneManager.sceneLoaded -= sceneLoadedHandler;
+            }
+
+            SceneManager.sceneLoaded += sceneLoadedHandler;
+        }
+        else
+        {
+            OnStateChanged?.Invoke(newState);
+        }
     }
 }

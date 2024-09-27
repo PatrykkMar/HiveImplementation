@@ -40,21 +40,25 @@ public class HubService
 
         _hubConnection.On<string, string, Trigger?, PlayerViewDTO>("ReceiveMessage", (player, message, trigger, playerView) =>
         {
-            Debug.Log($"Player: {player}. Message from server: {message}. Has trigger: {trigger.HasValue}. Has vertices: {(playerView != null ? 1 : 0)}");
+            Debug.Log($"Player: {player}. Message from server: {message}. Has trigger: {trigger.HasValue}");
 
-            if (playerView?.PlayerInsects != null)
-            {
-                OnPlayerInsectViewReceived?.Invoke(playerView.PlayerInsects);
-            }
-
-            if (playerView?.Board != null)
-            {
-                OnBoardReceived?.Invoke(playerView?.Board);
-            }
 
             if (trigger.HasValue)
             {
                 OnTriggerReceived?.Invoke(trigger.Value);
+            }
+
+
+            if (playerView != null && playerView.PlayerInsects != null)
+            {
+                Debug.Log($"HubService: Got player insects");
+                OnPlayerInsectViewReceived?.Invoke(playerView.PlayerInsects);
+            }
+
+            if (playerView != null && playerView.Board != null)
+            {
+                Debug.Log($"HubService: Got board");
+                OnBoardReceived?.Invoke(playerView.Board);
             }
         });
 

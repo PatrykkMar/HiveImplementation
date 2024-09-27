@@ -11,4 +11,6 @@ public class DisconnectedStateStrategy : IStateStrategy
     }
 
     public string InformationText => "You are disconnected. Click a button to get a token and connect";
+
+    public string Scene => Scenes.MenuScene;
 }

@@ -8,4 +8,6 @@ public class InGameOpponentMoveStateStrategy : IStateStrategy
     }
 
     public string InformationText => "Opponent's move";
+
+    public string Scene => Scenes.GameScene;
 }

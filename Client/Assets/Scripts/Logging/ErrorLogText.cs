@@ -8,6 +8,7 @@ public class ErrorText : MonoBehaviour
     private void OnEnable()
     {
         Application.logMessageReceived += HandleLog;
+        errorText.text = string.Empty;
     }
 
     private void OnDisable()

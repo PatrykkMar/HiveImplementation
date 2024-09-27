@@ -11,10 +11,8 @@ namespace HiveGame.BusinessLogic.Services
     public interface IHiveGameService
     {
         public IList<VertexDTO> Move(MoveInsectRequest request);
-
         public HiveActionResult Put(PutInsectRequest request);
         public HiveActionResult PutFirstInsect(PutFirstInsectRequest request);
-
         IList<VertexDTO> GetTestGrid();
         string GetTestGridPrint();
     }
@@ -65,7 +63,7 @@ namespace HiveGame.BusinessLogic.Services
 
         public HiveActionResult Put(PutInsectRequest request)
         {
-            var game = GetGame(request.PlayerId);
+            var game = _gameRepository.GetByPlayerId(request.PlayerId);
 
             if (game == null)
                 throw new Exception("Game not found");
@@ -84,7 +82,7 @@ namespace HiveGame.BusinessLogic.Services
 
         public HiveActionResult PutFirstInsect(PutFirstInsectRequest request)
         {
-            var game = GetGame(request.PlayerId);
+            var game = _gameRepository.GetByPlayerId(request.PlayerId);
             if (request.PlayerId != game?.GetCurrentPlayer().PlayerId)
             {
                 throw new Exception("It's not your move");
@@ -101,11 +99,6 @@ namespace HiveGame.BusinessLogic.Services
         {
             var verticesDTO = _mapper.Map<List<VertexDTO>>(game.Board.Vertices);
             return verticesDTO;
-        }
-
-        private Game? GetGame(string playerId)
-        {
-            return _gameRepository.GetByPlayerId(playerId);
         }
     }
 }

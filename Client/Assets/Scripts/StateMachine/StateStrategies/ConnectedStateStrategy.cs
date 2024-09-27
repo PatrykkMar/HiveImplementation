@@ -11,4 +11,6 @@ public class ConnectedStateStrategy : IStateStrategy
     }
 
     public string InformationText => "You are connected. Click a button to join a queue";
+
+    public string Scene => Scenes.MenuScene;
 }
