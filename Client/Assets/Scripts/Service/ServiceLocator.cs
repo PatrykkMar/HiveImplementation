@@ -9,6 +9,7 @@ public class ServiceLocator
         {
             if (_instance == null)
             {
+                Debug.Log("Creating ServiceLocator");
                 _instance = new ServiceLocator();
             }
             return _instance;
@@ -21,7 +22,6 @@ public class ServiceLocator
     public ConfigLoader ConfigLoader { get; private set; }
     public CurrentUser CurrentUser { get; private set; }
     public LogToFile LogToFile { get; private set; }
-    public SceneService SceneService { get; private set; }
 
     private ServiceLocator()
     {
@@ -32,10 +32,9 @@ public class ServiceLocator
     private void InitializeServices()
     {
         ConfigLoader = new ConfigLoader();
-        SceneService = new SceneService(Scenes.MenuScene);
         CurrentUser = new CurrentUser();
 
-        ClientStateMachine = new ClientStateMachine(SceneService);
+        ClientStateMachine = new ClientStateMachine();
         HubService = new HubService(ConfigLoader);
         HttpService = new HttpService(ConfigLoader);
     }

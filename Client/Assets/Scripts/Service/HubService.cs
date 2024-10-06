@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class HubService
@@ -13,9 +15,11 @@ public class HubService
     public event Action<Trigger> OnTriggerReceived;
 
     private readonly ConfigLoader _configLoader;
+    private SynchronizationContext _mainThreadContext;
     public HubService(ConfigLoader configLoader)
     {
         _configLoader = configLoader;
+        _mainThreadContext = SynchronizationContext.Current;
     }
 
     private HubConnection _hubConnection;
@@ -40,26 +44,49 @@ public class HubService
 
         _hubConnection.On<string, string, Trigger?, PlayerViewDTO>("ReceiveMessage", (player, message, trigger, playerView) =>
         {
-            Debug.Log($"Player: {player}. Message from server: {message}. Has trigger: {trigger.HasValue}");
-
-
-            if (trigger.HasValue)
+            _mainThreadContext.Post(async _ =>
             {
-                OnTriggerReceived?.Invoke(trigger.Value);
-            }
+                Debug.Log($"Player: {player}. Message from server: {message}. Has trigger: {trigger.HasValue}");
 
 
-            if (playerView != null && playerView.PlayerInsects != null)
-            {
-                Debug.Log($"HubService: Got player insects");
-                OnPlayerInsectViewReceived?.Invoke(playerView.PlayerInsects);
-            }
+                if (trigger.HasValue)
+                {
+                    Debug.Log($"HubService: Got trigger");
 
-            if (playerView != null && playerView.Board != null)
-            {
-                Debug.Log($"HubService: Got board");
-                OnBoardReceived?.Invoke(playerView.Board);
-            }
+
+                    var nextState = StateMachineConfiguration.CheckNextStateFromConfiguration(GameManager.GameState, trigger.Value);
+
+                    if(nextState.HasValue) 
+                    {
+                        var nextStateScene = Scenes.GetSceneByState(nextState.Value);
+                        if(nextStateScene != GameManager.GameScene)
+                        {
+                            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(nextStateScene);
+
+                            while (!asyncLoad.isDone)
+                            {
+                                await Task.Yield();
+                            }
+                        }
+                    }
+
+
+                    OnTriggerReceived?.Invoke(trigger.Value);
+                }
+
+
+                if (playerView != null && playerView.PlayerInsects != null)
+                {
+                    Debug.Log($"HubService: Got player insects");
+                    OnPlayerInsectViewReceived?.Invoke(playerView.PlayerInsects);
+                }
+
+                if (playerView != null && playerView.Board != null)
+                {
+                    Debug.Log($"HubService: Got board");
+                    OnBoardReceived?.Invoke(playerView.Board);
+                }
+            }, null);
         });
 
         await _hubConnection.StartAsync();

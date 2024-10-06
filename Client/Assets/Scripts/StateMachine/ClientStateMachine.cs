@@ -12,10 +12,9 @@ public class ClientStateMachine
 {
     private readonly SceneService _sceneService;
 
-    public ClientStateMachine(SceneService sceneService)
+    public ClientStateMachine()
     {
         InitiateStateMachine();
-        _sceneService = sceneService;
     }
 
     private StateMachine<ClientState, Trigger> _machine;
@@ -24,31 +23,7 @@ public class ClientStateMachine
 
     public void InitiateStateMachine()
     {
-        _machine = new StateMachine<ClientState, Trigger>(ClientState.Disconnected);
-
-        _machine.Configure(ClientState.Disconnected)
-            .Permit(Trigger.ReceivedToken, ClientState.Connected)
-            .PermitReentry(Trigger.Started);
-
-        _machine.Configure(ClientState.Connected)
-            .Permit(Trigger.JoinedQueue, ClientState.WaitingForPlayers)
-            .Permit(Trigger.FoundGamePlayerStarts, ClientState.InGamePlayerMove)
-            .Permit(Trigger.FoundGameOpponentStarts, ClientState.InGameOpponentMove);
-
-        _machine.Configure(ClientState.WaitingForPlayers)
-            .Permit(Trigger.LeftQueue, ClientState.Connected)
-            .Permit(Trigger.FoundGamePlayerStarts, ClientState.InGamePlayerFirstMove)
-            .Permit(Trigger.FoundGameOpponentStarts, ClientState.InGameOpponentMove);
-
-        _machine.Configure(ClientState.InGamePlayerFirstMove)
-            .Permit(Trigger.PlayerMadeMove, ClientState.InGameOpponentMove);
-
-        _machine.Configure(ClientState.InGamePlayerMove)
-            .Permit(Trigger.PlayerMadeMove, ClientState.InGameOpponentMove);
-
-        _machine.Configure(ClientState.InGameOpponentMove)
-            .Permit(Trigger.OpponentMadeMove, ClientState.InGamePlayerMove)
-            .Permit(Trigger.PlayerFirstMove, ClientState.InGamePlayerFirstMove);
+        _machine = StateMachineConfiguration.CreateStateMachineWithConfiguration();
 
         _machine.OnTransitioned(transition =>
             {
@@ -76,20 +51,12 @@ public class ClientStateMachine
 
     private void HandleStateChanged(ClientState newState)
     {
-        if(_sceneService.ChangeSceneForStateIfNecessary(newState))
-        {
-            //making the event to be emitted after loading the scene (executing OnEnable/OnDisable of all scripts)
-            void sceneLoadedHandler(Scene scene, LoadSceneMode mode)
-            {
-                OnStateChanged?.Invoke(newState);
-                SceneManager.sceneLoaded -= sceneLoadedHandler;
-            }
+        var strategy = StateStrategyFactory.GetStrategy(newState);
+        strategy.OnEntry();
 
-            SceneManager.sceneLoaded += sceneLoadedHandler;
-        }
-        else
-        {
-            OnStateChanged?.Invoke(newState);
-        }
+        GameManager.GameState = newState;
+        GameManager.GameScene = Scenes.GetSceneByState(newState);
+
+        OnStateChanged?.Invoke(newState);
     }
 }
