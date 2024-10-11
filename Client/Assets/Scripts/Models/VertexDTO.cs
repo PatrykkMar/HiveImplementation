@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-[System.Serializable]
 public class VertexDTO
 {
-    public long x;
-    public long y;
-    public long z;
-    public InsectType insect;
-    public bool highlighted;
+    public long x { get; set; }
+    public long y { get; set; }
+    public long z { get; set; }
+    public InsectType insect { get; set; }
+    public bool highlighted { get; set; }
 }

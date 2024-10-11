@@ -42,7 +42,7 @@ public class HubService
             })
             .Build();
 
-        _hubConnection.On<string, string, Trigger?, PlayerViewDTO>("ReceiveMessage", (player, message, trigger, playerView) =>
+        _hubConnection.On<string, string, Trigger?, List<VertexDTO>, Dictionary<InsectType, int>>("ReceiveMessage", (player, message, trigger, board, playerInsects) =>
         {
             _mainThreadContext.Post(async _ =>
             {
@@ -75,16 +75,16 @@ public class HubService
                 }
 
 
-                if (playerView != null && playerView.PlayerInsects != null)
+                if (playerInsects != null)
                 {
                     Debug.Log($"HubService: Got player insects");
-                    OnPlayerInsectViewReceived?.Invoke(playerView.PlayerInsects);
+                    OnPlayerInsectViewReceived?.Invoke(playerInsects);
                 }
 
-                if (playerView != null && playerView.Board != null)
+                if (board != null)
                 {
                     Debug.Log($"HubService: Got board");
-                    OnBoardReceived?.Invoke(playerView.Board);
+                    OnBoardReceived?.Invoke(board);
                 }
             }, null);
         });

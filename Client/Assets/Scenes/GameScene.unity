@@ -783,7 +783,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hexPrismPrefab: {fileID: 4499399255008462367, guid: 435633ee5615edb479723a6a37864721, type: 3}
   hexPrismInsectPrefab: {fileID: 8245136676699455747, guid: 82fb2a07e5b2d5c4886d29aad6236100, type: 3}
-  radius: 1
+  radius: 10
   insectObjectPairs:
   - InsectType: 0
     PlayerColor: 0

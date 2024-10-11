@@ -101,11 +101,11 @@ namespace HiveGame.Hubs
                     var otherPlayer = game.GetOtherPlayer().PlayerId;
                     if (player == currentPlayer)
                     {
-                        await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "Found the game. It's your move", Trigger.FoundGamePlayerStarts, playerView);
+                        await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "Found the game. It's your move", Trigger.FoundGamePlayerStarts, playerView.Board, playerView.PlayerInsects);
                     }
                     else if (player == otherPlayer)
                     {
-                        await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "Found the game. It's opponent's move", Trigger.FoundGameOpponentStarts, playerView);
+                        await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "Found the game. It's opponent's move", Trigger.FoundGameOpponentStarts, playerView.Board, playerView.PlayerInsects);
                     }
                     else
                     {
@@ -115,7 +115,7 @@ namespace HiveGame.Hubs
             }
             else
             {
-                await Clients.Caller.SendAsync("ReceiveMessage", playerId, "Waiting for player", Trigger.JoinedQueue, null);
+                await Clients.Caller.SendAsync("ReceiveMessage", playerId, "Waiting for player", Trigger.JoinedQueue, null, null);
             }
         }
 
@@ -127,7 +127,7 @@ namespace HiveGame.Hubs
 
             _matchmakingService.LeaveQueue(playerId);
 
-            await Clients.Caller.SendAsync("ReceiveMessage", playerId, "Left the queue", Trigger.LeftQueue, null);
+            await Clients.Caller.SendAsync("ReceiveMessage", playerId, "Left the queue", Trigger.LeftQueue, null, null);
         }
 
         [Authorize]
@@ -186,13 +186,13 @@ namespace HiveGame.Hubs
                 if (player == game.GetCurrentPlayer().PlayerId)
                 {
                     if(game.Board.FirstMoves)
-                        await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "It's your first move", Trigger.PlayerFirstMove, playerView);
+                        await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "It's your first move", Trigger.PlayerFirstMove, playerView.Board, playerView.PlayerInsects);
                     else
-                        await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "It's your move", Trigger.OpponentMadeMove, playerView);
+                        await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "It's your move", Trigger.OpponentMadeMove, playerView.Board, playerView.PlayerInsects);
                 }
                 else
                 {
-                    await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "It's opponent's move", Trigger.PlayerMadeMove, playerView);
+                    await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "It's opponent's move", Trigger.PlayerMadeMove, playerView.Board, playerView.PlayerInsects);
                 }
             }
         }

@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 
 namespace HiveGame.BusinessLogic.Models.Game
 {
-    [Serializable]
     public class PlayerViewDTO
     {
         public List<VertexDTO> Board { get; set; }

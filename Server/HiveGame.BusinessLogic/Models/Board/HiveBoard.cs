@@ -32,7 +32,14 @@ namespace HiveGame.BusinessLogic.Models.Graph
         {
             get
             {
-                return _mapper.Map<List<VertexDTO>>(_board.Values.ToList());
+                return Vertices.Select(x => new VertexDTO
+                {
+                    x = x.X, 
+                    y = x.Y,
+                    z = x.Z,
+                    insect = x.CurrentInsect != null ? x.CurrentInsect.Type : InsectType.Nothing,
+                    highlighted = x.IsEmpty
+                }).ToList();
             }
         }
 
@@ -118,9 +125,9 @@ namespace HiveGame.BusinessLogic.Models.Graph
             Vertex vertex;
             Insect insect = _factory.CreateInsect(insectType);
 
-            if (_board.Count == 0)
+            if (NotEmptyVertices.Count == 0)
                 vertex = new Vertex(0, 0, 0, insect);
-            else if (_board.Count == 1)
+            else if (NotEmptyVertices.Count == 1)
                 vertex = new Vertex(1, 0, 0, insect);
             else
                 throw new Exception("It's not first insect");

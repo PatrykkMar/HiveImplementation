@@ -63,7 +63,7 @@ public class PlayerInsectView : MonoBehaviour
     public void ChooseInsect(InsectType insect)
     {
         ChosenInsect = insect;
-
+        Debug.Log("Chosen insect: " + Enum.GetName(typeof(InsectType), insect));
         foreach (var ins in InsectButtonDict.Keys)
         {
             if (ins == InsectType.Nothing)

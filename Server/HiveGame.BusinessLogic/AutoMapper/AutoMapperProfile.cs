@@ -15,7 +15,11 @@ namespace HiveGame.BusinessLogic.AutoMapper
         public AutoMapperProfile()
         {
             CreateMap<Vertex, VertexDTO>()
-                .ForMember(dest => dest.insect, opt => opt.MapFrom(src => src.CurrentInsect != null ? (InsectType?)src.CurrentInsect.Type : null));
+                .ForMember(dest => dest.x, opt => opt.MapFrom(src => src.X))  
+                .ForMember(dest => dest.y, opt => opt.MapFrom(src => src.Y)) 
+                .ForMember(dest => dest.z, opt => opt.MapFrom(src => src.Z))
+                //.ForMember(dest => dest.insect, opt => opt.MapFrom(src => src.CurrentInsect != null ? src.CurrentInsect.Type : InsectType.Nothing))
+                .ForMember(dest => dest.highlighted, opt => opt.MapFrom(src => src.IsEmpty));
         }
     }
 }

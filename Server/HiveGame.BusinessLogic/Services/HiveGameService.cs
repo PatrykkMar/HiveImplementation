@@ -97,7 +97,7 @@ namespace HiveGame.BusinessLogic.Services
 
         private List<VertexDTO> GetVerticesDTOFromGraph(Game game)
         {
-            var verticesDTO = _mapper.Map<List<VertexDTO>>(game.Board.Vertices);
+            List<VertexDTO> verticesDTO = game.Board.VerticesDTO;
             return verticesDTO;
         }
     }
