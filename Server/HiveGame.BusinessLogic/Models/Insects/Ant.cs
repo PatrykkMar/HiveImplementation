@@ -12,7 +12,7 @@ namespace HiveGame.BusinessLogic.Models.Insects
     {
         public Ant()
         {
-
+            Type = InsectType.Ant;
         }
 
         public override IList<Vertex> GetAvailableVertices(Vertex moveFrom, HiveBoard board)

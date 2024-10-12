@@ -38,7 +38,8 @@ namespace HiveGame.BusinessLogic.Models.Graph
                     y = x.Y,
                     z = x.Z,
                     insect = x.CurrentInsect != null ? x.CurrentInsect.Type : InsectType.Nothing,
-                    highlighted = x.IsEmpty
+                    highlighted = x.IsEmpty,
+                    isempty = x.IsEmpty
                 }).ToList();
             }
         }

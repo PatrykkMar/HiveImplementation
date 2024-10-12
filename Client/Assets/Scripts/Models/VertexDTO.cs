@@ -9,5 +9,6 @@ public class VertexDTO
     public long y { get; set; }
     public long z { get; set; }
     public InsectType insect { get; set; }
+    public bool isempty { get; set; }
     public bool highlighted { get; set; }
 }
