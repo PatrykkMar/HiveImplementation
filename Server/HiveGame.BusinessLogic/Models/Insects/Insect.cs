@@ -15,12 +15,14 @@ namespace HiveGame.BusinessLogic.Models.Insects
         {
         }
 
-        public Insect(InsectType type)
+        public Insect(InsectType type, PlayerColor color)
         {
             Type = type;
+            PlayerColor = color;
         }
 
         public InsectType Type { get; set; }
+        public PlayerColor PlayerColor { get; set; }
 
         public IList<Vertex> BasicCheck(Vertex moveFrom, HiveBoard board)
         {

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using HiveGame.BusinessLogic.Factories;
+using HiveGame.BusinessLogic.Models.Game;
 using HiveGame.BusinessLogic.Models.Insects;
 using System;
 using System.Collections.Generic;
@@ -39,7 +40,8 @@ namespace HiveGame.BusinessLogic.Models.Graph
                     z = x.Z,
                     insect = x.CurrentInsect != null ? x.CurrentInsect.Type : InsectType.Nothing,
                     highlighted = x.IsEmpty,
-                    isempty = x.IsEmpty
+                    isempty = x.IsEmpty,
+                    playercolor = x.CurrentInsect?.PlayerColor
                 }).ToList();
             }
         }
@@ -60,7 +62,7 @@ namespace HiveGame.BusinessLogic.Models.Graph
             }
         }
 
-        public bool Move(Vertex moveFrom, Vertex moveTo, Player player)
+        public bool Move(Vertex moveFrom, Vertex moveTo, Player player, PlayerColor playerColor)
         {
             if (moveFrom.IsEmpty)
                 throw new ArgumentException("There is not insect on the 'moveFrom' vertex");
@@ -83,7 +85,7 @@ namespace HiveGame.BusinessLogic.Models.Graph
             return true;
         }
 
-        public bool Put(InsectType insectType, (int, int, int)? whereToPut)
+        public bool Put(InsectType insectType, (int, int, int)? whereToPut, PlayerColor playerColor)
         {
             if(FirstMoves)
             {
@@ -99,7 +101,7 @@ namespace HiveGame.BusinessLogic.Models.Graph
 
             //check if "where" vertex is empty
 
-            var insect = _factory.CreateInsect(insectType);
+            var insect = _factory.CreateInsect(insectType, playerColor);
             var where = GetVertexByCoord(whereToPut);
 
             if (where == null)
@@ -116,7 +118,7 @@ namespace HiveGame.BusinessLogic.Models.Graph
             _board[(vertex.X, vertex.Y, vertex.Z)] = vertex;
         }
 
-        public bool PutFirstInsect(InsectType insectType)
+        public bool PutFirstInsect(InsectType insectType, PlayerColor playerColor)
         {
             if (!FirstMoves)
             {
@@ -124,7 +126,7 @@ namespace HiveGame.BusinessLogic.Models.Graph
             }
 
             Vertex vertex;
-            Insect insect = _factory.CreateInsect(insectType);
+            Insect insect = _factory.CreateInsect(insectType, playerColor);
 
             if (NotEmptyVertices.Count == 0)
                 vertex = new Vertex(0, 0, 0, insect);

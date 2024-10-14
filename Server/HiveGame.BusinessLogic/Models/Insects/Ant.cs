@@ -10,9 +10,10 @@ namespace HiveGame.BusinessLogic.Models.Insects
 {
     public class Ant : Insect
     {
-        public Ant()
+        public Ant(PlayerColor color)
         {
             Type = InsectType.Ant;
+            PlayerColor = color;
         }
 
         public override IList<Vertex> GetAvailableVertices(Vertex moveFrom, HiveBoard board)

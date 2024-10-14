@@ -71,7 +71,7 @@ namespace HiveGame.BusinessLogic.Services
             if (request.PlayerId != game?.GetCurrentPlayer().PlayerId)
                 throw new Exception("It's not your move");
 
-            game.Board.Put(request.InsectToPut, request.WhereToPut);
+            game.Board.Put(request.InsectToPut, request.WhereToPut, game.CurrentColorMove);
 
             game.GetCurrentPlayer().NumberOfMove++;
 
@@ -88,7 +88,7 @@ namespace HiveGame.BusinessLogic.Services
                 throw new Exception("It's not your move");
             }
 
-            game.Board.PutFirstInsect(request.InsectToPut);
+            game.Board.PutFirstInsect(request.InsectToPut, game.CurrentColorMove);
             game.AfterActionMade();
             var result = new HiveActionResult(game, GetVerticesDTOFromGraph(game));
 

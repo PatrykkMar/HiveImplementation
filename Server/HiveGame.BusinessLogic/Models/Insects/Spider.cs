@@ -10,9 +10,10 @@ namespace HiveGame.BusinessLogic.Models.Insects
 {
     public class Spider : Insect
     {
-        public Spider()
+        public Spider(PlayerColor color)
         {
             Type = InsectType.Spider;
+            PlayerColor = color;
         }
 
         //can move on adjacent field

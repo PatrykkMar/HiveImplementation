@@ -10,9 +10,10 @@ namespace HiveGame.BusinessLogic.Models.Insects
 {
     public class Grasshopperm : Insect
     {
-        public Grasshopperm()
+        public Grasshopperm(PlayerColor color)
         {
             Type= InsectType.Grasshopperm;
+            PlayerColor = color;
         }
 
         //can move on adjacent field

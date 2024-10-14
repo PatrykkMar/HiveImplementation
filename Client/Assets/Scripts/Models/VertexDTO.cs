@@ -11,4 +11,5 @@ public class VertexDTO
     public InsectType insect { get; set; }
     public bool isempty { get; set; }
     public bool highlighted { get; set; }
+    public PlayerColor? playercolor { get; set; }
 }

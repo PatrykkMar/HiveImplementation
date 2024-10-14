@@ -15,5 +15,6 @@ namespace HiveGame.BusinessLogic.Models.Graph
         public InsectType insect { get; set; }
         public bool highlighted { get; set; }
         public bool isempty { get; set; }
+        public PlayerColor? playercolor { get; set; }
     }
 }

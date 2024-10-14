@@ -782,7 +782,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hexPrismPrefab: {fileID: 4499399255008462367, guid: 435633ee5615edb479723a6a37864721, type: 3}
-  hexPrismInsectPrefab: {fileID: 8245136676699455747, guid: 82fb2a07e5b2d5c4886d29aad6236100, type: 3}
   radius: 10
   insectObjectPairs:
   - InsectType: 0
@@ -815,6 +814,7 @@ MonoBehaviour:
   - InsectType: 4
     PlayerColor: 1
     UV: {fileID: 2100000, guid: 4e208e13b5a903242b3d0ea79952ce2a, type: 2}
+  transparentMaterial: {fileID: 2100000, guid: 133b4d15abfd45845a29a336181d97cd, type: 2}
 --- !u!1 &516302323
 GameObject:
   m_ObjectHideFlags: 0

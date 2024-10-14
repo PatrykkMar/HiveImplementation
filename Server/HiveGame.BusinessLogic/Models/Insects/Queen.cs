@@ -10,9 +10,10 @@ namespace HiveGame.BusinessLogic.Models.Insects
 {
     public class Queen : Insect
     {
-        public Queen()
+        public Queen(PlayerColor color)
         {
             Type = InsectType.Queen;
+            PlayerColor = color;
         }
 
         public override IList<Vertex> GetAvailableVertices(Vertex moveFrom, HiveBoard board)

@@ -1,15 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class HexGridGenerator : MonoBehaviour
 {
     public GameObject hexPrismPrefab;
-    public GameObject hexPrismInsectPrefab;
     public float radius = 1.0f;
     private List<GameObject> generatedVertices = new List<GameObject>();
     public List<InsectObjectPair> insectObjectPairs;
     private Dictionary<(PlayerColor,InsectType),Material> materialDictionary;
+    [SerializeField] private Material transparentMaterial;
 
 
     private void OnEnable()
@@ -50,13 +51,18 @@ public class HexGridGenerator : MonoBehaviour
         {
             var name = $"Hex_{vertex.x}_{vertex.y}_{vertex.z}_" + (vertex.insect == InsectType.Nothing ? "no insect" : "insect");
             Vector3 position = CalculatePosition(vertex.x, vertex.y, vertex.z);
-            GameObject hexPrism = Instantiate(vertex.insect == InsectType.Nothing ? hexPrismPrefab : hexPrismInsectPrefab, position, Quaternion.identity);
+            GameObject hexPrism = Instantiate(hexPrismPrefab, position, Quaternion.identity);
             generatedVertices.Add(hexPrism);
             if(vertex.insect != InsectType.Nothing)
             {
                 Renderer hexPrismRenderer = hexPrism.GetComponent<Renderer>();
-                var tuple = (PlayerColor.White, vertex.insect);
+                var tuple = (vertex.playercolor.Value, vertex.insect);
                 hexPrismRenderer.material = materialDictionary[tuple];
+            }
+            else
+            {
+                Renderer hexPrismRenderer = hexPrism.GetComponent<Renderer>();
+                hexPrismRenderer.material = transparentMaterial;
             }
 
             hexPrism.name = name;
