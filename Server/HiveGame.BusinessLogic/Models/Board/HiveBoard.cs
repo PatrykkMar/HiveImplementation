@@ -33,7 +33,7 @@ namespace HiveGame.BusinessLogic.Models.Graph
         {
             get
             {
-                return Vertices.Select(x => new VertexDTO
+                var list = Vertices.Select(x => new VertexDTO
                 {
                     x = x.X, 
                     y = x.Y,
@@ -43,6 +43,8 @@ namespace HiveGame.BusinessLogic.Models.Graph
                     isempty = x.IsEmpty,
                     playercolor = x.CurrentInsect?.PlayerColor
                 }).ToList();
+
+                return list;
             }
         }
 

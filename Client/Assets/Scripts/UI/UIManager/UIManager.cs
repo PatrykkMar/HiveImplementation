@@ -13,7 +13,6 @@ using System.Collections;
 public class UIManager : MonoBehaviour
 {
     public Button[] buttons;
-    [SerializeField] private Text informationText;
     protected string textToChange;
 
     public virtual string Name
@@ -73,7 +72,7 @@ public class UIManager : MonoBehaviour
         if(textToChange!= null) 
         {
             Debug.Log("Text to change: "+textToChange);
-            informationText.text = textToChange;
+            ServiceLocator.Services.EventAggregator.InvokeInformationTextReceived(textToChange);
             textToChange = null;
         }
     }

@@ -22,6 +22,7 @@ public class ServiceLocator
     public ConfigLoader ConfigLoader { get; private set; }
     public CurrentUser CurrentUser { get; private set; }
     public LogToFile LogToFile { get; private set; }
+    public EventAggregator EventAggregator { get; private set; }
 
     private ServiceLocator()
     {
@@ -37,6 +38,8 @@ public class ServiceLocator
         ClientStateMachine = new ClientStateMachine();
         HubService = new HubService(ConfigLoader);
         HttpService = new HttpService(ConfigLoader);
+        LogToFile = new LogToFile();
+        EventAggregator = new EventAggregator();
     }
 
     private void AddEvents()
