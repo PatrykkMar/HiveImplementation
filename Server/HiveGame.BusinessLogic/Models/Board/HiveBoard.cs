@@ -2,6 +2,7 @@
 using HiveGame.BusinessLogic.Factories;
 using HiveGame.BusinessLogic.Models.Game;
 using HiveGame.BusinessLogic.Models.Insects;
+using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,8 +34,9 @@ namespace HiveGame.BusinessLogic.Models.Graph
         {
             get
             {
-                var list = Vertices.Select(x => new VertexDTO
+                var list = Vertices.Select((x,i) => new VertexDTO
                 {
+                    id = x.Id,
                     x = x.X, 
                     y = x.Y,
                     z = x.Z,
@@ -43,9 +45,33 @@ namespace HiveGame.BusinessLogic.Models.Graph
                     isempty = x.IsEmpty,
                     playercolor = x.CurrentInsect?.PlayerColor
                 }).ToList();
-
                 return list;
             }
+        }
+
+
+
+        public List<VertexDTO> CreateVerticesDTO(PlayerColor playerColor)
+        {
+            //you can put an insect on the empty vertex only if there is no opponent's insect arount
+            var toPut = EmptyVertices.Where(x => 
+            GetAdjacentVerticesByCoordList(x, ignoreDown: true, ignoreUp: true)
+            .Where(y => !y.IsEmpty)
+            .Any(x => x.CurrentInsect?.PlayerColor != playerColor));
+
+            var list = Vertices.Select((x, i) => new VertexDTO
+            {
+                id = x.Id,
+                x = x.X,
+                y = x.Y,
+                z = x.Z,
+                insect = x.CurrentInsect != null ? x.CurrentInsect.Type : InsectType.Nothing,
+                highlighted = x.IsEmpty,
+                isempty = x.IsEmpty,
+                playercolor = x.CurrentInsect?.PlayerColor,
+                vertexidtoput = toPut.Select(x=>x.Id).ToList()
+            }).ToList();
+            return list;
         }
 
         public List<Vertex> NotEmptyVertices
@@ -53,6 +79,14 @@ namespace HiveGame.BusinessLogic.Models.Graph
             get
             {
                 return _board.Values.Where(x => !x.IsEmpty).ToList();
+            }
+        }
+
+        public List<Vertex> EmptyVertices
+        {
+            get
+            {
+                return _board.Values.Where(x => x.IsEmpty).ToList();
             }
         }
 
@@ -142,10 +176,10 @@ namespace HiveGame.BusinessLogic.Models.Graph
             return true;
         }
 
-        private void AddEmptyVerticesAround(Vertex vertex, bool ignoreDown = true)
+        private void AddEmptyVerticesAround(Vertex vertex, bool ignoreDown = true, bool ignoreUp = false)
         {
             var board = this;
-            var adjacentVertices = GetAdjacentVerticesByCoordDict(vertex, ignoreDown);
+            var adjacentVertices = GetAdjacentVerticesByCoordDict(vertex, ignoreDown, ignoreUp);
             foreach (var direction in (Direction[])Enum.GetValues(typeof(Direction)))
             {
                 if (ignoreDown && direction == Direction.Down)
@@ -190,13 +224,13 @@ namespace HiveGame.BusinessLogic.Models.Graph
         }
 
 
-        public Dictionary<Direction, Vertex> GetAdjacentVerticesByCoordDict(Vertex vertex, bool ignoreDown = true)
+        public Dictionary<Direction, Vertex> GetAdjacentVerticesByCoordDict(Vertex vertex, bool ignoreDown = true, bool ignoreUp = false)
         {
             var dict = new Dictionary<Direction, Vertex>();
 
             foreach (var direction in (Direction[])Enum.GetValues(typeof(Direction)))
             {
-                if (ignoreDown && direction == Direction.Down)
+                if ((ignoreDown && direction == Direction.Down) || (ignoreUp && direction == Direction.Up))
                     continue;
 
                 var offset = NeighborOffsetsDict[direction];
@@ -209,9 +243,9 @@ namespace HiveGame.BusinessLogic.Models.Graph
             return dict;
         }
 
-        public List<Vertex> GetAdjacentVerticesByCoordList(Vertex vertex)
+        public List<Vertex> GetAdjacentVerticesByCoordList(Vertex vertex, bool ignoreDown = true, bool ignoreUp = false)
         {
-            return GetAdjacentVerticesByCoordDict(vertex).Values.ToList();
+            return GetAdjacentVerticesByCoordDict(vertex, ignoreDown, ignoreUp).Values.ToList();
         }
     }
 }

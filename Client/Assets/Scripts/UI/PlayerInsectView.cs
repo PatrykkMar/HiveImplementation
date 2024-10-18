@@ -1,6 +1,8 @@
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,16 +21,32 @@ public class PlayerInsectView : MonoBehaviour
     private void OnEnable()
     {
         ServiceLocator.Services.HubService.OnPlayerInsectViewReceived += UpdatePlayerInsectView;
+        ServiceLocator.Services.HubService.OnTriggerReceived += ClearSetInsect;
     }
 
     private void OnDisable()
     {
         ServiceLocator.Services.HubService.OnPlayerInsectViewReceived -= UpdatePlayerInsectView;
+        ServiceLocator.Services.HubService.OnTriggerReceived -= ClearSetInsect;
     }
 
     public void UpdatePlayerInsectView(Dictionary<InsectType, int> dict)
     {
         SetInsects(dict);
+    }
+
+    public void ClearSetInsect(Trigger trigger)
+    {
+        if (InsectButtonDict != null) 
+            foreach (var ins in InsectButtonDict.Keys)
+            {
+                if (ins == InsectType.Nothing)
+                    continue;
+
+                var button = InsectButtonDict[ins];
+                var buttonImage = button.GetComponent<Image>();
+                buttonImage.color = Color.white;
+            }
     }
 
     public void SetInsects(Dictionary<InsectType, int> insectDict)

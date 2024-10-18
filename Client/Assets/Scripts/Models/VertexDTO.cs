@@ -12,4 +12,6 @@ public class VertexDTO
     public bool isempty { get; set; }
     public bool highlighted { get; set; }
     public PlayerColor? playercolor { get; set; }
+    public List<long> vertexidtomove { get; set; } = new List<long>();
+    public List<long> vertexidtoput { get; set; } = new List<long>();
 }
