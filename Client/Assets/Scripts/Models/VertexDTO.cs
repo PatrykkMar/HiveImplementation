@@ -5,6 +5,7 @@ using UnityEngine.Networking;
 
 public class VertexDTO
 {
+    public long id { get; set; }
     public long x { get; set; }
     public long y { get; set; }
     public long z { get; set; }

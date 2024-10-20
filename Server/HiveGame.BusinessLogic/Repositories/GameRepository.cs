@@ -1,4 +1,4 @@
-﻿using HiveGame.BusinessLogic.Models.Game;
+﻿using HiveGame.BusinessLogic.Models;
 using System;
 using System.Collections.Generic;
 

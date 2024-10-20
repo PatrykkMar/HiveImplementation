@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
 using HiveGame.BusinessLogic.Factories;
-using HiveGame.BusinessLogic.Models.Game;
 using HiveGame.BusinessLogic.Models.Insects;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static HiveGame.BusinessLogic.Models.Game.Graph.DirectionConsts;
+using static HiveGame.BusinessLogic.Models.Graph.DirectionConsts;
 
 namespace HiveGame.BusinessLogic.Models.Graph
 {
@@ -121,7 +120,7 @@ namespace HiveGame.BusinessLogic.Models.Graph
             return true;
         }
 
-        public bool Put(InsectType insectType, (int, int, int)? whereToPut, PlayerColor playerColor)
+        public bool Put(InsectType insectType, (int, int, int)? whereToPut, Game game)
         {
             if(FirstMoves)
             {
@@ -137,7 +136,7 @@ namespace HiveGame.BusinessLogic.Models.Graph
 
             //check if "where" vertex is empty
 
-            var insect = _factory.CreateInsect(insectType, playerColor);
+            var insect = _factory.CreateInsect(insectType, game.CurrentColorMove);
             var where = GetVertexByCoord(whereToPut);
 
             if (where == null)

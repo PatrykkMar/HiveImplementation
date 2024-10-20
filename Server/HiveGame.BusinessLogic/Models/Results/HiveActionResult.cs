@@ -1,6 +1,6 @@
 ﻿using HiveGame.BusinessLogic.Models.Graph;
 
-namespace HiveGame.BusinessLogic.Models.Game
+namespace HiveGame.BusinessLogic.Models
 {
     public class HiveActionResult
     {

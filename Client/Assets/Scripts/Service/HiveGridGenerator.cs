@@ -15,12 +15,12 @@ public class HexGridGenerator : MonoBehaviour
 
     private void OnEnable()
     {
-        ServiceLocator.Services.HubService.OnBoardReceived += GenerateVertices;
+        ServiceLocator.Services.EventAggregator.BoardUpdate += GenerateVertices;
     }
 
     private void OnDisable()
     {
-        ServiceLocator.Services.HubService.OnBoardReceived -= GenerateVertices;
+        ServiceLocator.Services.EventAggregator.BoardUpdate -= GenerateVertices;
     }
 
 
@@ -66,6 +66,13 @@ public class HexGridGenerator : MonoBehaviour
             }
 
             hexPrism.name = name;
+
+            if (!hexPrism.GetComponent<Collider>())
+            {
+                hexPrism.AddComponent<BoxCollider>();
+            }
+
+            hexPrism.AddComponent<HexMouseActionHandler>().Vertex = vertex;
         }
     }
 

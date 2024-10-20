@@ -1,5 +1,4 @@
 using HiveGame.BusinessLogic.Models;
-using HiveGame.BusinessLogic.Models.Game;
 using HiveGame.BusinessLogic.Models.Insects;
 using HiveGame.BusinessLogic.Models.Requests;
 using HiveGame.BusinessLogic.Services;

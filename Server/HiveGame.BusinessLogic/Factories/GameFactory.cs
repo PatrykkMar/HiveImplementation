@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using HiveGame.BusinessLogic.Models;
-using HiveGame.BusinessLogic.Models.Game;
+using HiveGame.BusinessLogic.Models;
 using HiveGame.BusinessLogic.Models.Graph;
 using HiveGame.BusinessLogic.Models.Insects;
 using System;

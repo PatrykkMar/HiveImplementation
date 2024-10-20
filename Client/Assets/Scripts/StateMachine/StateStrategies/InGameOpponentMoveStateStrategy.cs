@@ -7,7 +7,7 @@ public class InGameOpponentMoveStateStrategy : IStateStrategy
         return new List<ButtonHelper>();
     }
 
-    public string InformationText => "Opponent's move";
+    public string InformationText => "Opponent's move\nWait for your turn";
 
     public string Scene => Scenes.GameScene;
 }

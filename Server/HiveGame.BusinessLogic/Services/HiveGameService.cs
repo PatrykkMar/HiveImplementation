@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
-using HiveGame.BusinessLogic.Models.Game;
-using HiveGame.BusinessLogic.Models.Game.Graph;
+using HiveGame.BusinessLogic.Models;
 using HiveGame.BusinessLogic.Models.Graph;
 using HiveGame.BusinessLogic.Models.Insects;
 using HiveGame.BusinessLogic.Models.Requests;
@@ -63,7 +62,7 @@ namespace HiveGame.BusinessLogic.Services
 
         public HiveActionResult Put(PutInsectRequest request)
         {
-            var game = _gameRepository.GetByPlayerId(request.PlayerId);
+            Game? game = _gameRepository.GetByPlayerId(request.PlayerId);
 
             if (game == null)
                 throw new Exception("Game not found");
@@ -71,7 +70,7 @@ namespace HiveGame.BusinessLogic.Services
             if (request.PlayerId != game?.GetCurrentPlayer().PlayerId)
                 throw new Exception("It's not your move");
 
-            game.Board.Put(request.InsectToPut, request.WhereToPut, game.CurrentColorMove);
+            game.Board.Put(request.InsectToPut, request.WhereToPut, game);
 
             game.GetCurrentPlayer().NumberOfMove++;
 

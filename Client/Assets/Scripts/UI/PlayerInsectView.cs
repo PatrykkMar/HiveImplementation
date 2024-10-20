@@ -2,6 +2,7 @@ using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -78,7 +79,7 @@ public class PlayerInsectView : MonoBehaviour
         }
     }
 
-    public void ChooseInsect(InsectType insect)
+    public void ChooseInsect(InsectType insect, bool stateAction = true)
     {
         ChosenInsect = insect;
         Debug.Log("Chosen insect: " + Enum.GetName(typeof(InsectType), insect));
@@ -99,6 +100,12 @@ public class PlayerInsectView : MonoBehaviour
                 buttonImage.color = Color.white;
             }
 
+        }
+
+        if(stateAction == true) 
+        {
+            var stateStrategy = StateStrategyFactory.GetCurrentStateStrategy();
+            stateStrategy.OnInsectButtonClick(insect);
         }
     }
 }

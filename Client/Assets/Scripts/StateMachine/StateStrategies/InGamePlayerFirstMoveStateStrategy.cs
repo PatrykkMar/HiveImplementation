@@ -7,11 +7,10 @@ public class InGamePlayerFirstMoveStateStrategy : IStateStrategy
     {
         return new List<ButtonHelper>
         {
-            new ButtonHelper("Put first insect", async () => await PutFirstInsect()),
         };
     }
 
-    public string InformationText => "Your move";
+    public string InformationText => "Your first move\nClick insect to put it";
 
     public string Scene => Scenes.GameScene;
 
@@ -25,5 +24,16 @@ public class InGamePlayerFirstMoveStateStrategy : IStateStrategy
 
 
         await ServiceLocator.Services.HubService.PutFirstInsectAsync(PlayerInsectView.ChosenInsect.Value);
+    }
+
+    public void OnInsectButtonClick(InsectType insect)
+    {
+        if (!PlayerInsectView.ChosenInsect.HasValue)
+        {
+            ServiceLocator.Services.EventAggregator.InvokeInformationTextReceived("Insect to put not chosen");
+            return;
+        }
+
+        ServiceLocator.Services.HubService.PutFirstInsectAsync(insect);
     }
 }

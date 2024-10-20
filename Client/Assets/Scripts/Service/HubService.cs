@@ -9,9 +9,7 @@ using UnityEngine.UI;
 
 public class HubService
 {
-    public event Action<string> OnMessageReceived;
     public event Action<Dictionary<InsectType, int>> OnPlayerInsectViewReceived;
-    public event Action<List<VertexDTO>> OnBoardReceived;
     public event Action<Trigger> OnTriggerReceived;
 
     private readonly ConfigLoader _configLoader;
@@ -84,7 +82,7 @@ public class HubService
                 if (board != null)
                 {
                     Debug.Log($"HubService: Got board");
-                    OnBoardReceived?.Invoke(board);
+                    Board.Instance.SetBoard(board, invokeEvent: true);
                 }
             }, null);
         });

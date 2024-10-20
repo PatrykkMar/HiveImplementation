@@ -44,7 +44,8 @@ public class UIManager : MonoBehaviour
     public void SetInformationText(ClientState state)
     {
         string text = StateStrategyFactory.GetStrategy(state).InformationText;
-        textToChange = text;
+        Debug.Log("Text to change: " + text);
+        ServiceLocator.Services.EventAggregator.InvokeInformationTextReceived(text);
     }
 
     public virtual void UpdateUI(ClientState state)
@@ -66,15 +67,4 @@ public class UIManager : MonoBehaviour
             }
         }
     }
-
-    private void Update()
-    {
-        if(textToChange!= null) 
-        {
-            Debug.Log("Text to change: "+textToChange);
-            ServiceLocator.Services.EventAggregator.InvokeInformationTextReceived(textToChange);
-            textToChange = null;
-        }
-    }
-
 }

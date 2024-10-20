@@ -1,11 +1,11 @@
-﻿using HiveGame.BusinessLogic.Models.Game.Graph;
+﻿using HiveGame.BusinessLogic.Models.Graph;
 using HiveGame.BusinessLogic.Models.Graph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static HiveGame.BusinessLogic.Models.Game.Graph.DirectionConsts;
+using static HiveGame.BusinessLogic.Models.Graph.DirectionConsts;
 
 namespace HiveGame.BusinessLogic.Models.Insects
 {

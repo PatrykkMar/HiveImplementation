@@ -28,7 +28,7 @@ public class ClientStateMachine
         _machine.OnTransitioned(transition =>
             {
                 Debug.Log($"{transition.Source} -[{transition.Trigger}]-> {transition.Destination}");
-                HandleStateChanged(transition.Destination);
+                HandleStateChanged(transition.Source, transition.Destination);
             }
         );
     }
@@ -49,13 +49,13 @@ public class ClientStateMachine
         OnStateChanged?.Invoke(GetCurrentState());
     }
 
-    private void HandleStateChanged(ClientState newState)
+    private void HandleStateChanged(ClientState oldState, ClientState newState)
     {
-        var strategy = StateStrategyFactory.GetStrategy(newState);
-        strategy.OnEntry();
+        StateStrategyFactory.GetStrategy(oldState).OnEntry();
+        StateStrategyFactory.GetStrategy(newState).OnEntry();
 
         GameManager.GameState = newState;
-        GameManager.GameScene = Scenes.GetSceneByState(newState);
+        GameManager.GameScene = StateStrategyFactory.GetStrategy(newState).Scene;
 
         OnStateChanged?.Invoke(newState);
     }

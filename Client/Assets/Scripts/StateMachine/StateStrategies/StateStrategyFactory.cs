@@ -27,4 +27,9 @@ public static class StateStrategyFactory
 
         throw new ArgumentException($"Strategy for state {state} not implemented");
     }
+
+    public static IStateStrategy GetCurrentStateStrategy()
+    {
+        return GetStrategy(ServiceLocator.Services.ClientStateMachine.GetCurrentState());
+    }
 }
