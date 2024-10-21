@@ -21,13 +21,13 @@ public class PlayerInsectView : MonoBehaviour
 
     private void OnEnable()
     {
-        ServiceLocator.Services.HubService.OnPlayerInsectViewReceived += UpdatePlayerInsectView;
+        ServiceLocator.Services.EventAggregator.PlayerInsectsUpdate += UpdatePlayerInsectView;
         ServiceLocator.Services.HubService.OnTriggerReceived += ClearSetInsect;
     }
 
     private void OnDisable()
     {
-        ServiceLocator.Services.HubService.OnPlayerInsectViewReceived -= UpdatePlayerInsectView;
+        ServiceLocator.Services.EventAggregator.PlayerInsectsUpdate -= UpdatePlayerInsectView;
         ServiceLocator.Services.HubService.OnTriggerReceived -= ClearSetInsect;
     }
 

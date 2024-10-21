@@ -81,22 +81,26 @@ namespace HiveGame.BusinessLogic.Services
 
         public HiveActionResult PutFirstInsect(PutFirstInsectRequest request)
         {
-            var game = _gameRepository.GetByPlayerId(request.PlayerId);
+            Game? game = _gameRepository.GetByPlayerId(request.PlayerId);
+
+            if (game == null)
+                throw new Exception("Game not found");
+
             if (request.PlayerId != game?.GetCurrentPlayer().PlayerId)
             {
                 throw new Exception("It's not your move");
             }
 
-            game.Board.PutFirstInsect(request.InsectToPut, game.CurrentColorMove);
+            game.Board.PutFirstInsect(request.InsectToPut, game);
             game.AfterActionMade();
             var result = new HiveActionResult(game, GetVerticesDTOFromGraph(game));
 
             return result;
         }
 
-        private List<VertexDTO> GetVerticesDTOFromGraph(Game game)
+        private List<VertexDTO> GetVerticesDTOFromGraph(Game game, PlayerColor color = PlayerColor.White)
         {
-            List<VertexDTO> verticesDTO = game.Board.VerticesDTO;
+            List<VertexDTO> verticesDTO = game.Board.CreateVerticesDTO(color);
             return verticesDTO;
         }
     }

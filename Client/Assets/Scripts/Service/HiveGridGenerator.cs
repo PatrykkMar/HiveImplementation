@@ -10,7 +10,7 @@ public class HexGridGenerator : MonoBehaviour
     private List<GameObject> generatedVertices = new List<GameObject>();
     public List<InsectObjectPair> insectObjectPairs;
     private Dictionary<(PlayerColor,InsectType),Material> materialDictionary;
-    [SerializeField] private Material transparentMaterial;
+    [SerializeField] private Material halfTransparentMaterial;
 
 
     private void OnEnable()
@@ -61,8 +61,15 @@ public class HexGridGenerator : MonoBehaviour
             }
             else
             {
-                Renderer hexPrismRenderer = hexPrism.GetComponent<Renderer>();
-                hexPrismRenderer.material = transparentMaterial;
+                if(!vertex.highlighted)
+                {
+                    hexPrism.SetActive(false);
+                }
+                else
+                {
+                    Renderer hexPrismRenderer = hexPrism.GetComponent<Renderer>();
+                    hexPrismRenderer.material = halfTransparentMaterial;
+                }
             }
 
             hexPrism.name = name;

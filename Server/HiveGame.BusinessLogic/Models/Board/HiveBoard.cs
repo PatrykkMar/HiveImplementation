@@ -40,7 +40,7 @@ namespace HiveGame.BusinessLogic.Models.Graph
                     y = x.Y,
                     z = x.Z,
                     insect = x.CurrentInsect != null ? x.CurrentInsect.Type : InsectType.Nothing,
-                    highlighted = x.IsEmpty,
+                    highlighted = false,
                     isempty = x.IsEmpty,
                     playercolor = x.CurrentInsect?.PlayerColor
                 }).ToList();
@@ -65,7 +65,7 @@ namespace HiveGame.BusinessLogic.Models.Graph
                 y = x.Y,
                 z = x.Z,
                 insect = x.CurrentInsect != null ? x.CurrentInsect.Type : InsectType.Nothing,
-                highlighted = x.IsEmpty,
+                highlighted = false,
                 isempty = x.IsEmpty,
                 playercolor = x.CurrentInsect?.PlayerColor,
                 vertexidtoput = toPut.Select(x=>x.Id).ToList()
@@ -129,8 +129,12 @@ namespace HiveGame.BusinessLogic.Models.Graph
 
             if (insectType == InsectType.Nothing)
                 throw new ArgumentNullException("Insect not specified");
+
             if (!_board.Keys.Any())
-                throw new Exception("Cannot put insect on the empty board");
+                throw new Exception("Cannot put insect using this action on the empty board");
+
+            if (!game.GetCurrentPlayer().RemoveInsectFromPlayerBoard(insectType))
+                throw new Exception("Player can't put this insect");
 
             //adjacency rule
 
@@ -153,15 +157,18 @@ namespace HiveGame.BusinessLogic.Models.Graph
             _board[(vertex.X, vertex.Y, vertex.Z)] = vertex;
         }
 
-        public bool PutFirstInsect(InsectType insectType, PlayerColor playerColor)
+        public bool PutFirstInsect(InsectType insectType, Game game)
         {
             if (!FirstMoves)
             {
                 throw new Exception("There are first insects put");
             }
 
+            if (!game.GetCurrentPlayer().RemoveInsectFromPlayerBoard(insectType))
+                throw new Exception("Player can't put this insect");
+
             Vertex vertex;
-            Insect insect = _factory.CreateInsect(insectType, playerColor);
+            Insect insect = _factory.CreateInsect(insectType, game.CurrentColorMove);
 
             if (NotEmptyVertices.Count == 0)
                 vertex = new Vertex(0, 0, 0, insect);

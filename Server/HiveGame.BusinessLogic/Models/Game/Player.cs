@@ -14,6 +14,15 @@ namespace HiveGame.BusinessLogic.Models
         public PlayerColor PlayerColor { get; set; }
         public Dictionary<InsectType, int> PlayerInsects { get; set; }
         public int NumberOfMove { get; set; }
+
+        public bool RemoveInsectFromPlayerBoard(InsectType insect)
+        {
+            if (PlayerInsects[insect] == 0)
+                return false;
+
+            PlayerInsects[insect]--;
+            return true;
+        }
     }
 
     public enum PlayerColor

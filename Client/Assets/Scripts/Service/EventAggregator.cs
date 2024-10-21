@@ -9,6 +9,7 @@ public class EventAggregator
 {
     public event Action<string> InformationTextReceived;
     public event Action<List<VertexDTO>> BoardUpdate;
+    public event Action<Dictionary<InsectType, int>> PlayerInsectsUpdate;
 
     //hex mouse actions
     //public event Action<VertexDTO> HexClicked;
@@ -23,6 +24,11 @@ public class EventAggregator
     public void InvokeBoardUpdate(List<VertexDTO> hexes)
     {
         BoardUpdate?.Invoke(hexes);
+    }
+
+    public void InvokePlayerInsectsUpdate(Dictionary<InsectType, int> insects)
+    {
+        PlayerInsectsUpdate?.Invoke(insects);
     }
 
     //public void InvokeHexClicked(VertexDTO hex)

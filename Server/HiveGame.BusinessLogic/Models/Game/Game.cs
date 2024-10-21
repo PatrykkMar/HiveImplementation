@@ -26,11 +26,11 @@ namespace HiveGame.BusinessLogic.Models
         public PlayerColor CurrentColorMove { get; set; }
         public Player GetCurrentPlayer()
         {
-            return Players.FirstOrDefault(x => x.PlayerColor == CurrentColorMove);
+            return Players.First(x => x.PlayerColor == CurrentColorMove);
         }
         public Player GetOtherPlayer()
         {
-            return Players.FirstOrDefault(x => x.PlayerColor != CurrentColorMove);
+            return Players.First(x => x.PlayerColor != CurrentColorMove);
         }
 
         public PlayerViewDTO GetPlayerView(string playerId)

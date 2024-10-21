@@ -9,7 +9,6 @@ using UnityEngine.UI;
 
 public class HubService
 {
-    public event Action<Dictionary<InsectType, int>> OnPlayerInsectViewReceived;
     public event Action<Trigger> OnTriggerReceived;
 
     private readonly ConfigLoader _configLoader;
@@ -76,7 +75,7 @@ public class HubService
                 if (playerInsects != null)
                 {
                     Debug.Log($"HubService: Got player insects");
-                    OnPlayerInsectViewReceived?.Invoke(playerInsects);
+                    Board.Instance.SetPlayerInsects(playerInsects, invokeEvent: true);
                 }
 
                 if (board != null)
