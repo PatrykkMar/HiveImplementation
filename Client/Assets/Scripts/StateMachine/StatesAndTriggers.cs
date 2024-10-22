@@ -17,7 +17,7 @@ public enum Trigger
     LeftQueue = 4,
     FoundGamePlayerStarts = 5,
     FoundGameOpponentStarts = 51,
-    OpponentMadeMove = 6,
+    PlayerMove = 6,
     PlayerFirstMove = 60,
-    PlayerMadeMove = 61
+    OpponentMove = 61
 }

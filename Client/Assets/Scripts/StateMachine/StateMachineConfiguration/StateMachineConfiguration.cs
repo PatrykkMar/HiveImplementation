@@ -26,13 +26,13 @@ using System.Threading.Tasks;
                 .Permit(Trigger.FoundGameOpponentStarts, ClientState.InGameOpponentMove);
 
             machine.Configure(ClientState.InGamePlayerFirstMove)
-                .Permit(Trigger.PlayerMadeMove, ClientState.InGameOpponentMove);
+                .Permit(Trigger.OpponentMove, ClientState.InGameOpponentMove);
 
             machine.Configure(ClientState.InGamePlayerMove)
-                .Permit(Trigger.PlayerMadeMove, ClientState.InGameOpponentMove);
+                .Permit(Trigger.OpponentMove, ClientState.InGameOpponentMove);
 
             machine.Configure(ClientState.InGameOpponentMove)
-                .Permit(Trigger.OpponentMadeMove, ClientState.InGamePlayerMove)
+                .Permit(Trigger.PlayerMove, ClientState.InGamePlayerMove)
                 .Permit(Trigger.PlayerFirstMove, ClientState.InGamePlayerFirstMove);
 
             return machine;

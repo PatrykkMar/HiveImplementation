@@ -145,7 +145,7 @@ namespace HiveGame.Hubs
         }
 
         [Authorize]
-        public async Task PutInsect(InsectType type, (int, int, int)? whereToPut)
+        public async Task PutInsect(InsectType type, int[] whereToPut)
         {
             var playerId = GetPlayerIdFromToken();
 
@@ -153,7 +153,7 @@ namespace HiveGame.Hubs
             {
                 InsectToPut = type,
                 PlayerId = playerId,
-                WhereToPut = whereToPut
+                WhereToPut = (whereToPut[0], whereToPut[1], whereToPut[2])
             };
 
             var result = _gameService.Put(request);
@@ -187,7 +187,7 @@ namespace HiveGame.Hubs
                     if(game.Board.FirstMoves)
                         await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "It's your first move", Trigger.PlayerFirstMove, playerView.Board, playerView.PlayerInsects);
                     else
-                        await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "It's your move", Trigger.OpponentMadeMove, playerView.Board, playerView.PlayerInsects);
+                        await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "It's your move", Trigger.PlayerMove, playerView.Board, playerView.PlayerInsects);
                 }
                 else
                 {

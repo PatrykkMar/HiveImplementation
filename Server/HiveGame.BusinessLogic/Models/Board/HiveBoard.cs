@@ -29,6 +29,7 @@ namespace HiveGame.BusinessLogic.Models.Graph
             }
         }
 
+        [Obsolete]
         public List<VertexDTO> VerticesDTO
         {
             get
@@ -54,9 +55,13 @@ namespace HiveGame.BusinessLogic.Models.Graph
         {
             //you can put an insect on the empty vertex only if there is no opponent's insect arount
             var toPut = EmptyVertices.Where(x => 
-            GetAdjacentVerticesByCoordList(x, ignoreDown: true, ignoreUp: true)
-            .Where(y => !y.IsEmpty)
-            .Any(x => x.CurrentInsect?.PlayerColor != playerColor));
+                GetAdjacentVerticesByCoordList(x, ignoreDown: true, ignoreUp: true)
+                    .Any(y=>!y.IsEmpty && y.CurrentInsect?.PlayerColor == playerColor)
+            &&
+                GetAdjacentVerticesByCoordList(x, ignoreDown: true, ignoreUp: true)
+                    .Where(y=>!y.IsEmpty)
+                    .All(z=>z.CurrentInsect?.PlayerColor == playerColor)
+            );
 
             var list = Vertices.Select((x, i) => new VertexDTO
             {
@@ -67,8 +72,9 @@ namespace HiveGame.BusinessLogic.Models.Graph
                 insect = x.CurrentInsect != null ? x.CurrentInsect.Type : InsectType.Nothing,
                 highlighted = false,
                 isempty = x.IsEmpty,
+                isthisplayerinsect = x.CurrentInsect != null ? x.CurrentInsect.PlayerColor == playerColor : false,
                 playercolor = x.CurrentInsect?.PlayerColor,
-                vertexidtoput = toPut.Select(x=>x.Id).ToList()
+                vertexidtoput = toPut.Select(x => x.Id).ToList()
             }).ToList();
             return list;
         }

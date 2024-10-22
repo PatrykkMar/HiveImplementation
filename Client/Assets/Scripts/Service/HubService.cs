@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -99,9 +100,10 @@ public class HubService
         await _hubConnection.InvokeAsync("LeaveQueue");
     }
 
-    public async Task PutInsectAsync(InsectType insect, (int, int, int)? position)
+    public async Task PutInsectAsync(InsectType insect, (int, int, int) position)
     {
-        await _hubConnection.InvokeAsync("PutInsect", insect, position);
+        int[] point = new int[3] { position.Item1, position.Item2, position.Item3 };
+        await _hubConnection.InvokeAsync("PutInsect", insect, point);
     }
 
     public async Task PutFirstInsectAsync(InsectType insect)

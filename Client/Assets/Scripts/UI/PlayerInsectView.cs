@@ -36,6 +36,7 @@ public class PlayerInsectView : MonoBehaviour
         SetInsects(dict);
     }
 
+
     public void ClearSetInsect(Trigger trigger)
     {
         if (InsectButtonDict != null) 
@@ -70,7 +71,11 @@ public class PlayerInsectView : MonoBehaviour
             else
             {
                 buttons[buttonIndex].enabled = true;
-                buttons[buttonIndex].onClick.AddListener(() => ChooseInsect(insect));
+                buttons[buttonIndex].onClick.AddListener(() => 
+                {
+                    ChooseInsect(insect, false);
+                    StateStrategyFactory.GetCurrentStateStrategy().OnInsectButtonClick(insect);
+                });
             }
 
             InsectButtonDict[insect] = buttons[buttonIndex];

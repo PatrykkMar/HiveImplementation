@@ -71,8 +71,7 @@ namespace HiveGame.BusinessLogic.Services
                 throw new Exception("It's not your move");
 
             game.Board.Put(request.InsectToPut, request.WhereToPut, game);
-
-            game.GetCurrentPlayer().NumberOfMove++;
+            game.AfterActionMade();
 
             var result = new HiveActionResult(game, GetVerticesDTOFromGraph(game));
 
