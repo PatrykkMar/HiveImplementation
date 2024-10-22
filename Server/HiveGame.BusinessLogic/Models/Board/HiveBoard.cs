@@ -51,7 +51,7 @@ namespace HiveGame.BusinessLogic.Models.Graph
 
 
 
-        public List<VertexDTO> CreateVerticesDTO(PlayerColor playerColor)
+        public BoardDTO CreateBoardDTO(PlayerColor playerColor)
         {
             //you can put an insect on the empty vertex only if there is no opponent's insect arount
             var toPut = EmptyVertices.Where(x => 
@@ -76,7 +76,14 @@ namespace HiveGame.BusinessLogic.Models.Graph
                 playercolor = x.CurrentInsect?.PlayerColor,
                 vertexidtoput = toPut.Select(x => x.Id).ToList()
             }).ToList();
-            return list;
+
+            var board = new BoardDTO()
+            {
+                hexes = list,
+                vertexidtoput = toPut.Select(x=>x.Id).ToList()
+            };
+
+            return board;
         }
 
         public List<Vertex> NotEmptyVertices

@@ -15,5 +15,4 @@ public class VertexDTO
     public bool isthisplayerinsect { get; set; }
     public PlayerColor? playercolor { get; set; }
     public List<long> vertexidtomove { get; set; }
-    public List<long> vertexidtoput { get; set; }
 }

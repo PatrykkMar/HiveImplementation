@@ -73,7 +73,7 @@ namespace HiveGame.BusinessLogic.Services
             game.Board.Put(request.InsectToPut, request.WhereToPut, game);
             game.AfterActionMade();
 
-            var result = new HiveActionResult(game, GetVerticesDTOFromGraph(game));
+            var result = new HiveActionResult(game, GetBoardDTOFromGraph(game));
 
             return result;
         }
@@ -92,14 +92,14 @@ namespace HiveGame.BusinessLogic.Services
 
             game.Board.PutFirstInsect(request.InsectToPut, game);
             game.AfterActionMade();
-            var result = new HiveActionResult(game, GetVerticesDTOFromGraph(game));
+            var result = new HiveActionResult(game, GetBoardDTOFromGraph(game));
 
             return result;
         }
 
-        private List<VertexDTO> GetVerticesDTOFromGraph(Game game, PlayerColor color = PlayerColor.White)
+        private BoardDTO GetBoardDTOFromGraph(Game game, PlayerColor color = PlayerColor.White)
         {
-            List<VertexDTO> verticesDTO = game.Board.CreateVerticesDTO(color);
+            var verticesDTO = game.Board.CreateBoardDTO(color);
             return verticesDTO;
         }
     }

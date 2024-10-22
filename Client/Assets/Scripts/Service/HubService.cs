@@ -40,7 +40,7 @@ public class HubService
             })
             .Build();
 
-        _hubConnection.On<string, string, Trigger?, List<VertexDTO>, Dictionary<InsectType, int>>("ReceiveMessage", (player, message, trigger, board, playerInsects) =>
+        _hubConnection.On<string, string, Trigger?, BoardDTO, Dictionary<InsectType, int>>("ReceiveMessage", (player, message, trigger, board, playerInsects) =>
         {
             _mainThreadContext.Post(async _ =>
             {
@@ -82,7 +82,7 @@ public class HubService
                 if (board != null)
                 {
                     Debug.Log($"HubService: Got board");
-                    Board.Instance.SetBoard(board, invokeEvent: true);
+                    Board.Instance.SetBoardFromDTO(board, invokeEvent: true);
                 }
             }, null);
         });

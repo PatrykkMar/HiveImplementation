@@ -28,6 +28,12 @@ public class Board
         Hexes = new List<VertexDTO>();
     }
 
+    public void SetBoardFromDTO(BoardDTO board, bool invokeEvent = true, long[] highlighted = null)
+    {
+        HexesToPutInsectIds = board.vertexidtoput;
+        SetBoard(board.hexes, invokeEvent, highlighted);
+    }
+
     public void SetBoard(List<VertexDTO> hexes, bool invokeEvent = true, long[] highlighted = null)
     {
         if (highlighted != null)
@@ -57,8 +63,8 @@ public class Board
     public void HighlightHexesToPutInsects(bool invokeEvent = true)
     {
 
-        if (Hexes != null && Hexes.Count != 0)
-            HighlightHexes(Hexes[0].vertexidtoput.ToArray(), invokeEvent);
+        if (HexesToPutInsectIds!=null && HexesToPutInsectIds.Count > 0)
+            HighlightHexes(HexesToPutInsectIds.ToArray(), invokeEvent);
     }
 
     public void HighlightHexes(long[] highlighted, bool invokeEvent = true)

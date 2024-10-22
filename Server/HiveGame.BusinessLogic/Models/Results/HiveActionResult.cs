@@ -4,12 +4,12 @@ namespace HiveGame.BusinessLogic.Models
 {
     public class HiveActionResult
     {
-        public HiveActionResult(Game game, List<VertexDTO> vertices) 
+        public HiveActionResult(Game game, BoardDTO board) 
         {
-            CurrentBoard = vertices;
+            CurrentBoard = board;
             Game = game;
         }
-        public List<VertexDTO> CurrentBoard { get; set; }
+        public BoardDTO CurrentBoard { get; set; }
         public Game Game { get; set; }
     }
 }
