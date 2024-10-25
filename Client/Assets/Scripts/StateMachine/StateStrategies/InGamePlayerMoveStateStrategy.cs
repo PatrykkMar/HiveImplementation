@@ -41,7 +41,6 @@ public class InGamePlayerMoveStateStrategy : IStateStrategy
                 SetPlayerAction(PlayerMoveStateAction.PutInsect, insectToPut: insect);
                 break;
             case PlayerMoveStateAction.PutInsect:
-                SetPlayerAction(PlayerMoveStateAction.None); 
                 break;
         }
     }
@@ -52,15 +51,14 @@ public class InGamePlayerMoveStateStrategy : IStateStrategy
         switch (CurrentAction)
         {
             case PlayerMoveStateAction.None:
-                break;
             case PlayerMoveStateAction.MoveInsect:
-                //TODO: Move action
-                Board.Instance.CancelHighlighing();
-                Board.Instance.HighlightHexesToPutInsects();
-                if(!hex.isempty && hex.isthisplayerinsect)
-                    SetPlayerAction(PlayerMoveStateAction.PutInsect, insectToPut: hex.insect);
-                else
-                    SetPlayerAction(PlayerMoveStateAction.None);
+
+                if (!hex.isempty && hex.isthisplayerinsect)
+                {
+                    SetPlayerAction(PlayerMoveStateAction.MoveInsect, hex);
+                    Board.Instance.CancelHighlighing();
+                    Board.Instance.HighlightHexesToMoveInsects(hex);
+                }
                 break;
             case PlayerMoveStateAction.PutInsect:
                 if(hex.highlighted)
@@ -75,6 +73,7 @@ public class InGamePlayerMoveStateStrategy : IStateStrategy
                 {
                     SetPlayerAction(PlayerMoveStateAction.None);
                 }
+                Board.Instance.CancelHighlighing();
                 break;
         }
     }

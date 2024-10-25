@@ -16,9 +16,18 @@ namespace HiveGame.BusinessLogic.Models.Insects
             PlayerColor = color;
         }
 
-        public override IList<Vertex> GetAvailableVertices(Vertex moveFrom, HiveBoard board)
+        public override List<Vertex> GetAvailableVertices(Vertex moveFrom, HiveBoard board)
         {
-            throw new NotImplementedException();
+            List<Vertex> vertices = BasicCheck(moveFrom, board);
+
+            var freeHexesAround = CheckNotSurroundedFields(moveFrom, board);
+
+            if (freeHexesAround.Count == 0)
+                return new List<Vertex>();
+
+            vertices = vertices.Where(x => freeHexesAround.Any(y => y.Equals(x))).ToList();
+
+            return vertices;
         }
     }
 }

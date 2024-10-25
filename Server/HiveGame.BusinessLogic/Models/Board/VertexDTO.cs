@@ -19,6 +19,5 @@ namespace HiveGame.BusinessLogic.Models.Graph
         public bool isthisplayerinsect { get; set; }
         public PlayerColor? playercolor { get; set; }
         public List<long> vertexidtomove { get; set; } = new List<long>();
-        public List<long> vertexidtoput { get; set; }
     }
 }

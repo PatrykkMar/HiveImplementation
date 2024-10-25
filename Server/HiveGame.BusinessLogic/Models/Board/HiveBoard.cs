@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using HiveGame.BusinessLogic.Factories;
+using HiveGame.BusinessLogic.Models.Extensions;
 using HiveGame.BusinessLogic.Models.Insects;
 using Microsoft.AspNetCore.Components;
 using System;
@@ -29,28 +30,6 @@ namespace HiveGame.BusinessLogic.Models.Graph
             }
         }
 
-        [Obsolete]
-        public List<VertexDTO> VerticesDTO
-        {
-            get
-            {
-                var list = Vertices.Select((x,i) => new VertexDTO
-                {
-                    id = x.Id,
-                    x = x.X, 
-                    y = x.Y,
-                    z = x.Z,
-                    insect = x.CurrentInsect != null ? x.CurrentInsect.Type : InsectType.Nothing,
-                    highlighted = false,
-                    isempty = x.IsEmpty,
-                    playercolor = x.CurrentInsect?.PlayerColor
-                }).ToList();
-                return list;
-            }
-        }
-
-
-
         public BoardDTO CreateBoardDTO(PlayerColor playerColor)
         {
             //you can put an insect on the empty vertex only if there is no opponent's insect arount
@@ -74,7 +53,7 @@ namespace HiveGame.BusinessLogic.Models.Graph
                 isempty = x.IsEmpty,
                 isthisplayerinsect = x.CurrentInsect != null ? x.CurrentInsect.PlayerColor == playerColor : false,
                 playercolor = x.CurrentInsect?.PlayerColor,
-                vertexidtoput = toPut.Select(x => x.Id).ToList()
+                vertexidtomove = x.CurrentInsect != null && x.CurrentInsect.PlayerColor == playerColor ? GetHexesToMove(x) : null
             }).ToList();
 
             var board = new BoardDTO()
@@ -84,6 +63,15 @@ namespace HiveGame.BusinessLogic.Models.Graph
             };
 
             return board;
+        }
+
+        private List<long> GetHexesToMove(Vertex vertex)
+        {
+            var ids = vertex.CurrentInsect.GetAvailableVertices(vertex, this).Select(x => x.Id).ToList();
+
+            if (ids.Count == 0)
+                return null;
+            return ids;
         }
 
         public List<Vertex> NotEmptyVertices
@@ -212,12 +200,6 @@ namespace HiveGame.BusinessLogic.Models.Graph
             }
         }
 
-        private bool IsEndgameConditionMet()
-        {
-            //check if some player's queen is surronded in every side
-            throw new NotImplementedException();
-        }
-
         private void RemoveAllEmptyUnconnectedVerticesAround(Vertex vertex)
         {
             var verticesToDelete = GetAdjacentVerticesByCoordList(vertex);
@@ -252,9 +234,7 @@ namespace HiveGame.BusinessLogic.Models.Graph
                 if ((ignoreDown && direction == Direction.Down) || (ignoreUp && direction == Direction.Up))
                     continue;
 
-                var offset = NeighborOffsetsDict[direction];
-
-                var adjacent = GetVertexByCoord(vertex.X + offset.dx, vertex.Y + offset.dy, vertex.Z + offset.dz);
+                var adjacent = GetVertexByCoord(vertex.Coords.Add(NeighborOffsetsDict[direction]));
                 if (adjacent != null)
                     dict.Add(direction, adjacent);
             }
@@ -265,6 +245,12 @@ namespace HiveGame.BusinessLogic.Models.Graph
         public List<Vertex> GetAdjacentVerticesByCoordList(Vertex vertex, bool ignoreDown = true, bool ignoreUp = false)
         {
             return GetAdjacentVerticesByCoordDict(vertex, ignoreDown, ignoreUp).Values.ToList();
+        }
+
+        public Vertex? GetVertexFromVertexAtDirection(Vertex vertex, Direction direction) 
+        { 
+            var point = vertex.Coords.Add(NeighborOffsetsDict[direction]);
+            return GetVertexByCoord(point);
         }
     }
 }

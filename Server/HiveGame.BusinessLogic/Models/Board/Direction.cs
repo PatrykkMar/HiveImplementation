@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -39,6 +40,13 @@ namespace HiveGame.BusinessLogic.Models.Graph
                 Direction.Down => Direction.Up,
                 _ => throw new ArgumentException("Invalid direction")
             };
+        }
+
+        public static Direction NextDirection(Direction direction, bool includeUpAndDown = false)
+        {
+            int amountOfDirection = includeUpAndDown ? 8 : 6;
+
+            return (Direction)((int)(direction + 1) % amountOfDirection);
         }
     }
 }

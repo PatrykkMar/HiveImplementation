@@ -59,7 +59,7 @@ namespace HiveGame.BusinessLogic.Models.Graph
         public int X { get; set; }
         public int Y { get; set; }
         public int Z { get; set; }
-        public (int, int, int) Coords
+        public (int x, int y, int z) Coords
         {
             get { return (X,Y,Z); }
         }

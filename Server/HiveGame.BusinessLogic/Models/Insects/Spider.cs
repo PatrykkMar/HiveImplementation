@@ -16,16 +16,21 @@ namespace HiveGame.BusinessLogic.Models.Insects
             PlayerColor = color;
         }
 
-        //can move on adjacent field
-        public override IList<Vertex> GetAvailableVertices(Vertex moveFrom, HiveBoard board)
+        public override List<Vertex> GetAvailableVertices(Vertex moveFrom, HiveBoard board)
         {
-            //if is surrouded by at least 5 insects, can't move
-            if (CheckIfSurrounded(moveFrom, board))
+            List<Vertex> vertices = BasicCheck(moveFrom, board);
+
+            var freeHexesAround = CheckNotSurroundedFields(moveFrom, board);
+
+            if (freeHexesAround.Count == 0)
                 return new List<Vertex>();
 
-            var vertices = BasicCheck(moveFrom, board);
-            
-            vertices = vertices.Intersect(board.GetAdjacentVerticesByCoordList(moveFrom)).ToList();
+            List<Vertex> hexesToMoveFromfreeHexes = freeHexesAround
+                .SelectMany(x => GetVerticesByBFS(moveFrom, board, 3))
+                .Distinct()
+                .ToList();
+
+            vertices = vertices.Where(x => hexesToMoveFromfreeHexes.Any(y => y.Equals(x))).ToList();
 
             return vertices;
         }

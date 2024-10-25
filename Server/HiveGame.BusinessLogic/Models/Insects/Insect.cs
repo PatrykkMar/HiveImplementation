@@ -1,10 +1,10 @@
 ﻿using HiveGame.BusinessLogic.Models.Graph;
-using HiveGame.BusinessLogic.Models.Graph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HiveGame.BusinessLogic.Models.Extensions;
 using static HiveGame.BusinessLogic.Models.Graph.DirectionConsts;
 
 namespace HiveGame.BusinessLogic.Models.Insects
@@ -24,7 +24,13 @@ namespace HiveGame.BusinessLogic.Models.Insects
         public InsectType Type { get; set; }
         public PlayerColor PlayerColor { get; set; }
 
-        public IList<Vertex> BasicCheck(Vertex moveFrom, HiveBoard board)
+        /// <summary>
+        /// Check if insect is moved and if insect doesn't move on empty vertex which would be deleted after move. All vertices meeting this condition are removed
+        /// </summary>
+        /// <param name="moveFrom"></param>
+        /// <param name="board"></param>
+        /// <returns></returns>
+        public List<Vertex> BasicCheck(Vertex moveFrom, HiveBoard board)
         {
             var vertices = board.Vertices.ToList();
 
@@ -39,45 +45,96 @@ namespace HiveGame.BusinessLogic.Models.Insects
             return vertices;
         }
 
-        //insect is surrounded (and most of them can't move) if there are 2 parallel pairs around it
-        public bool CheckIfSurrounded(Vertex moveFrom, HiveBoard board)
+        public List<Vertex> CheckNotSurroundedFields(Vertex moveFrom, HiveBoard board)
         {
-            if(board.GetAdjacentVerticesByCoordList(moveFrom).Count >= 5)
-                return true;
-
-            var directions = board
+            var surroundings = board
                 .GetAdjacentVerticesByCoordList(moveFrom)
                 .Where(x => !x.IsEmpty)
                 .ToList();
 
+            var surroudingDirections = Enum.GetValues<Direction>()
+                .Where(x => x != Direction.Up && x != Direction.Down)
+                .Where(x =>
+                    surroundings.Any(y => 
+                    y.X == NeighborOffsetsDict[x].dx + moveFrom.X && 
+                    y.Y == NeighborOffsetsDict[x].dy + moveFrom.Y && 
+                    y.Z == NeighborOffsetsDict[x].dz + moveFrom.Z)
+                );
 
-            Direction[]? pair = null;
+            Direction currentDirection = 0;
 
-            var next = (Direction d) => { return (Direction)((int)(d + 1) % 6); };
+            var freePoints = new List<(int, int, int)>();
 
-            //TODO: New surrounding condition
-            //for (Direction i = 0; (int)i <= 5; i++)
-            //{
-            //    if(directions.Contains(i) && directions.Contains(next(i)))
-            //    {
-            //        pair = new Direction[2] {i, next(i) };
-            //        break;
-            //    }
-            //}
+            for(int i=0;i<6/*number of directions*/;i++)
+            {
 
-            //if(pair != null)
-            //{
-            //    if (directions.Contains(OppositeDirection(pair[0])) && directions.Contains(OppositeDirection(pair[1])))
-            //    {
-            //        return true;
-            //    }
-            //}
+                var current = board.GetVertexFromVertexAtDirection(moveFrom, currentDirection);
+                var next = board.GetVertexFromVertexAtDirection(moveFrom, NextDirection(currentDirection));
 
-            return false;
+                if ((current == null || current.IsEmpty) && (next == null || next.IsEmpty))
+                {
+                    freePoints.Add(moveFrom.Coords.Add(NeighborOffsetsDict[currentDirection]));
+                    freePoints.Add(moveFrom.Coords.Add(NeighborOffsetsDict[NextDirection(currentDirection)]));
+                }
+
+                currentDirection = NextDirection(currentDirection);
+            }
+
+            List<Vertex> freeVertices = freePoints
+                .Distinct()
+                .Select(x => board.GetVertexByCoord(x))
+                .Where(x => x != null)
+                .ToList();
+
+            return freeVertices;
+        }
+
+        public bool CheckIfSurrounded(Vertex moveFrom, HiveBoard board)
+        {
+            return CheckNotSurroundedFields(moveFrom, board).Count == 0;
         }
 
         public abstract IList<Vertex> GetAvailableVertices(Vertex moveFrom, HiveBoard board);
+
+        public List<Vertex> GetVerticesByBFS(Vertex moveFrom, HiveBoard board, int? limit = null)
+        {
+            var result = new List<Vertex>();
+            var visited = new HashSet<Vertex>();
+            var queue = new Queue<(Vertex vertex, int distance)>();
+
+            queue.Enqueue((moveFrom, 0));
+            visited.Add(moveFrom);
+
+            while (queue.Count > 0)
+            {
+                var (current, distance) = queue.Dequeue();
+
+                if (current.IsEmpty)
+                {
+                    result.Add(current);
+                }
+
+                if (limit.HasValue && distance >= limit.Value)
+                {
+                    continue;
+                }
+
+                var adjacent = CheckNotSurroundedFields(current, board);
+
+                foreach (var edge in adjacent)
+                {
+                    if (!visited.Contains(edge))
+                    {
+                        visited.Add(edge);
+                        queue.Enqueue((edge, distance + 1));
+                    }
+                }
+            }
+
+            return result;
+        }
     }
+
 
     public enum InsectType
     {

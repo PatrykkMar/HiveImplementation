@@ -16,54 +16,23 @@ namespace HiveGame.BusinessLogic.Models.Insects
             PlayerColor = color;
         }
 
-        public override IList<Vertex> GetAvailableVertices(Vertex moveFrom, HiveBoard board)
+        public override List<Vertex> GetAvailableVertices(Vertex moveFrom, HiveBoard board)
         {
-            var vertices = BasicCheck(moveFrom, board);
+            List<Vertex> vertices = BasicCheck(moveFrom, board);
 
-            if (CheckIfSurrounded(moveFrom, board))
+            var freeHexesAround = CheckNotSurroundedFields(moveFrom, board);
+
+            if (freeHexesAround.Count == 0)
                 return new List<Vertex>();
 
-            vertices = vertices.Intersect(board.GetAdjacentVerticesByCoordList(moveFrom)).ToList();
+            List<Vertex> hexesToMoveFromfreeHexes = freeHexesAround
+                .SelectMany(x => GetVerticesByBFS(moveFrom, board))
+                .Distinct()
+                .ToList();
 
-            vertices = GetAntVerticesByBFS(moveFrom, board);
+            vertices = vertices.Where(x => hexesToMoveFromfreeHexes.Any(y=>y.Equals(x))).ToList();
 
             return vertices;
-        }
-
-        private IList<Vertex> GetAntVerticesByBFS(Vertex moveFrom, HiveBoard board) 
-        {
-            var result = new List<Vertex>();
-            var visited = new HashSet<Vertex>();
-            var queue = new Queue<Vertex>();
-
-            queue.Enqueue(moveFrom);
-            visited.Add(moveFrom);
-
-            while (queue.Count > 0)
-            {
-                var current = queue.Dequeue();
-
-                if (current.IsEmpty)
-                {
-                    result.Add(current);
-                }
-
-                var adjacent = board.GetAdjacentVerticesByCoordList(current);
-
-                if (adjacent.Count < 5)
-                {
-                    foreach (var edge in adjacent)
-                    {
-                        if (!visited.Contains(edge))
-                        {
-                            visited.Add(edge);
-                            queue.Enqueue(edge);
-                        }
-                    }
-                }
-            }
-
-            return result;
         }
     }
 }

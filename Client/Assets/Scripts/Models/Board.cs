@@ -67,6 +67,13 @@ public class Board
             HighlightHexes(HexesToPutInsectIds.ToArray(), invokeEvent);
     }
 
+    public void HighlightHexesToMoveInsects(VertexDTO vertex, bool invokeEvent = true)
+    {
+
+        if (vertex.vertexidtomove != null && vertex.vertexidtomove.Count > 0)
+            HighlightHexes(vertex.vertexidtomove.ToArray(), invokeEvent);
+    }
+
     public void HighlightHexes(long[] highlighted, bool invokeEvent = true)
     {
         SetBoard(Hexes, invokeEvent, highlighted);

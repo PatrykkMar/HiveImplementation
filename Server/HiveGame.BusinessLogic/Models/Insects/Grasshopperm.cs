@@ -1,10 +1,10 @@
 ﻿using HiveGame.BusinessLogic.Models.Graph;
-using HiveGame.BusinessLogic.Models.Graph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static HiveGame.BusinessLogic.Models.Graph.DirectionConsts;
 
 namespace HiveGame.BusinessLogic.Models.Insects
 {
@@ -16,16 +16,39 @@ namespace HiveGame.BusinessLogic.Models.Insects
             PlayerColor = color;
         }
 
-        //can move on adjacent field
-        public IList<Vertex> BasicCheck(Vertex moveFrom, HiveBoard board)
-        {
-            //TODO
-            return null;
-        }
-
         public override IList<Vertex> GetAvailableVertices(Vertex moveFrom, HiveBoard board)
         {
-            throw new NotImplementedException();
+            var vertices = BasicCheck(moveFrom, board);
+            var possibleMoves = GetPossibleMovesForGrasshopperm(moveFrom, board);
+
+            return vertices
+                .Where(x => possibleMoves.Any(y => y.Equals(x)))
+                .Distinct()
+                .ToList();
+        }
+
+        public List<Vertex> GetPossibleMovesForGrasshopperm(Vertex moveFrom, HiveBoard board)
+        {
+            var possibleMoves = new List<Vertex>();
+
+            foreach ( var direction in Enum.GetValues<Direction>()) 
+            {
+                if (direction == Direction.Up || direction == Direction.Down)
+                    continue;
+
+                var currentPoint = moveFrom.Coords;
+
+                var (dx, dy, dz) = NeighborOffsetsDict[direction];
+
+                while(!board.GetVertexByCoord(currentPoint).IsEmpty)
+                {
+                    currentPoint = (currentPoint.x + dx, currentPoint.y + dy, currentPoint.z + dz);
+                }
+
+                possibleMoves.Add(board.GetVertexByCoord(currentPoint));
+            }
+
+            return possibleMoves;
         }
     }
 }
