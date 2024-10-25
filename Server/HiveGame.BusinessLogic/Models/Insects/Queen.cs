@@ -1,5 +1,4 @@
 ﻿using HiveGame.BusinessLogic.Models.Graph;
-using HiveGame.BusinessLogic.Models.Graph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +24,12 @@ namespace HiveGame.BusinessLogic.Models.Insects
             if (freeHexesAround.Count == 0)
                 return new List<Vertex>();
 
-            vertices = vertices.Where(x => freeHexesAround.Any(y => y.Equals(x))).ToList();
+            List<Vertex> hexesToMoveFromfreeHexes = freeHexesAround
+                .SelectMany(x => GetVerticesByBFS(moveFrom, board, limit: 1))
+                .Distinct()
+                .ToList();
+
+            vertices = vertices.Intersect(hexesToMoveFromfreeHexes).ToList();
 
             return vertices;
         }

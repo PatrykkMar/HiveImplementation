@@ -30,7 +30,7 @@ namespace HiveGame.BusinessLogic.Models.Insects
                 .Distinct()
                 .ToList();
 
-            vertices = vertices.Where(x => hexesToMoveFromfreeHexes.Any(y=>y.Equals(x))).ToList();
+            vertices = vertices.Intersect(hexesToMoveFromfreeHexes).ToList();
 
             return vertices;
         }

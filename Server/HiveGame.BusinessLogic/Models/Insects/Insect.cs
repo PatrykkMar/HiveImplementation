@@ -32,17 +32,79 @@ namespace HiveGame.BusinessLogic.Models.Insects
         /// <returns></returns>
         public List<Vertex> BasicCheck(Vertex moveFrom, HiveBoard board)
         {
-            var vertices = board.Vertices.ToList();
 
+            //hive can't divide to two separated hives
+            if (BrokeHive(moveFrom, board))
+                return new List<Vertex>();
+
+            //cannot move insects until queen is not in the game
+            if (QueenNotSet(board))
+                return new List<Vertex>();
+
+            //can move only on empty vertices
+            List<Vertex> vertices = board.EmptyVertices;
+
+
+            //cannot move on empty vertex which would be deleted after move
             var verticesToRemove = board.GetAdjacentVerticesByCoordList(moveFrom)
-                .Where(x => board.GetAdjacentVerticesByCoordList(x).Count == 1); //cannot move on empty vertex which would be deleted after move
+                .Where(x => board
+                .GetAdjacentVerticesByCoordList(x)
+                .Where(x=>!x.IsEmpty)
+                .Count() == 1); 
 
-            foreach(var v in verticesToRemove)
-                vertices.Remove(v);
+            vertices = vertices
+                .Except(verticesToRemove)
+                .ToList();
 
-            vertices.Remove(moveFrom); //cannot stay during move
+            //cannot stay during move
+            vertices.Remove(moveFrom);
 
             return vertices;
+        }
+
+        public bool BrokeHive(Vertex moveFrom, HiveBoard board)
+        {
+            var vertices = board.NotEmptyVertices.Where(x=>x != moveFrom).ToList();
+
+            if(vertices.Count == 0) 
+                return false;
+
+
+            var result = new List<Vertex>();
+            var visited = new HashSet<Vertex>();
+            var queue = new Queue<Vertex>();
+
+            queue.Enqueue(vertices[0]);
+            visited.Add(vertices[0]);
+
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+
+                if (!current.IsEmpty)
+                {
+                    result.Add(current);
+                }
+
+                var adjacent = board.GetAdjacentVerticesByCoordList(current).Where(x => !x.IsEmpty && x != moveFrom);
+
+                foreach (var edge in adjacent)
+                {
+                    if (!visited.Contains(edge))
+                    {
+                        visited.Add(edge);
+                        queue.Enqueue(edge);
+                    }
+                }
+            }
+
+            return vertices.Count != result.Count;
+        }
+
+        public bool QueenNotSet(HiveBoard board)
+        {
+            var queen = board.NotEmptyVertices.FirstOrDefault(x => x.CurrentInsect.PlayerColor == PlayerColor && x.CurrentInsect.Type == InsectType.Queen);
+            return queen == null;
         }
 
         public List<Vertex> CheckNotSurroundedFields(Vertex moveFrom, HiveBoard board)
