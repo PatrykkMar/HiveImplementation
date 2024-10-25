@@ -1,4 +1,5 @@
-﻿using HiveGame.BusinessLogic.Models.Graph;
+﻿using HiveGame.BusinessLogic.Models.Extensions;
+using HiveGame.BusinessLogic.Models.Graph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,20 +18,21 @@ namespace HiveGame.BusinessLogic.Models.Insects
 
         public override IList<Vertex> GetAvailableVertices(Vertex moveFrom, HiveBoard board)
         {
-            //TODO: To change
             List<Vertex> vertices = BasicCheck(moveFrom, board);
 
-            var freeHexesAround = CheckNotSurroundedFields(moveFrom, board);
+            Vertex vertexUnder = board.GetVertexByCoord((moveFrom.Coords.x, moveFrom.Coords.y, 0));
 
-            if (freeHexesAround.Count == 0)
-                return new List<Vertex>();
+            List<Vertex> hexesToMove = board.GetAdjacentVerticesByCoordList(vertexUnder);
 
-            List<Vertex> hexesToMoveFromfreeHexes = freeHexesAround
-                .SelectMany(x => GetVerticesByBFS(moveFrom, board, 1))
-                .Distinct()
-                .ToList();
+            for(int i = 0; i < hexesToMove.Count; i++)
+            {
+                while (!hexesToMove[i].IsEmpty)
+                {
+                    hexesToMove[i] = board.GetVertexByCoord(hexesToMove[i].Coords.Add((0, 0, 1)));
+                }
+            }
 
-            vertices = vertices.Where(x => hexesToMoveFromfreeHexes.Any(y => y.Equals(x))).ToList();
+            vertices = vertices.Intersect(hexesToMove).ToList();
 
             return vertices;
         }

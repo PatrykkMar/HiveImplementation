@@ -41,6 +41,10 @@ namespace HiveGame.BusinessLogic.Models.Insects
             if (QueenNotSet(board))
                 return new List<Vertex>();
 
+            //cannot move if there is a beetle above insect
+            if (BlockingBeetle(moveFrom, board))
+                return new List<Vertex>();
+
             //can move only on empty vertices
             List<Vertex> vertices = board.EmptyVertices;
 
@@ -151,6 +155,12 @@ namespace HiveGame.BusinessLogic.Models.Insects
             return freeVertices;
         }
 
+        public bool BlockingBeetle(Vertex moveFrom, HiveBoard board)
+        {
+            var bettleVertex = board.GetVertexByCoord(moveFrom.Coords.Add((0,0,1)));
+            return bettleVertex != null && !bettleVertex.IsEmpty;
+        }
+
         public bool CheckIfSurrounded(Vertex moveFrom, HiveBoard board)
         {
             return CheckNotSurroundedFields(moveFrom, board).Count == 0;
@@ -158,7 +168,7 @@ namespace HiveGame.BusinessLogic.Models.Insects
 
         public abstract IList<Vertex> GetAvailableVertices(Vertex moveFrom, HiveBoard board);
 
-        public List<Vertex> GetVerticesByBFS(Vertex moveFrom, HiveBoard board, int? limit = null)
+        public List<Vertex> GetVerticesByBFS(Vertex moveFrom, HiveBoard board, int? limit = null, int? onlyDistance = null)
         {
             var result = new List<Vertex>();
             var visited = new HashSet<Vertex>();
@@ -171,7 +181,7 @@ namespace HiveGame.BusinessLogic.Models.Insects
             {
                 var (current, distance) = queue.Dequeue();
 
-                if (current.IsEmpty)
+                if (current.IsEmpty && (!onlyDistance.HasValue || distance == onlyDistance.Value))
                 {
                     result.Add(current);
                 }
