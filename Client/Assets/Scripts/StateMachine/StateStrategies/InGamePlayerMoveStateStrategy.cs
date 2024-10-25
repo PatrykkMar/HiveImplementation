@@ -13,7 +13,7 @@ public class InGamePlayerMoveStateStrategy : IStateStrategy
 
     public InsectType? InsectToPut { get; set; }
 
-    public VertexDTO? HexToMove { get; set; }
+    public VertexDTO? HexFromMove { get; set; }
 
     public List<ButtonHelper> GetAvailableButtonsList()
     {
@@ -36,12 +36,11 @@ public class InGamePlayerMoveStateStrategy : IStateStrategy
         {
             case PlayerMoveStateAction.None:
             case PlayerMoveStateAction.MoveInsect:
+            case PlayerMoveStateAction.PutInsect:
                 Board.Instance.CancelHighlighing();
                 Board.Instance.HighlightHexesToPutInsects();
                 SetPlayerAction(PlayerMoveStateAction.PutInsect, insectToPut: insect);
-                break;
-            case PlayerMoveStateAction.PutInsect:
-                break;
+            break;
         }
     }
 
@@ -51,8 +50,6 @@ public class InGamePlayerMoveStateStrategy : IStateStrategy
         switch (CurrentAction)
         {
             case PlayerMoveStateAction.None:
-            case PlayerMoveStateAction.MoveInsect:
-
                 if (!hex.isempty && hex.isthisplayerinsect)
                 {
                     SetPlayerAction(PlayerMoveStateAction.MoveInsect, hex);
@@ -60,6 +57,25 @@ public class InGamePlayerMoveStateStrategy : IStateStrategy
                     Board.Instance.HighlightHexesToMoveInsects(hex);
                 }
                 break;
+            case PlayerMoveStateAction.MoveInsect:
+
+                if (hex.isempty && hex.highlighted)
+                {
+                    ServiceLocator.Services.HubService.MoveInsectAsync((HexFromMove.x, HexFromMove.y, HexFromMove.z), (hex.x, hex.y, hex.z));
+                    SetPlayerAction(PlayerMoveStateAction.None);
+                    Board.Instance.CancelHighlighing();
+                }
+                else if (!hex.isempty && hex.isthisplayerinsect)
+                {
+                    SetPlayerAction(PlayerMoveStateAction.MoveInsect, hex);
+                    Board.Instance.CancelHighlighing();
+                    Board.Instance.HighlightHexesToMoveInsects(hex);
+                }
+                else
+                {
+                    SetPlayerAction(PlayerMoveStateAction.None);
+                }
+                    break;
             case PlayerMoveStateAction.PutInsect:
                 if(hex.highlighted)
                 {
@@ -101,7 +117,7 @@ public class InGamePlayerMoveStateStrategy : IStateStrategy
         }
 
         CurrentAction = action;
-        HexToMove = hexToMove;
+        HexFromMove = hexToMove;
         InsectToPut = insectToPut;
 
         Debug.Log("Action: " + Enum.GetName(typeof(PlayerMoveStateAction), action));

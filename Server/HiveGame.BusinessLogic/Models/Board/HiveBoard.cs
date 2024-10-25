@@ -98,26 +98,35 @@ namespace HiveGame.BusinessLogic.Models.Graph
             }
         }
 
-        public bool Move(Vertex moveFrom, Vertex moveTo, Player player, PlayerColor playerColor)
+        public bool Move((int, int, int)? moveFrom, (int, int, int)? moveTo, Game game)
         {
-            if (moveFrom.IsEmpty)
-                throw new ArgumentException("There is not insect on the 'moveFrom' vertex");
+            if (!moveFrom.HasValue)
+                throw new ArgumentException("Empty moveFrom parameter");
 
-            if (!moveTo.IsEmpty)
-                throw new ArgumentException("'emptyVertex' is not empty");
+            if (!moveTo.HasValue)
+                throw new ArgumentException("Empty moveTo parameter");
 
-            if (GetVertexByCoord(moveFrom.X, moveFrom.Y, moveFrom.Z + 1)?.IsEmpty == false)
-                throw new ArgumentException("Insect cannot move because there is another insect above him");
+            var moveFromVertex = GetVertexByCoord(moveFrom.Value);
+            var moveToVertex = GetVertexByCoord(moveTo.Value);
 
+            if (moveFromVertex == null || moveFromVertex.IsEmpty)
+                throw new ArgumentException("MoveFromVertex not found or empty");
 
-            RemoveAllEmptyUnconnectedVerticesAround(moveFrom);
+            if (moveToVertex == null || !moveToVertex.IsEmpty)
+                throw new ArgumentException("MoveToVertex not found or not empty");
 
-            var insect = moveFrom.CurrentInsect;
-            moveTo.CurrentInsect = insect;
-            moveFrom.CurrentInsect = null;
-            RemoveAllEmptyUnconnectedVerticesAround(moveFrom);
+            if (moveFromVertex.CurrentInsect.PlayerColor != game.GetCurrentPlayer().PlayerColor)
+                throw new ArgumentException("Player wants to move opponent's insect");
 
-            AddEmptyVerticesAround(moveTo);
+            var availableHexes = moveFromVertex.CurrentInsect.GetAvailableVertices(moveFromVertex, this);
+
+            if (!availableHexes.Contains(moveToVertex))
+                throw new ArgumentException("Insect cannot move there");
+
+            moveToVertex.CurrentInsect = moveFromVertex.CurrentInsect;
+            moveFromVertex.CurrentInsect = null;
+            RemoveAllEmptyUnconnectedVerticesAround(moveFromVertex);
+            AddEmptyVerticesAround(moveToVertex);
             return true;
         }
 
@@ -202,7 +211,7 @@ namespace HiveGame.BusinessLogic.Models.Graph
 
         private void RemoveAllEmptyUnconnectedVerticesAround(Vertex vertex)
         {
-            var verticesToDelete = GetAdjacentVerticesByCoordList(vertex);
+            var verticesToDelete = GetAdjacentVerticesByCoordList(vertex).Where(x=>x.IsEmpty && GetAdjacentVerticesByCoordList(x).Where(y=>!y.IsEmpty).Count()==0);
 
             foreach (var ver in verticesToDelete)
                 _board.Remove(ver.Coords);

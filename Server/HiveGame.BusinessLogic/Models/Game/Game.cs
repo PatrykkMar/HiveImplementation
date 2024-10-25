@@ -19,6 +19,16 @@ namespace HiveGame.BusinessLogic.Models
             CurrentColorMove = startingColor;
             players[0].PlayerColor = PlayerColor.White;
             players[1].PlayerColor = PlayerColor.Black;
+            NumberOfMove = 0;
+        }
+
+        public int NumberOfMove { get; set; }
+        public int Turn
+        {
+            get
+            {
+                return NumberOfMove / 2 + 1;
+            }
         }
 
         public HiveBoard Board { get; set; }
@@ -45,6 +55,7 @@ namespace HiveGame.BusinessLogic.Models
         public void AfterActionMade()
         {
             CurrentColorMove = (PlayerColor)(((int)(CurrentColorMove + 1)) % 2);
+            NumberOfMove++;
         }
 
     }

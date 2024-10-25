@@ -9,7 +9,7 @@ namespace HiveGame.BusinessLogic.Services
 {
     public interface IHiveGameService
     {
-        public IList<VertexDTO> Move(MoveInsectRequest request);
+        public HiveActionResult Move(MoveInsectRequest request);
         public HiveActionResult Put(PutInsectRequest request);
         public HiveActionResult PutFirstInsect(PutFirstInsectRequest request);
         IList<VertexDTO> GetTestGrid();
@@ -51,13 +51,22 @@ namespace HiveGame.BusinessLogic.Services
             //return dtos;
         }
 
-        public IList<VertexDTO> Move(MoveInsectRequest request)
+        public HiveActionResult Move(MoveInsectRequest request)
         {
-            throw new NotImplementedException();
-            //var vertexFrom = _board.GetVertexByCoord(request.MoveFrom);
-            //var vertexTo = _board.GetVertexByCoord(request.MoveTo);
-            //_board.Move(vertexFrom, vertexTo, null);
-            //return GetVerticesDTOFromGraph();
+            Game? game = _gameRepository.GetByPlayerId(request.PlayerId);
+
+            if (game == null)
+                throw new Exception("Game not found");
+
+            if (request.PlayerId != game?.GetCurrentPlayer().PlayerId)
+                throw new Exception("It's not your move");
+
+            game.Board.Move(request.MoveFrom, request.MoveTo, game);
+            game.AfterActionMade();
+
+            var result = new HiveActionResult(game, GetBoardDTOFromGraph(game));
+
+            return result;
         }
 
         public HiveActionResult Put(PutInsectRequest request)

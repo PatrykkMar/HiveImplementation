@@ -161,9 +161,19 @@ namespace HiveGame.Hubs
         }
 
         [Authorize]
-        public async Task MoveInsect(InsectType type)
+        public async Task MoveInsect(int[] moveFrom, int[] moveTo)
         {
-            throw new NotImplementedException();
+            var playerId = GetPlayerIdFromToken();
+
+            var request = new MoveInsectRequest()
+            {
+                MoveFrom = (moveFrom[0], moveFrom[1], moveFrom[2]),
+                MoveTo= (moveTo[0], moveTo[1], moveTo[2]),
+                PlayerId = playerId
+            };
+
+            var result = _gameService.Move(request);
+            await SendGameActionInformation(result);
         }
 
         private string GetPlayerIdFromToken()

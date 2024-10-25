@@ -7,6 +7,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class HubService
 {
@@ -111,9 +112,10 @@ public class HubService
         await _hubConnection.InvokeAsync("PutFirstInsect", insect);
     }
 
-    public async Task MoveInsectAsync()
+    public async Task MoveInsectAsync((int, int, int) moveFrom, (int, int, int) moveTo)
     {
-        throw new NotImplementedException();
-        await _hubConnection.InvokeAsync("MoveInsectAsync");
+        int[] moveFromPoint = new int[3] { moveFrom.Item1, moveFrom.Item2, moveFrom.Item3 };
+        int[] moveToPoint = new int[3] { moveTo.Item1, moveTo.Item2, moveTo.Item3 };
+        await _hubConnection.InvokeAsync("MoveInsect", moveFromPoint, moveToPoint);
     }
 }

@@ -48,6 +48,10 @@ namespace HiveGame.BusinessLogic.Models.Insects
                 possibleMoves.Add(board.GetVertexByCoord(currentPoint));
             }
 
+            var verticesToRemove = board.GetAdjacentVerticesByCoordList(moveFrom);
+
+            possibleMoves = possibleMoves.Except(verticesToRemove).ToList();
+
             return possibleMoves;
         }
     }
