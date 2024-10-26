@@ -11,6 +11,7 @@ public class HexGridGenerator : MonoBehaviour
     public List<InsectObjectPair> insectObjectPairs;
     private Dictionary<(PlayerColor,InsectType),Material> materialDictionary;
     [SerializeField] private Material halfTransparentMaterial;
+    [SerializeField] private Material halfTransparentGreyMaterial;
 
 
     private void OnEnable()
@@ -63,7 +64,12 @@ public class HexGridGenerator : MonoBehaviour
             {
                 if(!vertex.highlighted)
                 {
-                    hexPrism.SetActive(false);
+#if UNITY_EDITOR
+                    Renderer hexPrismRenderer = hexPrism.GetComponent<Renderer>();
+                    hexPrismRenderer.material = halfTransparentGreyMaterial;
+#else
+                hexPrism.SetActive(false);
+#endif
                 }
                 else
                 {

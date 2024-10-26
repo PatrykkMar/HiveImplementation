@@ -815,6 +815,7 @@ MonoBehaviour:
     PlayerColor: 1
     UV: {fileID: 2100000, guid: 4e208e13b5a903242b3d0ea79952ce2a, type: 2}
   halfTransparentMaterial: {fileID: 2100000, guid: 133b4d15abfd45845a29a336181d97cd, type: 2}
+  halfTransparentGreyMaterial: {fileID: 2100000, guid: 4a8fd25dddc82fe49affe358fa5134ae, type: 2}
 --- !u!1 &516302323
 GameObject:
   m_ObjectHideFlags: 0
