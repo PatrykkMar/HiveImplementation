@@ -30,6 +30,14 @@ namespace HiveGame.BusinessLogic.Models.Graph
             }
         }
 
+        public List<Insect> AllInsects
+        {
+            get
+            {
+                return Vertices.SelectMany(x=>x.InsectStack).ToList();
+            }
+        }
+
         public BoardDTO CreateBoardDTO(PlayerColor playerColor)
         {
             //you can put an insect on the empty vertex only if there is no opponent's insect arount
@@ -169,6 +177,9 @@ namespace HiveGame.BusinessLogic.Models.Graph
 
             if (!game.GetCurrentPlayer().RemoveInsectFromPlayerBoard(insectType))
                 throw new Exception("Player can't put this insect");
+
+            if (game.NumberOfMove == 4 && AllInsects.FirstOrDefault(x=>x.Type == InsectType.Queen && x.PlayerColor == game.GetCurrentPlayer().PlayerColor) == null)
+                throw new Exception("It's 4 turn and you still didn't put a queen");
 
             //adjacency rule
 

@@ -17,6 +17,9 @@ public class InformationText : MonoBehaviour
 
     private void UpdateInformationText(string text)
     {
-        informationText.text = text;
+        if(informationText != null) 
+        {
+            informationText.text = text;
+        }
     }
 }
