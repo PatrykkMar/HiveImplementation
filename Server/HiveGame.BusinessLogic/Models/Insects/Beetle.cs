@@ -20,15 +20,13 @@ namespace HiveGame.BusinessLogic.Models.Insects
         {
             List<Vertex> vertices = BasicCheck(moveFrom, board);
 
-            Vertex vertexUnder = board.GetVertexByCoord((moveFrom.Coords.x, moveFrom.Coords.y, 0));
-
-            List<Vertex> hexesToMove = board.GetAdjacentVerticesByCoordList(vertexUnder);
+            List<Vertex> hexesToMove = board.GetAdjacentVerticesByCoordList(moveFrom);
 
             for(int i = 0; i < hexesToMove.Count; i++)
             {
                 while (!hexesToMove[i].IsEmpty)
                 {
-                    hexesToMove[i] = board.GetVertexByCoord(hexesToMove[i].Coords.Add((0, 0, 1)));
+                    hexesToMove[i] = board.GetVertexByCoord(hexesToMove[i].Coords);
                 }
             }
 

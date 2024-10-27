@@ -1,4 +1,5 @@
-﻿using HiveGame.BusinessLogic.Models.Graph;
+﻿using HiveGame.BusinessLogic.Models.Extensions;
+using HiveGame.BusinessLogic.Models.Graph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,11 +39,11 @@ namespace HiveGame.BusinessLogic.Models.Insects
 
                 var currentPoint = moveFrom.Coords;
 
-                var (dx, dy, dz) = NeighborOffsetsDict[direction];
+                var (dx, dy) = NeighborOffsetsDict[direction].To2D();
 
                 while(!board.GetVertexByCoord(currentPoint).IsEmpty)
                 {
-                    currentPoint = (currentPoint.x + dx, currentPoint.y + dy, currentPoint.z + dz);
+                    currentPoint = (currentPoint.x + dx, currentPoint.y + dy);
                 }
 
                 possibleMoves.Add(board.GetVertexByCoord(currentPoint));

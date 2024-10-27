@@ -8,7 +8,7 @@ namespace HiveGame.BusinessLogic.Models.Requests
 {
     public class MoveInsectRequest : GameMoveRequest
     {
-        public (int, int, int)? MoveFrom { get; set; }
-        public (int, int, int)? MoveTo { get; set; }
+        public (int, int)? MoveFrom { get; set; }
+        public (int, int)? MoveTo { get; set; }
     }
 }

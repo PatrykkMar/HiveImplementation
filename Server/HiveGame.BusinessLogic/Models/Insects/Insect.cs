@@ -123,13 +123,13 @@ namespace HiveGame.BusinessLogic.Models.Insects
                 .Where(x =>
                     surroundings.Any(y => 
                     y.X == NeighborOffsetsDict[x].dx + moveFrom.X && 
-                    y.Y == NeighborOffsetsDict[x].dy + moveFrom.Y && 
-                    y.Z == NeighborOffsetsDict[x].dz + moveFrom.Z)
+                    y.Y == NeighborOffsetsDict[x].dy + moveFrom.Y
+                    )
                 );
 
             Direction currentDirection = 0;
 
-            var freePoints = new List<(int, int, int)>();
+            var freePoints = new List<(int, int)>();
 
             for(int i=0;i<6/*number of directions*/;i++)
             {
@@ -139,8 +139,8 @@ namespace HiveGame.BusinessLogic.Models.Insects
 
                 if ((current == null || current.IsEmpty) && (next == null || next.IsEmpty))
                 {
-                    freePoints.Add(moveFrom.Coords.Add(NeighborOffsetsDict[currentDirection]));
-                    freePoints.Add(moveFrom.Coords.Add(NeighborOffsetsDict[NextDirection(currentDirection)]));
+                    freePoints.Add(moveFrom.Coords.Add(NeighborOffsetsDict[currentDirection].To2D()));
+                    freePoints.Add(moveFrom.Coords.Add(NeighborOffsetsDict[NextDirection(currentDirection)].To2D()));
                 }
 
                 currentDirection = NextDirection(currentDirection);
@@ -157,8 +157,8 @@ namespace HiveGame.BusinessLogic.Models.Insects
 
         public bool BlockingBeetle(Vertex moveFrom, HiveBoard board)
         {
-            var bettleVertex = board.GetVertexByCoord(moveFrom.Coords.Add((0,0,1)));
-            return bettleVertex != null && !bettleVertex.IsEmpty;
+            var bettleVertex = board.GetVertexByCoord(moveFrom.Coords)?.CurrentInsect;
+            return bettleVertex != null && bettleVertex.Type == InsectType.Beetle;
         }
 
         public bool CheckIfSurrounded(Vertex moveFrom, HiveBoard board)

@@ -12,13 +12,13 @@ namespace HiveGame.BusinessLogic.Models.Graph
 {
     public class HiveBoard
     {
-        private Dictionary<(int, int, int), Vertex> _board;
+        private Dictionary<(int, int), Vertex> _board;
         private readonly IInsectFactory _factory;
         private readonly IMapper _mapper;
         public HiveBoard(IInsectFactory factory, IMapper mapper)
         {
             _factory = factory;
-            _board = new Dictionary<(int, int, int), Vertex>();
+            _board = new Dictionary<(int x, int y), Vertex>();
             _mapper = mapper;
         }
 
@@ -33,7 +33,7 @@ namespace HiveGame.BusinessLogic.Models.Graph
         public BoardDTO CreateBoardDTO(PlayerColor playerColor)
         {
             //you can put an insect on the empty vertex only if there is no opponent's insect arount
-            var toPut = EmptyVertices.Where(x => 
+            var toPut = EmptyVertices.Where(x =>
                 GetAdjacentVerticesByCoordList(x, ignoreDown: true, ignoreUp: true)
                     .Any(y=>!y.IsEmpty && y.CurrentInsect?.PlayerColor == playerColor)
             &&
@@ -42,30 +42,44 @@ namespace HiveGame.BusinessLogic.Models.Graph
                     .All(z=>z.CurrentInsect?.PlayerColor == playerColor)
             );
 
-            var list = Vertices.Select((x, i) => new VertexDTO
+            List<VertexDTO> verticesDTO = new List<VertexDTO>();
+
+            foreach(var vertex in Vertices)
             {
-                id = x.Id,
-                x = x.X,
-                y = x.Y,
-                z = x.Z,
-                insect = x.CurrentInsect != null ? x.CurrentInsect.Type : InsectType.Nothing,
-                highlighted = false,
-                isempty = x.IsEmpty,
-                isthisplayerinsect = x.CurrentInsect != null ? x.CurrentInsect.PlayerColor == playerColor : false,
-                playercolor = x.CurrentInsect?.PlayerColor,
-                vertexidtomove = x.CurrentInsect != null && x.CurrentInsect.PlayerColor == playerColor ? GetHexesToMove(x) : null
-            }).ToList();
+                if(vertex.IsEmpty)
+                {
+                    var verDTO = new VertexDTO(vertex, playerColor);
+                    verticesDTO.Add(verDTO);
+                }
+                else
+                {
+                    int zIndex = 0;
+                    foreach(var insect in vertex.InsectStack.Reverse())
+                    {
+                        var insectVertexDTO = new VertexDTO(vertex, playerColor);
+                        insectVertexDTO.z = zIndex++;
+                        insectVertexDTO.insect = insect.Type;
+                        insectVertexDTO.SetVertexToMove(vertex, this, playerColor);
+                        verticesDTO.Add(insectVertexDTO);
+                    }
+
+                    var lastVertexDTO = new VertexDTO(vertex, playerColor);
+                    lastVertexDTO.insect = InsectType.Nothing;
+                    lastVertexDTO.z = zIndex;
+                    verticesDTO.Add(lastVertexDTO);
+                }
+            }
 
             var board = new BoardDTO()
             {
-                hexes = list,
+                hexes = verticesDTO,
                 vertexidtoput = toPut.Select(x=>x.Id).ToList()
             };
 
             return board;
         }
 
-        private List<long> GetHexesToMove(Vertex vertex)
+        public List<long> GetHexesToMove(Vertex vertex)
         {
             var ids = vertex.CurrentInsect.GetAvailableVertices(vertex, this).Select(x => x.Id).ToList();
 
@@ -98,7 +112,7 @@ namespace HiveGame.BusinessLogic.Models.Graph
             }
         }
 
-        public bool Move((int, int, int)? moveFrom, (int, int, int)? moveTo, Game game)
+        public bool Move((int, int)? moveFrom, (int, int)? moveTo, Game game)
         {
             if (!moveFrom.HasValue)
                 throw new ArgumentException("Empty moveFrom parameter");
@@ -112,8 +126,10 @@ namespace HiveGame.BusinessLogic.Models.Graph
             if (moveFromVertex == null || moveFromVertex.IsEmpty)
                 throw new ArgumentException("MoveFromVertex not found or empty");
 
-            if (moveToVertex == null || !moveToVertex.IsEmpty)
+            if (moveToVertex == null)
                 throw new ArgumentException("MoveToVertex not found or not empty");
+
+            var moveToVertexEmptyBeforeMove = moveToVertex.IsEmpty;
 
             if (moveFromVertex.CurrentInsect.PlayerColor != game.GetCurrentPlayer().PlayerColor)
                 throw new ArgumentException("Player wants to move opponent's insect");
@@ -123,14 +139,21 @@ namespace HiveGame.BusinessLogic.Models.Graph
             if (!availableHexes.Contains(moveToVertex))
                 throw new ArgumentException("Insect cannot move there");
 
-            moveToVertex.CurrentInsect = moveFromVertex.CurrentInsect;
-            moveFromVertex.CurrentInsect = null;
-            RemoveAllEmptyUnconnectedVerticesAround(moveFromVertex);
-            AddEmptyVerticesAround(moveToVertex);
+            var moveFromInsect = moveFromVertex.InsectStack.Pop();
+            moveToVertex.InsectStack.Push(moveFromInsect);
+            if(moveFromVertex.IsEmpty)
+            {
+                RemoveAllEmptyUnconnectedVerticesAround(moveFromVertex);
+            }
+
+            if(moveToVertexEmptyBeforeMove)
+            {
+                AddEmptyVerticesAround(moveToVertex);
+            }
             return true;
         }
 
-        public bool Put(InsectType insectType, (int, int, int)? whereToPut, Game game)
+        public bool Put(InsectType insectType, (int, int)? whereToPut, Game game)
         {
             if(FirstMoves)
             {
@@ -156,15 +179,14 @@ namespace HiveGame.BusinessLogic.Models.Graph
             if (where == null)
                 throw new Exception("Vertex not found");
 
-            where.CurrentInsect = insect;
-            AddVertex(where);
+            where.AddInsectToStack(insect);
             AddEmptyVerticesAround(where);
             return true;
         }
 
         public void AddVertex(Vertex vertex)
         {
-            _board[(vertex.X, vertex.Y, vertex.Z)] = vertex;
+            _board[(vertex.X, vertex.Y)] = vertex;
         }
 
         public bool PutFirstInsect(InsectType insectType, Game game)
@@ -181,9 +203,9 @@ namespace HiveGame.BusinessLogic.Models.Graph
             Insect insect = _factory.CreateInsect(insectType, game.CurrentColorMove);
 
             if (NotEmptyVertices.Count == 0)
-                vertex = new Vertex(0, 0, 0, insect);
+                vertex = new Vertex(0, 0, insect);
             else if (NotEmptyVertices.Count == 1)
-                vertex = new Vertex(1, 0, 0, insect);
+                vertex = new Vertex(1, 0, insect);
             else
                 throw new Exception("It's not first insect");
 
@@ -217,20 +239,20 @@ namespace HiveGame.BusinessLogic.Models.Graph
                 _board.Remove(ver.Coords);
         }
 
-        public Vertex? GetVertexByCoord(int x, int y, int z)
+        public Vertex? GetVertexByCoord(int x, int y)
         {
-            if (!_board.ContainsKey((x, y, z)))
+            if (!_board.ContainsKey((x, y)))
                 return null;
-            return _board[(x, y, z)];
+            return _board[(x, y)];
 
         }
 
-        public Vertex? GetVertexByCoord((int X, int Y, int Z)? point)
+        public Vertex? GetVertexByCoord((int X, int Y)? point)
         {
             if(!point.HasValue)
                 return null;
 
-            return GetVertexByCoord(point.Value.X, point.Value.Y, point.Value.Z);
+            return GetVertexByCoord(point.Value.X, point.Value.Y);
         }
 
 
@@ -243,7 +265,9 @@ namespace HiveGame.BusinessLogic.Models.Graph
                 if ((ignoreDown && direction == Direction.Down) || (ignoreUp && direction == Direction.Up))
                     continue;
 
-                var adjacent = GetVertexByCoord(vertex.Coords.Add(NeighborOffsetsDict[direction]));
+                var coords = vertex.Coords.Add(NeighborOffsetsDict[direction].To2D());
+
+                var adjacent = GetVertexByCoord(coords);
                 if (adjacent != null)
                     dict.Add(direction, adjacent);
             }
@@ -258,7 +282,7 @@ namespace HiveGame.BusinessLogic.Models.Graph
 
         public Vertex? GetVertexFromVertexAtDirection(Vertex vertex, Direction direction) 
         { 
-            var point = vertex.Coords.Add(NeighborOffsetsDict[direction]);
+            var point = vertex.Coords.Add(NeighborOffsetsDict[direction].To2D());
             return GetVertexByCoord(point);
         }
     }

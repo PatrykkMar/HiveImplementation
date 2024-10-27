@@ -59,6 +59,7 @@ public class HexGridGenerator : MonoBehaviour
                 Renderer hexPrismRenderer = hexPrism.GetComponent<Renderer>();
                 var tuple = (vertex.playercolor.Value, vertex.insect);
                 hexPrismRenderer.material = materialDictionary[tuple];
+                AddCollider(hexPrism);
             }
             else
             {
@@ -67,6 +68,7 @@ public class HexGridGenerator : MonoBehaviour
 #if UNITY_EDITOR
                     Renderer hexPrismRenderer = hexPrism.GetComponent<Renderer>();
                     hexPrismRenderer.material = halfTransparentGreyMaterial;
+                    RemoveCollider(hexPrism);
 #else
                 hexPrism.SetActive(false);
 #endif
@@ -75,19 +77,33 @@ public class HexGridGenerator : MonoBehaviour
                 {
                     Renderer hexPrismRenderer = hexPrism.GetComponent<Renderer>();
                     hexPrismRenderer.material = halfTransparentMaterial;
+                    AddCollider(hexPrism);
                 }
             }
 
             hexPrism.name = name;
 
-            if (!hexPrism.GetComponent<Collider>())
-            {
-                hexPrism.AddComponent<BoxCollider>();
-            }
-
             hexPrism.AddComponent<HexMouseActionHandler>().Vertex = vertex;
         }
     }
+
+    private void AddCollider(GameObject obj)
+    {
+        if (!obj.GetComponent<Collider>())
+        {
+            obj.AddComponent<BoxCollider>();
+        }
+    }
+
+    private void RemoveCollider(GameObject obj)
+    {
+        var collider = obj.GetComponent<Collider>();
+        if (collider != null)
+        {
+            Destroy(collider);
+        }
+    }
+
 
     private Vector3 CalculatePosition(long x, long y, long z)
     {

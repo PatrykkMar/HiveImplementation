@@ -153,7 +153,7 @@ namespace HiveGame.Hubs
             {
                 InsectToPut = type,
                 PlayerId = playerId,
-                WhereToPut = (whereToPut[0], whereToPut[1], whereToPut[2])
+                WhereToPut = (whereToPut[0], whereToPut[1])
             };
 
             var result = _gameService.Put(request);
@@ -167,8 +167,8 @@ namespace HiveGame.Hubs
 
             var request = new MoveInsectRequest()
             {
-                MoveFrom = (moveFrom[0], moveFrom[1], moveFrom[2]),
-                MoveTo= (moveTo[0], moveTo[1], moveTo[2]),
+                MoveFrom = (moveFrom[0], moveFrom[1]),
+                MoveTo= (moveTo[0], moveTo[1]),
                 PlayerId = playerId
             };
 

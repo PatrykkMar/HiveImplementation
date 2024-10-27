@@ -9,6 +9,24 @@ namespace HiveGame.BusinessLogic.Models.Graph
 {
     public class VertexDTO
     {
+        public VertexDTO(Vertex vertex, PlayerColor playerColor) 
+        {
+            id = vertex.Id;
+            x = vertex.X;
+            y = vertex.Y;
+            z = 0;
+            insect = vertex.CurrentInsect != null ? vertex.CurrentInsect.Type : InsectType.Nothing;
+            highlighted = false;
+            isempty = vertex.IsEmpty;
+            isthisplayerinsect = vertex.CurrentInsect != null ? vertex.CurrentInsect.PlayerColor == playerColor : false;
+            playercolor = vertex.CurrentInsect?.PlayerColor;
+        }
+
+        public void SetVertexToMove(Vertex vertex, HiveBoard board, PlayerColor playerColor)
+        {
+            vertexidtomove = vertex.CurrentInsect != null && vertex.CurrentInsect.PlayerColor == playerColor ? board.GetHexesToMove(vertex) : null;
+        }
+
         public long id { get; set; }
         public int x { get; set; }
         public int y { get; set; }
