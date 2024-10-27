@@ -24,12 +24,7 @@ namespace HiveGame.BusinessLogic.Models.Insects
             if (freeHexesAround.Count == 0)
                 return new List<Vertex>();
 
-            List<Vertex> hexesToMoveFromfreeHexes = freeHexesAround
-                .SelectMany(x => GetVerticesByBFS(moveFrom, board, limit: 1))
-                .Distinct()
-                .ToList();
-
-            vertices = vertices.Intersect(hexesToMoveFromfreeHexes).ToList();
+            vertices = vertices.Intersect(freeHexesAround).ToList();
 
             return vertices;
         }

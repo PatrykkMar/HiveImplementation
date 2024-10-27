@@ -50,7 +50,7 @@ public class HexGridGenerator : MonoBehaviour
 
         foreach (var vertex in vertices)
         {
-            var name = $"Hex_{vertex.x}_{vertex.y}_{vertex.z}_" + (vertex.insect == InsectType.Nothing ? "no insect" : "insect");
+            var name = $"Hex_{vertex.x}_{vertex.y}_{vertex.z}_" + (vertex.insect == InsectType.Nothing ? "no insect" : "insect") + (" id: " +vertex.id);
             Vector3 position = CalculatePosition(vertex.x, vertex.y, vertex.z);
             GameObject hexPrism = Instantiate(hexPrismPrefab, position, Quaternion.identity);
             generatedVertices.Add(hexPrism);
@@ -84,6 +84,20 @@ public class HexGridGenerator : MonoBehaviour
             hexPrism.name = name;
 
             hexPrism.AddComponent<HexMouseActionHandler>().Vertex = vertex;
+
+            WarningIfDuplicates(vertices);
+        }
+    }
+
+    private void WarningIfDuplicates(List<VertexDTO> vertices)
+    {
+        for(int i=0; i<vertices.Count; i++)
+        {
+            for (int j = 0; j <vertices.Count; j++)
+            {
+                if (i!=j && vertices[i].x == vertices[j].x && vertices[i].y == vertices[j].y && vertices[i].z == vertices[j].z)
+                    Debug.LogWarning("Created duplicated hexes");
+            }
         }
     }
 

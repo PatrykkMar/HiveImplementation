@@ -42,6 +42,13 @@ namespace HiveGame.BusinessLogic.Models.Graph
             };
         }
 
+        public static Direction[] Get2DDirections()
+        {
+            return Enum.GetValues<Direction>()
+                .Where(x=> x != Direction.Up && x != Direction.Down)
+                .ToArray();
+        }
+
         public static Direction NextDirection(Direction direction, bool includeUpAndDown = false)
         {
             int amountOfDirection = includeUpAndDown ? 8 : 6;

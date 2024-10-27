@@ -30,7 +30,7 @@ namespace HiveGame.BusinessLogic.Models.Insects
         /// <param name="moveFrom"></param>
         /// <param name="board"></param>
         /// <returns></returns>
-        public List<Vertex> BasicCheck(Vertex moveFrom, HiveBoard board)
+        public List<Vertex> BasicCheck(Vertex moveFrom, HiveBoard board, bool onlyEmpty = true)
         {
 
             //hive can't divide to two separated hives
@@ -41,24 +41,23 @@ namespace HiveGame.BusinessLogic.Models.Insects
             if (QueenNotSet(board))
                 return new List<Vertex>();
 
-            //cannot move if there is a beetle above insect
-            if (BlockingBeetle(moveFrom, board))
-                return new List<Vertex>();
-
-            //can move only on empty vertices
-            List<Vertex> vertices = board.EmptyVertices;
+            //most insects can move only on empty vertices
+            List<Vertex> vertices = onlyEmpty ? board.EmptyVertices : board.Vertices;
 
 
             //cannot move on empty vertex which would be deleted after move
-            var verticesToRemove = board.GetAdjacentVerticesByCoordList(moveFrom)
-                .Where(x => board
-                .GetAdjacentVerticesByCoordList(x)
-                .Where(x=>!x.IsEmpty)
-                .Count() == 1); 
+            if(moveFrom.InsectStack.Count==1)
+            {
+                var verticesToRemove = board.GetAdjacentVerticesByCoordList(moveFrom)
+                    .Where(x => board
+                    .GetAdjacentVerticesByCoordList(x)
+                    .Where(x=>!x.IsEmpty)
+                    .Count() == 1); 
 
-            vertices = vertices
-                .Except(verticesToRemove)
-                .ToList();
+                vertices = vertices
+                    .Except(verticesToRemove)
+                    .ToList();
+            }
 
             //cannot stay during move
             vertices.Remove(moveFrom);
@@ -107,7 +106,7 @@ namespace HiveGame.BusinessLogic.Models.Insects
 
         public bool QueenNotSet(HiveBoard board)
         {
-            var queen = board.NotEmptyVertices.FirstOrDefault(x => x.CurrentInsect.PlayerColor == PlayerColor && x.CurrentInsect.Type == InsectType.Queen);
+            var queen = board.NotEmptyVertices.SelectMany(x=>x.InsectStack).FirstOrDefault(x => x.PlayerColor == PlayerColor && x.Type == InsectType.Queen);
             return queen == null;
         }
 
@@ -153,12 +152,6 @@ namespace HiveGame.BusinessLogic.Models.Insects
                 .ToList();
 
             return freeVertices;
-        }
-
-        public bool BlockingBeetle(Vertex moveFrom, HiveBoard board)
-        {
-            var bettleVertex = board.GetVertexByCoord(moveFrom.Coords)?.CurrentInsect;
-            return bettleVertex != null && bettleVertex.Type == InsectType.Beetle;
         }
 
         public bool CheckIfSurrounded(Vertex moveFrom, HiveBoard board)

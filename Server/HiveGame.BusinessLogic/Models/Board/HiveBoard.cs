@@ -34,10 +34,10 @@ namespace HiveGame.BusinessLogic.Models.Graph
         {
             //you can put an insect on the empty vertex only if there is no opponent's insect arount
             var toPut = EmptyVertices.Where(x =>
-                GetAdjacentVerticesByCoordList(x, ignoreDown: true, ignoreUp: true)
+                GetAdjacentVerticesByCoordList(x)
                     .Any(y=>!y.IsEmpty && y.CurrentInsect?.PlayerColor == playerColor)
             &&
-                GetAdjacentVerticesByCoordList(x, ignoreDown: true, ignoreUp: true)
+                GetAdjacentVerticesByCoordList(x)
                     .Where(y=>!y.IsEmpty)
                     .All(z=>z.CurrentInsect?.PlayerColor == playerColor)
             );
@@ -66,6 +66,7 @@ namespace HiveGame.BusinessLogic.Models.Graph
                     var lastVertexDTO = new VertexDTO(vertex, playerColor);
                     lastVertexDTO.insect = InsectType.Nothing;
                     lastVertexDTO.z = zIndex;
+                    lastVertexDTO.isempty = true;
                     verticesDTO.Add(lastVertexDTO);
                 }
             }
@@ -214,14 +215,12 @@ namespace HiveGame.BusinessLogic.Models.Graph
             return true;
         }
 
-        private void AddEmptyVerticesAround(Vertex vertex, bool ignoreDown = true, bool ignoreUp = false)
+        private void AddEmptyVerticesAround(Vertex vertex)
         {
             var board = this;
-            var adjacentVertices = GetAdjacentVerticesByCoordDict(vertex, ignoreDown, ignoreUp);
-            foreach (var direction in (Direction[])Enum.GetValues(typeof(Direction)))
+            var adjacentVertices = GetAdjacentVerticesByCoordDict(vertex);
+            foreach (var direction in Get2DDirections())
             {
-                if (ignoreDown && direction == Direction.Down)
-                    continue;
 
                 if (!adjacentVertices.ContainsKey(direction))
                 {
@@ -256,14 +255,12 @@ namespace HiveGame.BusinessLogic.Models.Graph
         }
 
 
-        public Dictionary<Direction, Vertex> GetAdjacentVerticesByCoordDict(Vertex vertex, bool ignoreDown = true, bool ignoreUp = false)
+        public Dictionary<Direction, Vertex> GetAdjacentVerticesByCoordDict(Vertex vertex)
         {
             var dict = new Dictionary<Direction, Vertex>();
 
-            foreach (var direction in (Direction[])Enum.GetValues(typeof(Direction)))
+            foreach (var direction in Get2DDirections())
             {
-                if ((ignoreDown && direction == Direction.Down) || (ignoreUp && direction == Direction.Up))
-                    continue;
 
                 var coords = vertex.Coords.Add(NeighborOffsetsDict[direction].To2D());
 
@@ -275,9 +272,9 @@ namespace HiveGame.BusinessLogic.Models.Graph
             return dict;
         }
 
-        public List<Vertex> GetAdjacentVerticesByCoordList(Vertex vertex, bool ignoreDown = true, bool ignoreUp = false)
+        public List<Vertex> GetAdjacentVerticesByCoordList(Vertex vertex)
         {
-            return GetAdjacentVerticesByCoordDict(vertex, ignoreDown, ignoreUp).Values.ToList();
+            return GetAdjacentVerticesByCoordDict(vertex).Values.ToList();
         }
 
         public Vertex? GetVertexFromVertexAtDirection(Vertex vertex, Direction direction) 

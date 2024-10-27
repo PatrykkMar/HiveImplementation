@@ -18,19 +18,15 @@ namespace HiveGame.BusinessLogic.Models.Insects
 
         public override IList<Vertex> GetAvailableVertices(Vertex moveFrom, HiveBoard board)
         {
-            List<Vertex> vertices = BasicCheck(moveFrom, board);
+            List<Vertex> vertices = BasicCheck(moveFrom, board, onlyEmpty: false);
 
-            List<Vertex> hexesToMove = board.GetAdjacentVerticesByCoordList(moveFrom);
+            var freeHexesAround = CheckNotSurroundedFields(moveFrom, board)
+                .Union(board.GetAdjacentVerticesByCoordList(moveFrom).Where(x => !x.IsEmpty)).ToList(); //beetle can move on insect
 
-            for(int i = 0; i < hexesToMove.Count; i++)
-            {
-                while (!hexesToMove[i].IsEmpty)
-                {
-                    hexesToMove[i] = board.GetVertexByCoord(hexesToMove[i].Coords);
-                }
-            }
+            if (freeHexesAround.Count == 0)
+                return new List<Vertex>();
 
-            vertices = vertices.Intersect(hexesToMove).ToList();
+            vertices = vertices.Intersect(freeHexesAround).ToList();
 
             return vertices;
         }

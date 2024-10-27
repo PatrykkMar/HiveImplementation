@@ -74,10 +74,6 @@ namespace HiveGame.BusinessLogic.Models.Graph
         public long Id { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
-        public (int x, int y, int z) Coords3D
-        {
-            get { return (X,Y,0); }
-        }
 
         public (int x, int y) Coords
         {
