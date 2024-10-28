@@ -15,12 +15,8 @@ namespace HiveGame.BusinessLogic.Factories
     }
     public class GameFactory : IGameFactory
     {
-        private readonly IInsectFactory _insectFactory;
-        private readonly IMapper _mapper;
-        public GameFactory(IInsectFactory insectFactory, IMapper mapper)
+        public GameFactory()
         {
-            _insectFactory = insectFactory;
-            _mapper = mapper;
         }
 
         public Game CreateGame(Player[] players)
