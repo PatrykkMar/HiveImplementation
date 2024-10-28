@@ -33,7 +33,6 @@ namespace HiveGame.BusinessLogic.Services
             _moveValidator.ValidateMove(request);
 
             Game? game = _gameRepository.GetByPlayerId(request.PlayerId);
-            var currentPlayer = game.GetCurrentPlayer();
             var board = game.Board;
 
             var moveFromVertex = board.GetVertexByCoord(request.MoveFrom.Value);
@@ -108,7 +107,7 @@ namespace HiveGame.BusinessLogic.Services
 
         private BoardDTO GetBoardDTOFromGraph(Game game, PlayerColor color = PlayerColor.White)
         {
-            var verticesDTO = game.Board.CreateBoardDTO(color);
+            var verticesDTO = BoardDTOFactory.CreateBoardDTO(game.Board, color);
             return verticesDTO;
         }
     }

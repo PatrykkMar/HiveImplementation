@@ -34,56 +34,6 @@ namespace HiveGame.BusinessLogic.Models.Graph
             }
         }
 
-        public BoardDTO CreateBoardDTO(PlayerColor playerColor)
-        {
-            //you can put an insect on the empty vertex only if there is no opponent's insect arount
-            var toPut = EmptyVertices.Where(x =>
-                GetAdjacentVerticesByCoordList(x)
-                    .Any(y=>!y.IsEmpty && y.CurrentInsect?.PlayerColor == playerColor)
-            &&
-                GetAdjacentVerticesByCoordList(x)
-                    .Where(y=>!y.IsEmpty)
-                    .All(z=>z.CurrentInsect?.PlayerColor == playerColor)
-            );
-
-            List<VertexDTO> verticesDTO = new List<VertexDTO>();
-
-            foreach(var vertex in Vertices)
-            {
-                if(vertex.IsEmpty)
-                {
-                    var verDTO = new VertexDTO(vertex, playerColor);
-                    verticesDTO.Add(verDTO);
-                }
-                else
-                {
-                    int zIndex = 0;
-                    foreach(var insect in vertex.InsectStack.Reverse())
-                    {
-                        var insectVertexDTO = new VertexDTO(vertex, playerColor);
-                        insectVertexDTO.z = zIndex++;
-                        insectVertexDTO.insect = insect.Type;
-                        insectVertexDTO.SetVertexToMove(vertex, this, playerColor);
-                        verticesDTO.Add(insectVertexDTO);
-                    }
-
-                    var lastVertexDTO = new VertexDTO(vertex, playerColor);
-                    lastVertexDTO.insect = InsectType.Nothing;
-                    lastVertexDTO.z = zIndex;
-                    lastVertexDTO.isempty = true;
-                    verticesDTO.Add(lastVertexDTO);
-                }
-            }
-
-            var board = new BoardDTO()
-            {
-                hexes = verticesDTO,
-                vertexidtoput = toPut.Select(x=>x.Id).ToList()
-            };
-
-            return board;
-        }
-
         public List<long> GetHexesToMove(Vertex vertex)
         {
             var ids = vertex.CurrentInsect.GetAvailableVertices(vertex, this).Select(x => x.Id).ToList();
