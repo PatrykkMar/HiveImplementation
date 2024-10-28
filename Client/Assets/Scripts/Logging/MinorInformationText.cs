@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class MinorInformationText : MonoBehaviour
 {
     [SerializeField] private Text informationText;
+    [SerializeField] private bool clearAfterDelay;
 
     private void OnEnable()
     {
@@ -22,7 +23,8 @@ public class MinorInformationText : MonoBehaviour
         if (informationText != null)
         {
             informationText.text = text;
-            StartCoroutine(ClearTextAfterDelay(5f));
+            if(clearAfterDelay)
+                StartCoroutine(ClearTextAfterDelay(5f));
         }
     }
 
