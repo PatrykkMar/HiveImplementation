@@ -9,7 +9,9 @@ public class CameraMovement : MonoBehaviour
     public float minDistance = 2f;
     public float maxDistance = 20f;
     public float wasdMoveSpeed = 5f;
-    public float verticalAngleLimit = 45f;
+    public float maxAngle = 80f;
+    public float minAngle = 15f;
+    public float startingRotation = 30f;
 
     private float rotationX = 0f;
     private float rotationY = 0f;
@@ -23,11 +25,9 @@ public class CameraMovement : MonoBehaviour
             target = targetObject.transform;
         }
 
-        Vector3 angles = transform.eulerAngles;
-        rotationX = angles.y;
-        rotationY = angles.x;
+        rotationY = startingRotation;
 
-        transform.position = target.position - transform.forward * distance;
+        UpdateCameraPosition();
     }
 
     void Update()
@@ -36,7 +36,7 @@ public class CameraMovement : MonoBehaviour
         {
             rotationX += Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime;
             rotationY -= Input.GetAxis("Mouse Y") * sensitivity * Time.deltaTime;
-            rotationY = Mathf.Clamp(rotationY, 0f, verticalAngleLimit);
+            rotationY = Mathf.Clamp(rotationY, minAngle, maxAngle);
         }
 
         float scroll = Input.GetAxis("Mouse ScrollWheel");
@@ -48,6 +48,11 @@ public class CameraMovement : MonoBehaviour
         move.y = 0;
         target.position += move;
 
+        UpdateCameraPosition();
+    }
+
+    private void UpdateCameraPosition()
+    {
         Quaternion rotation = Quaternion.Euler(rotationY, rotationX, 0);
         transform.position = target.position - (rotation * Vector3.forward * distance);
         transform.LookAt(target);
