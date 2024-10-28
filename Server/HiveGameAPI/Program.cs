@@ -34,6 +34,7 @@ builder.Services.AddScoped<IGameFactory, GameFactory>();
 
 //Others
 builder.Services.AddScoped<ITokenUtils, TokenUtils>();
+builder.Services.AddScoped<IHiveMoveValidator, HiveMoveValidator>();
 
 
 builder.Services

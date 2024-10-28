@@ -1,9 +1,10 @@
-﻿using AutoMapper;
-using HiveGame.BusinessLogic.Models;
+﻿using HiveGame.BusinessLogic.Factories;
 using HiveGame.BusinessLogic.Models.Graph;
 using HiveGame.BusinessLogic.Models.Insects;
 using HiveGame.BusinessLogic.Models.Requests;
+using HiveGame.BusinessLogic.Models;
 using HiveGame.BusinessLogic.Repositories;
+using HiveGame.BusinessLogic.Services;
 
 namespace HiveGame.BusinessLogic.Services
 {
@@ -12,97 +13,96 @@ namespace HiveGame.BusinessLogic.Services
         public HiveActionResult Move(MoveInsectRequest request);
         public HiveActionResult Put(PutInsectRequest request);
         public HiveActionResult PutFirstInsect(PutFirstInsectRequest request);
-        IList<VertexDTO> GetTestGrid();
-        string GetTestGridPrint();
     }
 
     public class HiveGameService : IHiveGameService
     {
         private readonly IGameRepository _gameRepository;
-        private readonly IMapper _mapper;
-        public HiveGameService(IMapper mapper, IGameRepository gameRepository) 
+        private readonly IInsectFactory _insectFactory;
+        private readonly IHiveMoveValidator _moveValidator;
+
+        public HiveGameService(IInsectFactory insectFactory, IGameRepository gameRepository, IHiveMoveValidator hiveMoveValidator)
         {
-            _mapper = mapper;
             _gameRepository = gameRepository;
-        }
-
-        public IList<VertexDTO> GetTestGrid()
-        {
-            throw new NotImplementedException();
-            //_board.PutFirstInsect(InsectType.Ant, null);
-            //_board.Put(InsectType.Queen, _board.GetVertexByCoord(1, -1, 0), null);
-            //_board.Move(_board.GetVertexByCoord(0, 0, 0), _board.GetVertexByCoord(2, -2 ,0), null);
-            //var dtos = GetVerticesDTOFromGraph();
-            //return dtos;
-        }
-
-        public string GetTestGridPrint()
-        {
-            throw new NotImplementedException();
-            //_board.PutFirstInsect(InsectType.Ant, null);
-            //_board.Put(InsectType.Queen, _board.GetVertexByCoord(1, -1, 0), null);
-            //_board.Move(_board.GetVertexByCoord(0, 0, 0), _board.GetVertexByCoord(2, -2 ,0), null);
-            //var dtos = "";
-            //dtos += "Vertices\n";
-            //foreach (var vertex in _board.Vertices)
-            //{
-            //    dtos += vertex.PrintVertex() + "\n";
-            //}
-            //return dtos;
+            _insectFactory = insectFactory;
+            _moveValidator = hiveMoveValidator;
         }
 
         public HiveActionResult Move(MoveInsectRequest request)
         {
+            _moveValidator.ValidateMove(request);
+
             Game? game = _gameRepository.GetByPlayerId(request.PlayerId);
+            var currentPlayer = game.GetCurrentPlayer();
+            var board = game.Board;
 
-            if (game == null)
-                throw new Exception("Game not found");
+            var moveFromVertex = board.GetVertexByCoord(request.MoveFrom.Value);
+            var moveToVertex = board.GetVertexByCoord(request.MoveTo.Value);
+            var moveToVertexEmptyBeforeMove = moveToVertex.IsEmpty;
 
-            if (request.PlayerId != game?.GetCurrentPlayer().PlayerId)
-                throw new Exception("It's not your move");
+            var moveFromInsect = moveFromVertex.InsectStack.Pop();
+            moveToVertex.InsectStack.Push(moveFromInsect);
 
-            game.Board.Move(request.MoveFrom, request.MoveTo, game);
+            if (moveFromVertex.IsEmpty)
+            {
+                board.RemoveAllEmptyUnconnectedVerticesAround(moveFromVertex);
+            }
+
+            if (moveToVertexEmptyBeforeMove)
+            {
+                board.AddEmptyVerticesAround(moveToVertex);
+            }
+
             game.AfterActionMade();
 
             var result = new HiveActionResult(game, GetBoardDTOFromGraph(game));
-
             return result;
         }
 
         public HiveActionResult Put(PutInsectRequest request)
         {
+            _moveValidator.ValidatePut(request);
+
             Game? game = _gameRepository.GetByPlayerId(request.PlayerId);
+            var board = game.Board;
 
-            if (game == null)
-                throw new Exception("Game not found");
+            var insect = _insectFactory.CreateInsect(request.InsectToPut, game.CurrentColorMove);
+            var where = board.GetVertexByCoord(request.WhereToPut);
 
-            if (request.PlayerId != game?.GetCurrentPlayer().PlayerId)
-                throw new Exception("It's not your move");
+            if (where == null)
+                throw new Exception("Vertex not found");
 
-            game.Board.Put(request.InsectToPut, request.WhereToPut, game);
+            where.AddInsectToStack(insect);
+            board.AddEmptyVerticesAround(where);
+
             game.AfterActionMade();
 
             var result = new HiveActionResult(game, GetBoardDTOFromGraph(game));
-
             return result;
         }
 
         public HiveActionResult PutFirstInsect(PutFirstInsectRequest request)
         {
+            _moveValidator.ValidatePutFirstInsect(request);
+
             Game? game = _gameRepository.GetByPlayerId(request.PlayerId);
+            var board = game.Board;
 
-            if (game == null)
-                throw new Exception("Game not found");
+            Vertex vertex;
+            Insect insect = _insectFactory.CreateInsect(request.InsectToPut, game.CurrentColorMove);
 
-            if (request.PlayerId != game?.GetCurrentPlayer().PlayerId)
-            {
-                throw new Exception("It's not your move");
-            }
+            if (board.NotEmptyVertices.Count == 0)
+                vertex = new Vertex(0, 0, insect);
+            else if (board.NotEmptyVertices.Count == 1)
+                vertex = new Vertex(1, 0, insect);
+            else
+                throw new Exception("It's not first insect");
 
-            game.Board.PutFirstInsect(request.InsectToPut, game);
+            board.AddVertex(vertex);
+            board.AddEmptyVerticesAround(vertex);
+
             game.AfterActionMade();
             var result = new HiveActionResult(game, GetBoardDTOFromGraph(game));
-
             return result;
         }
 

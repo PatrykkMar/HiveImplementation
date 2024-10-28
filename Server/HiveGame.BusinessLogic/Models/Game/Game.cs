@@ -12,9 +12,9 @@ namespace HiveGame.BusinessLogic.Models
 {
     public class Game
     {
-        public Game(Player[] players, IInsectFactory factory, IMapper mapper, PlayerColor startingColor = PlayerColor.White)
+        public Game(Player[] players, PlayerColor startingColor = PlayerColor.White)
         {
-            Board = new HiveBoard(factory, mapper);
+            Board = new HiveBoard();
             Players = players;
             CurrentColorMove = startingColor;
             players[0].PlayerColor = PlayerColor.White;

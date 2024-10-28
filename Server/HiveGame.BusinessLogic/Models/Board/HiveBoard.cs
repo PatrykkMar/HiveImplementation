@@ -13,13 +13,9 @@ namespace HiveGame.BusinessLogic.Models.Graph
     public class HiveBoard
     {
         private Dictionary<(int, int), Vertex> _board;
-        private readonly IInsectFactory _factory;
-        private readonly IMapper _mapper;
-        public HiveBoard(IInsectFactory factory, IMapper mapper)
+        public HiveBoard()
         {
-            _factory = factory;
             _board = new Dictionary<(int x, int y), Vertex>();
-            _mapper = mapper;
         }
 
         public List<Vertex> Vertices
@@ -121,112 +117,12 @@ namespace HiveGame.BusinessLogic.Models.Graph
             }
         }
 
-        public bool Move((int, int)? moveFrom, (int, int)? moveTo, Game game)
-        {
-            if (!moveFrom.HasValue)
-                throw new ArgumentException("Empty moveFrom parameter");
-
-            if (!moveTo.HasValue)
-                throw new ArgumentException("Empty moveTo parameter");
-
-            var moveFromVertex = GetVertexByCoord(moveFrom.Value);
-            var moveToVertex = GetVertexByCoord(moveTo.Value);
-
-            if (moveFromVertex == null || moveFromVertex.IsEmpty)
-                throw new ArgumentException("MoveFromVertex not found or empty");
-
-            if (moveToVertex == null)
-                throw new ArgumentException("MoveToVertex not found or not empty");
-
-            var moveToVertexEmptyBeforeMove = moveToVertex.IsEmpty;
-
-            if (moveFromVertex.CurrentInsect.PlayerColor != game.GetCurrentPlayer().PlayerColor)
-                throw new ArgumentException("Player wants to move opponent's insect");
-
-            var availableHexes = moveFromVertex.CurrentInsect.GetAvailableVertices(moveFromVertex, this);
-
-            if (!availableHexes.Contains(moveToVertex))
-                throw new ArgumentException("Insect cannot move there");
-
-            var moveFromInsect = moveFromVertex.InsectStack.Pop();
-            moveToVertex.InsectStack.Push(moveFromInsect);
-            if(moveFromVertex.IsEmpty)
-            {
-                RemoveAllEmptyUnconnectedVerticesAround(moveFromVertex);
-            }
-
-            if(moveToVertexEmptyBeforeMove)
-            {
-                AddEmptyVerticesAround(moveToVertex);
-            }
-            return true;
-        }
-
-        public bool Put(InsectType insectType, (int, int)? whereToPut, Game game)
-        {
-            if(FirstMoves)
-            {
-                throw new Exception("You have to put first insects first");
-            }
-
-            if (insectType == InsectType.Nothing)
-                throw new ArgumentNullException("Insect not specified");
-
-            if (!_board.Keys.Any())
-                throw new Exception("Cannot put insect using this action on the empty board");
-
-            if (!game.GetCurrentPlayer().RemoveInsectFromPlayerBoard(insectType))
-                throw new Exception("Player can't put this insect");
-
-            if (game.NumberOfMove == 4 && AllInsects.FirstOrDefault(x=>x.Type == InsectType.Queen && x.PlayerColor == game.GetCurrentPlayer().PlayerColor) == null)
-                throw new Exception("It's 4 turn and you still didn't put a queen");
-
-            //adjacency rule
-
-            //check if "where" vertex is empty
-
-            var insect = _factory.CreateInsect(insectType, game.CurrentColorMove);
-            var where = GetVertexByCoord(whereToPut);
-
-            if (where == null)
-                throw new Exception("Vertex not found");
-
-            where.AddInsectToStack(insect);
-            AddEmptyVerticesAround(where);
-            return true;
-        }
-
         public void AddVertex(Vertex vertex)
         {
             _board[(vertex.X, vertex.Y)] = vertex;
         }
 
-        public bool PutFirstInsect(InsectType insectType, Game game)
-        {
-            if (!FirstMoves)
-            {
-                throw new Exception("There are first insects put");
-            }
-
-            if (!game.GetCurrentPlayer().RemoveInsectFromPlayerBoard(insectType))
-                throw new Exception("Player can't put this insect");
-
-            Vertex vertex;
-            Insect insect = _factory.CreateInsect(insectType, game.CurrentColorMove);
-
-            if (NotEmptyVertices.Count == 0)
-                vertex = new Vertex(0, 0, insect);
-            else if (NotEmptyVertices.Count == 1)
-                vertex = new Vertex(1, 0, insect);
-            else
-                throw new Exception("It's not first insect");
-
-            AddVertex(vertex);
-            AddEmptyVerticesAround(vertex);
-            return true;
-        }
-
-        private void AddEmptyVerticesAround(Vertex vertex)
+        public void AddEmptyVerticesAround(Vertex vertex)
         {
             var board = this;
             var adjacentVertices = GetAdjacentVerticesByCoordDict(vertex);
@@ -241,7 +137,7 @@ namespace HiveGame.BusinessLogic.Models.Graph
             }
         }
 
-        private void RemoveAllEmptyUnconnectedVerticesAround(Vertex vertex)
+        public void RemoveAllEmptyUnconnectedVerticesAround(Vertex vertex)
         {
             var verticesToDelete = GetAdjacentVerticesByCoordList(vertex).Where(x=>x.IsEmpty && GetAdjacentVerticesByCoordList(x).Where(y=>!y.IsEmpty).Count()==0);
 
