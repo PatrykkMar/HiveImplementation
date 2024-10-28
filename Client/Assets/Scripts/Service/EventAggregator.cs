@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 public class EventAggregator
 {
     public event Action<string> InformationTextReceived;
+    public event Action<string> MinorInformationTextReceived;
     public event Action<List<VertexDTO>> BoardUpdate;
     public event Action<Dictionary<InsectType, int>> PlayerInsectsUpdate;
 
@@ -17,6 +18,10 @@ public class EventAggregator
     //public event Action<VertexDTO> MovedMouseFromHex;
 
     public void InvokeInformationTextReceived(string text)
+    {
+        InformationTextReceived?.Invoke(text);
+    }
+    public void InvokeMinorInformationTextReceived(string text)
     {
         InformationTextReceived?.Invoke(text);
     }
