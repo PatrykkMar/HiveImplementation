@@ -26,16 +26,21 @@ using System.Threading.Tasks;
                 .Permit(Trigger.FoundGameOpponentStarts, ClientState.InGameOpponentMove);
 
             machine.Configure(ClientState.InGamePlayerFirstMove)
-                .Permit(Trigger.OpponentMove, ClientState.InGameOpponentMove);
+                .Permit(Trigger.OpponentMove, ClientState.InGameOpponentMove)
+                .Permit(Trigger.EndGameConditionMet, ClientState.GameOver);
 
             machine.Configure(ClientState.InGamePlayerMove)
-                .Permit(Trigger.OpponentMove, ClientState.InGameOpponentMove);
+                .Permit(Trigger.OpponentMove, ClientState.InGameOpponentMove)
+                .Permit(Trigger.EndGameConditionMet, ClientState.GameOver);
 
             machine.Configure(ClientState.InGameOpponentMove)
                 .Permit(Trigger.PlayerMove, ClientState.InGamePlayerMove)
-                .Permit(Trigger.PlayerFirstMove, ClientState.InGamePlayerFirstMove);
+                .Permit(Trigger.PlayerFirstMove, ClientState.InGamePlayerFirstMove)
+                .Permit(Trigger.EndGameConditionMet, ClientState.GameOver);
 
-            return machine;
+            machine.Configure(ClientState.GameOver);
+
+        return machine;
         }
 
 

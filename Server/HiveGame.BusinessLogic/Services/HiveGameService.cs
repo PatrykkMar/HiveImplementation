@@ -52,10 +52,7 @@ namespace HiveGame.BusinessLogic.Services
                 board.AddEmptyVerticesAround(moveToVertex);
             }
 
-            game.AfterActionMade();
-
-            var result = new HiveActionResult(game, GetBoardDTOFromGraph(game));
-            return result;
+            return AfterMoveActions(game);
         }
 
         public HiveActionResult Put(PutInsectRequest request)
@@ -74,10 +71,7 @@ namespace HiveGame.BusinessLogic.Services
             where.AddInsectToStack(insect);
             board.AddEmptyVerticesAround(where);
 
-            game.AfterActionMade();
-
-            var result = new HiveActionResult(game, GetBoardDTOFromGraph(game));
-            return result;
+            return AfterMoveActions(game);
         }
 
         public HiveActionResult PutFirstInsect(PutFirstInsectRequest request)
@@ -100,8 +94,17 @@ namespace HiveGame.BusinessLogic.Services
             board.AddVertex(vertex);
             board.AddEmptyVerticesAround(vertex);
 
+            return AfterMoveActions(game);
+        }
+
+        public HiveActionResult AfterMoveActions(Game game)
+        {
             game.AfterActionMade();
+
             var result = new HiveActionResult(game, GetBoardDTOFromGraph(game));
+
+            result.GameOver = game.CheckGameOverCondition();
+
             return result;
         }
 

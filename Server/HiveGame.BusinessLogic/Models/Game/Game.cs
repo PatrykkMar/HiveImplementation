@@ -58,5 +58,20 @@ namespace HiveGame.BusinessLogic.Models
             NumberOfMove++;
         }
 
+        public bool CheckGameOverCondition()
+        {
+            //if queen is surrounded, game is over
+            var queensVertices = Board.Vertices.Where(x => x.InsectStack.Any(x => x.Type == Insects.InsectType.Queen));
+
+            var surroundedQueens = queensVertices.Where(x => Board.GetAdjacentVerticesByCoordList(x).Where(x=>!x.IsEmpty).Count() == 6);
+
+            var numberOfSurroundedQueens = surroundedQueens.Count();
+
+            if (numberOfSurroundedQueens > 0)
+                return true;
+
+            return false;
+        }
+
     }
 }

@@ -10,7 +10,6 @@ namespace HiveGame.BusinessLogic.Models.Graph
     public class BoardDTO
     {
         public List<VertexDTO> hexes { get; set; }
-
         public List<long> vertexidtoput { get; set; }
     }
 }

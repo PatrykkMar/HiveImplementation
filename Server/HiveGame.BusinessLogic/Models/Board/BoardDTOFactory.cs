@@ -40,6 +40,7 @@ namespace HiveGame.BusinessLogic.Models.Graph
                         var insectVertexDTO = new VertexDTO(vertex, playerColor);
                         insectVertexDTO.z = zIndex++;
                         insectVertexDTO.insect = insect.Type;
+                        insectVertexDTO.playercolor = insect.PlayerColor;
                         insectVertexDTO.SetVertexToMove(vertex, board, playerColor);
                         verticesDTO.Add(insectVertexDTO);
                     }

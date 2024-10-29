@@ -6,7 +6,8 @@ public enum ClientState
     WaitingForPlayers,
     InGamePlayerFirstMove,
     InGamePlayerMove,
-    InGameOpponentMove
+    InGameOpponentMove,
+    GameOver
 }
 
 public enum Trigger
@@ -19,5 +20,6 @@ public enum Trigger
     FoundGameOpponentStarts = 51,
     PlayerMove = 6,
     PlayerFirstMove = 60,
-    OpponentMove = 61
+    OpponentMove = 61,
+    EndGameConditionMet = 70
 }

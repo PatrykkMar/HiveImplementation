@@ -14,7 +14,8 @@ public static class StateStrategyFactory
             { ClientState.WaitingForPlayers, new WaitingForPlayersStateStrategy() },
             { ClientState.InGamePlayerMove, new InGamePlayerMoveStateStrategy() },
             { ClientState.InGamePlayerFirstMove, new InGamePlayerFirstMoveStateStrategy() },
-            { ClientState.InGameOpponentMove, new InGameOpponentMoveStateStrategy() }
+            { ClientState.InGameOpponentMove, new InGameOpponentMoveStateStrategy() },
+            { ClientState.GameOver, new GameOverStateStrategy() }
         };
     }
 

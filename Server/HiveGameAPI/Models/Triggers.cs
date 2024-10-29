@@ -10,6 +10,7 @@
         FoundGameOpponentStarts = 51,
         PlayerMove = 6,
         PlayerFirstMove = 60,
-        PlayerMadeMove = 61
+        PlayerMadeMove = 61,
+        EndGameConditionMet = 70
     }
 }

@@ -11,5 +11,6 @@ namespace HiveGame.BusinessLogic.Models
         }
         public BoardDTO CurrentBoard { get; set; }
         public Game Game { get; set; }
+        public bool GameOver { get; set; }
     }
 }

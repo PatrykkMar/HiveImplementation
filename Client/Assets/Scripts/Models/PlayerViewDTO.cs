@@ -5,6 +5,6 @@ using UnityEngine.Networking;
 
 public class PlayerViewDTO
 {
-    public List<VertexDTO> Board { get; set; }
+    public BoardDTO Board { get; set; }
     public Dictionary<InsectType, int> PlayerInsects { get; set; }
 }

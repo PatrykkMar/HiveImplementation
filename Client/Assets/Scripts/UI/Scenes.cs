@@ -23,6 +23,7 @@ public class Scenes
             case ClientState.InGamePlayerMove:
             case ClientState.InGamePlayerFirstMove:
             case ClientState.InGameOpponentMove:
+            case ClientState.GameOver:
                 return GameScene;
             default:
                 throw new NotImplementedException("Scene for this state not found");
