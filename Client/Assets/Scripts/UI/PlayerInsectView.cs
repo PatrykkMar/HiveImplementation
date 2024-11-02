@@ -22,13 +22,13 @@ public class PlayerInsectView : MonoBehaviour
     private void OnEnable()
     {
         ServiceLocator.Services.EventAggregator.PlayerInsectsUpdate += UpdatePlayerInsectView;
-        ServiceLocator.Services.HubService.OnTriggerReceived += ClearSetInsect;
+        ServiceLocator.Services.HubService.OnStateReceived += ClearSetInsect;
     }
 
     private void OnDisable()
     {
         ServiceLocator.Services.EventAggregator.PlayerInsectsUpdate -= UpdatePlayerInsectView;
-        ServiceLocator.Services.HubService.OnTriggerReceived -= ClearSetInsect;
+        ServiceLocator.Services.HubService.OnStateReceived -= ClearSetInsect;
     }
 
     public void UpdatePlayerInsectView(Dictionary<InsectType, int> dict)
@@ -37,7 +37,7 @@ public class PlayerInsectView : MonoBehaviour
     }
 
 
-    public void ClearSetInsect(Trigger trigger)
+    public void ClearSetInsect(ClientState trigger)
     {
         if (InsectButtonDict != null) 
             foreach (var ins in InsectButtonDict.Keys)
@@ -73,7 +73,7 @@ public class PlayerInsectView : MonoBehaviour
                 buttons[buttonIndex].enabled = true;
                 buttons[buttonIndex].onClick.AddListener(() => 
                 {
-                    ChooseInsect(insect, false);
+                    ChooseInsect(insect, true);
                     StateStrategyFactory.GetCurrentStateStrategy().OnInsectButtonClick(insect);
                 });
             }

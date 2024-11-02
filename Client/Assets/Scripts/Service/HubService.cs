@@ -11,7 +11,7 @@ using UnityEngine.UIElements;
 
 public class HubService
 {
-    public event Action<Trigger> OnTriggerReceived;
+    public event Action<ClientState> OnStateReceived;
 
     private readonly ConfigLoader _configLoader;
     private SynchronizationContext _mainThreadContext;
@@ -41,23 +41,20 @@ public class HubService
             })
             .Build();
 
-        _hubConnection.On<string, string, Trigger?, PlayerViewDTO>("ReceiveMessage", (player, message, trigger, playerView) =>
+        _hubConnection.On<string, string, ClientState?, PlayerViewDTO>("ReceiveMessage", (player, message, state, playerView) =>
         {
             _mainThreadContext.Post(async _ =>
             {
-                Debug.Log($"Player: {player}. Message from server: {message}. Has trigger: {trigger.HasValue}");
+                Debug.Log($"Player: {player}. Message from server: {message}. Has trigger: {state.HasValue}");
 
 
-                if (trigger.HasValue)
+                if (state.HasValue)
                 {
-                    Debug.Log($"HubService: Got trigger");
+                    Debug.Log($"HubService: Got state");
 
-
-                    var nextState = StateMachineConfiguration.CheckNextStateFromConfiguration(GameManager.GameState, trigger.Value);
-
-                    if(nextState.HasValue) 
+                    if(state.HasValue) 
                     {
-                        var nextStateScene = Scenes.GetSceneByState(nextState.Value);
+                        var nextStateScene = Scenes.GetSceneByState(state.Value);
                         if(nextStateScene != GameManager.GameScene)
                         {
                             AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(nextStateScene);
@@ -69,8 +66,7 @@ public class HubService
                         }
                     }
 
-
-                    OnTriggerReceived?.Invoke(trigger.Value);
+                    OnStateReceived?.Invoke(state.Value);
                 }
 
 

@@ -44,11 +44,11 @@ public class ServiceLocator
 
     private void AddEvents()
     {
-        HubService.OnTriggerReceived += ClientStateMachine.Fire;
+        HubService.OnStateReceived += ClientStateMachine.Fire;
         HttpService.OnTokenReceived += async (string token) => 
         { 
             CurrentUser.Token = token;
-            ClientStateMachine.Fire(Trigger.ReceivedToken);
+            ClientStateMachine.Fire(ClientState.Connected);
             await HubService.InitializeMatchmakingServiceAsync(token);
         };
     }

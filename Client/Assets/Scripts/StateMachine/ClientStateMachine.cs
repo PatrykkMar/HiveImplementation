@@ -10,38 +10,29 @@ using UnityEngine.Events;
 
 public class ClientStateMachine
 {
-    private readonly SceneService _sceneService;
-
     public ClientStateMachine()
     {
         InitiateStateMachine();
     }
 
-    private StateMachine<ClientState, Trigger> _machine;
-
     public event Action<ClientState> OnStateChanged;
+    public ClientState CurrentState { get; private set; }
 
     public void InitiateStateMachine()
     {
-        _machine = StateMachineConfiguration.CreateStateMachineWithConfiguration();
 
-        _machine.OnTransitioned(transition =>
-            {
-                Debug.Log($"{transition.Source} -[{transition.Trigger}]-> {transition.Destination}");
-                HandleStateChanged(transition.Source, transition.Destination);
-            }
-        );
     }
 
-    public void Fire(Trigger trigger)
+    public void Fire(ClientState state)
     {
-        _machine.Fire(trigger);
+        HandleStateChanged(CurrentState, state);
+        CurrentState = state;
     }
 
 
     public ClientState GetCurrentState()
     {
-        return _machine.State;
+        return CurrentState;
     }
 
     public void SetForCurrentState()
