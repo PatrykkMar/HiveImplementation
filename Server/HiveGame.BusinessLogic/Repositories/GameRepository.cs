@@ -46,7 +46,7 @@ namespace HiveGame.BusinessLogic.Repositories
 
         public Game? GetByGameId(string gameId)
         {
-            throw new NotImplementedException();
+            return _items.FirstOrDefault(x => x.Id == gameId);
         }
 
         public bool Update(string gameId, Game updatedItem)
@@ -56,7 +56,14 @@ namespace HiveGame.BusinessLogic.Repositories
 
         public bool Remove(string gameId)
         {
-            throw new NotImplementedException();
+            var game = GetByGameId(gameId);
+
+            if (game != null)
+            {
+                _items.Remove(game);
+            }
+
+            return true;
         }
 
         public Game? GetByPlayerId(string playerId)

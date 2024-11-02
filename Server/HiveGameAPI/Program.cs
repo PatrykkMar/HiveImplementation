@@ -5,72 +5,102 @@ using HiveGame.BusinessLogic.Services;
 using HiveGame.BusinessLogic.Utils;
 using HiveGame.Hubs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.SignalR;
+using Microsoft.OpenApi.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Configuration for CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowOrigin", policy =>
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader());
+});
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Add services to the container
+builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "Sneaker API",
+        Description = "API for retrieving sneakers"
+    });
+});
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddSignalR();
 
-//Services
+// Register application services
 builder.Services.AddScoped<IHiveGameService, HiveGameService>();
 builder.Services.AddScoped<IMatchmakingService, MatchmakingService>();
 
-//Repository
+// Register repositories
 builder.Services.AddSingleton<IMatchmakingRepository, MatchmakingRepository>();
 builder.Services.AddSingleton<IGameRepository, GameRepository>();
 
-//Factories
+// Register factories
 builder.Services.AddScoped<IInsectFactory, InsectFactory>();
 builder.Services.AddScoped<IGameFactory, GameFactory>();
 
-//Others
+// Register utilities
 builder.Services.AddScoped<ITokenUtils, TokenUtils>();
 builder.Services.AddScoped<IHiveMoveValidator, HiveMoveValidator>();
 
-
+// Configure JWT authentication
 builder.Services
-    .AddAuthentication(x =>
+    .AddAuthentication(options =>
     {
-        x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     })
-    .AddJwtBearer(x =>
+    .AddJwtBearer(options =>
     {
-        x.TokenValidationParameters = new TokenValidationParameters()
+        options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = false,
             ValidateAudience = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("Jwt:AuthKey") ?? throw new Exception("Auth key not found")))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+                builder.Configuration["Jwt:AuthKey"] ?? throw new Exception("Auth key not found")))
         };
     });
 
+// Configure routing to use lowercase URLs
+builder.Services.AddRouting(options =>
+{
+    options.LowercaseUrls = true;
+    options.LowercaseQueryStrings = false;
+});
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
 }
 
-app.UseHttpsRedirection();
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Sneaker API V1");
+    c.RoutePrefix = string.Empty;
+});
 
+app.UseCors("AllowOrigin");
+
+app.UseRouting();
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.MapHub<GameHub>("matchmakinghub");
+app.MapHub<GameHub>("/matchmakinghub");
 
 app.Run();

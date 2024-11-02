@@ -14,6 +14,7 @@ namespace HiveGame.BusinessLogic.Models
     {
         public Game(Player[] players, PlayerColor startingColor = PlayerColor.White)
         {
+            Id = Guid.NewGuid().ToString();
             Board = new HiveBoard();
             Players = players;
             CurrentColorMove = startingColor;
@@ -30,7 +31,7 @@ namespace HiveGame.BusinessLogic.Models
                 return NumberOfMove / 2 + 1;
             }
         }
-
+        public string Id { get; set; }
         public HiveBoard Board { get; set; }
         public Player[] Players { get; set; }
         public PlayerColor CurrentColorMove { get; set; }

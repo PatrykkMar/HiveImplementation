@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HiveGame.BusinessLogic", "H
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HiveGame.Core", "HiveGame.Core\HiveGame.Core.csproj", "{C0E64A07-7473-414C-82C9-C69880E0AC85}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HiveGame.Test", "HiveGame.Test\HiveGame.Test.csproj", "{6CBB3E4D-03BA-4A9D-A65E-8E555A7228C3}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +27,6 @@ Global
 		{C0E64A07-7473-414C-82C9-C69880E0AC85}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C0E64A07-7473-414C-82C9-C69880E0AC85}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C0E64A07-7473-414C-82C9-C69880E0AC85}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6CBB3E4D-03BA-4A9D-A65E-8E555A7228C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6CBB3E4D-03BA-4A9D-A65E-8E555A7228C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6CBB3E4D-03BA-4A9D-A65E-8E555A7228C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6CBB3E4D-03BA-4A9D-A65E-8E555A7228C3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
