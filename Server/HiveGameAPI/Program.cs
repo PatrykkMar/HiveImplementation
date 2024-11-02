@@ -9,6 +9,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using HiveGame.Managers;
+using HiveGame.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +53,7 @@ builder.Services.AddScoped<IGameFactory, GameFactory>();
 builder.Services.AddScoped<ITokenUtils, TokenUtils>();
 builder.Services.AddScoped<IHiveMoveValidator, HiveMoveValidator>();
 builder.Services.AddScoped<IConnectionManager, ConnectionManager>();
+builder.Services.AddScoped<IGameActionsHandler, GameActionsHandler>();
 
 // Configure JWT authentication
 builder.Services
