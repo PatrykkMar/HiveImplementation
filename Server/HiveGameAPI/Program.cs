@@ -1,5 +1,4 @@
 using HiveGame.BusinessLogic.Factories;
-using HiveGame.BusinessLogic.Models.Graph;
 using HiveGame.BusinessLogic.Repositories;
 using HiveGame.BusinessLogic.Services;
 using HiveGame.BusinessLogic.Utils;

@@ -27,25 +27,13 @@ namespace HiveGame.Hubs
             string playerId = GetPlayerIdFromToken();
             _connectionManager.AddPlayerConnection(playerId, connectionId);
             await base.OnConnectedAsync();
-            await SendMessageAsync($"user: {playerId}", "You connected to the server hub");
+            await Clients.All.SendAsync($"user: {playerId}", "You connected to the server hub");
         }
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
             _connectionManager.RemovePlayerConnection(Context.ConnectionId);
             await base.OnDisconnectedAsync(exception);
-        }
-
-        public async Task SendMessageAsync(string user, string message)
-        {
-            await Clients.All.SendAsync("ReceiveMessage", user, message);
-        }
-
-        public async Task CreateJwtTokenAsync(string clientId)
-        {
-            var jwtToken = _utils.CreateToken(clientId);
-
-            await Clients.Caller.SendAsync("ReceiveToken", jwtToken);
         }
 
         [Authorize]

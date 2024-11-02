@@ -6,7 +6,7 @@ using HiveGame.BusinessLogic.Models.Requests;
 using System.Net.WebSockets;
 using HiveGame.BusinessLogic.Models.WebSocketModels;
 using HiveGame.BusinessLogic.Factories;
-using HiveGame.BusinessLogic.Models.Graph;
+using HiveGame.BusinessLogic.Models.Board;
 using HiveGame.BusinessLogic.Repositories;
 
 namespace HiveGame.BusinessLogic.Services

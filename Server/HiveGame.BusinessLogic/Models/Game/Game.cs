@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using HiveGame.BusinessLogic.Factories;
-using HiveGame.BusinessLogic.Models.Graph;
+using HiveGame.BusinessLogic.Models.Board;
 using System;
 using System.Collections.Generic;
 using System.Linq;

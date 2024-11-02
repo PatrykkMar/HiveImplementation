@@ -1,5 +1,5 @@
 ﻿using HiveGame.BusinessLogic.Factories;
-using HiveGame.BusinessLogic.Models.Graph;
+using HiveGame.BusinessLogic.Models.Board;
 using HiveGame.BusinessLogic.Models.Insects;
 using HiveGame.BusinessLogic.Models.Requests;
 using HiveGame.BusinessLogic.Models;
@@ -101,14 +101,14 @@ namespace HiveGame.BusinessLogic.Services
         {
             game.AfterActionMade();
 
-            var result = new HiveActionResult(game, GetBoardDTOFromGraph(game));
+            var result = new HiveActionResult(game, GetBoardDTOFromBoard(game));
 
             result.GameOver = game.CheckGameOverCondition();
 
             return result;
         }
 
-        private BoardDTO GetBoardDTOFromGraph(Game game, PlayerColor color = PlayerColor.White)
+        private BoardDTO GetBoardDTOFromBoard(Game game, PlayerColor color = PlayerColor.White)
         {
             var verticesDTO = BoardDTOFactory.CreateBoardDTO(game.Board, color);
             return verticesDTO;

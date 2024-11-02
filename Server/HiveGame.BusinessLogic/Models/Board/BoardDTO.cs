@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HiveGame.BusinessLogic.Models.Graph
+namespace HiveGame.BusinessLogic.Models.Board
 {
     public class BoardDTO
     {

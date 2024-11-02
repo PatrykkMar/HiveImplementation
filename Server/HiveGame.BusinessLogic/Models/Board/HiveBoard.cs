@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static HiveGame.BusinessLogic.Models.Graph.DirectionConsts;
+using static HiveGame.BusinessLogic.Models.Board.DirectionConsts;
 
-namespace HiveGame.BusinessLogic.Models.Graph
+namespace HiveGame.BusinessLogic.Models.Board
 {
     public class HiveBoard
     {
