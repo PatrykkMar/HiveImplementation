@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
     {
         ServiceLocator.Services.ClientStateMachine.Fire(ClientState.Disconnected);
 
-        StartCoroutine(ServiceLocator.Services.HttpService.GetToken());
+        StartCoroutine(ServiceLocator.Services.HttpService.GetTokenLoop());
     }
 
     private void InitializeServiceLocator()

@@ -7,6 +7,7 @@ namespace HiveGame.Managers
     {
         public void AddPlayerConnection(string playerId, string connectionId);
         public void RemovePlayerConnection(string connectionId);
+        public void UpdatePlayerConnection(string playerId, string connectionId);
         public string? GetConnectionId(string playerId);
     }
 
@@ -29,5 +30,10 @@ namespace HiveGame.Managers
         }
 
         public string? GetConnectionId(string playerId) => PlayerConnectionDict.TryGetValue(playerId, out var connectionId) ? connectionId : null;
+
+        public void UpdatePlayerConnection(string playerId, string connectionId)
+        {
+            PlayerConnectionDict[playerId] = connectionId;
+        }
     }
 }

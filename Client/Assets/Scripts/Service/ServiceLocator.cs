@@ -34,12 +34,13 @@ public class ServiceLocator
     {
         ConfigLoader = new ConfigLoader();
         CurrentUser = new CurrentUser();
+        EventAggregator = new EventAggregator();
 
         ClientStateMachine = new ClientStateMachine();
         HubService = new HubService(ConfigLoader);
-        HttpService = new HttpService(ConfigLoader);
+        HttpService = new HttpService(ConfigLoader, EventAggregator);
         LogToFile = new LogToFile();
-        EventAggregator = new EventAggregator();
+
     }
 
     private void AddEvents()
@@ -48,8 +49,8 @@ public class ServiceLocator
         HttpService.OnTokenReceived += async (string token) => 
         { 
             CurrentUser.Token = token;
-            ClientStateMachine.Fire(ClientState.Connected);
             await HubService.InitializeMatchmakingServiceAsync(token);
+            ClientStateMachine.Fire(ClientState.Connected);
         };
     }
 }

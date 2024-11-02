@@ -39,7 +39,18 @@ public class HubService
             {
                 options.AccessTokenProvider = () => Task.FromResult(token);
             })
+            .WithAutomaticReconnect(new TimeSpan[]
+            {
+                TimeSpan.FromSeconds(0),
+                TimeSpan.FromSeconds(2),
+                TimeSpan.FromSeconds(10), 
+                TimeSpan.FromSeconds(30),
+            })
             .Build();
+
+        _hubConnection.Closed += OnConnectionClosed;
+        _hubConnection.Reconnecting += OnReconnecting;
+        _hubConnection.Reconnected += OnReconnected;
 
         _hubConnection.On<string, string, ClientState?, PlayerViewDTO>("ReceiveMessage", (player, message, state, playerView) =>
         {
@@ -113,5 +124,20 @@ public class HubService
         int[] moveFromPoint = new int[3] { moveFrom.Item1, moveFrom.Item2, moveFrom.Item3 };
         int[] moveToPoint = new int[3] { moveTo.Item1, moveTo.Item2, moveTo.Item3 };
         await _hubConnection.InvokeAsync("MoveInsect", moveFromPoint, moveToPoint);
+    }
+
+    private async Task OnConnectionClosed(Exception ex)
+    {
+        Debug.LogError($"Connection closed: {ex?.Message}");
+    }
+
+    private async Task OnReconnecting(Exception ex)
+    {
+        Debug.LogError("Attempting to reconnect...");
+    }
+
+    private async Task OnReconnected(string connectionId)
+    {
+        Debug.LogError($"");
     }
 }
