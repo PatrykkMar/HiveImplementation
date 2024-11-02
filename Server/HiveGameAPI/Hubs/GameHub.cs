@@ -3,16 +3,11 @@ using HiveGame.BusinessLogic.Models.Insects;
 using HiveGame.BusinessLogic.Models.Requests;
 using HiveGame.BusinessLogic.Services;
 using HiveGame.BusinessLogic.Utils;
+using HiveGame.Managers;
 using HiveGame.Models;
-using HiveGameAPI.Controllers;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Newtonsoft.Json.Linq;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Numerics;
 
 namespace HiveGame.Hubs
 {
@@ -21,37 +16,29 @@ namespace HiveGame.Hubs
         private readonly ITokenUtils _utils;
         private readonly IMatchmakingService _matchmakingService;
         private readonly IHiveGameService _gameService;
+        private readonly IConnectionManager _connectionManager;
 
-        public GameHub(ITokenUtils utils, IMatchmakingService matchmakingService, IHiveGameService gameService)
+        public GameHub(ITokenUtils utils, IMatchmakingService matchmakingService, IHiveGameService gameService, IConnectionManager connectionManager)
         {
             _utils = utils;
             _matchmakingService = matchmakingService;
             _gameService = gameService;
+            _connectionManager = connectionManager;
         }
-
-        private static ConcurrentDictionary<string, string> PlayerConnectionDict = new ConcurrentDictionary<string, string>(); //client, connection
 
         [Authorize]
         public override async Task OnConnectedAsync()
         {
             string connectionId = Context.ConnectionId;
             string playerId = GetPlayerIdFromToken();
-            PlayerConnectionDict.TryAdd(playerId, connectionId);
+            _connectionManager.AddPlayerConnection(playerId, connectionId);
             await base.OnConnectedAsync();
             await SendMessageAsync($"user: {playerId}", "You connected to the server hub");
         }
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            string connectionId = Context.ConnectionId;
-
-            var keysToRemove = PlayerConnectionDict.Where(kvp => kvp.Value.Equals(connectionId)).Select(kvp => kvp.Key).ToList();
-
-            foreach (var key in keysToRemove)
-            {
-                PlayerConnectionDict.TryRemove(connectionId, out _);
-            }
-
+            _connectionManager.RemovePlayerConnection(Context.ConnectionId);
             await base.OnDisconnectedAsync(exception);
         }
 
@@ -84,13 +71,21 @@ namespace HiveGame.Hubs
                     PlayerViewDTO playerView = game.GetPlayerView(player);
                     var currentPlayer = game.GetCurrentPlayer().PlayerId;
                     var otherPlayer = game.GetOtherPlayer().PlayerId;
+                    var connectionId = _connectionManager.GetConnectionId(player);
+
+                    if (string.IsNullOrEmpty(connectionId))
+                        throw new Exception("Connection not found");
+
+                    if (string.IsNullOrEmpty(connectionId))
+                        throw new Exception("Connection not found");
+
                     if (player == currentPlayer)
                     {
-                        await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "Found the game. It's your move", ClientState.InGamePlayerFirstMove, playerView);
+                        await Clients.Client(connectionId).SendAsync("ReceiveMessage", playerId, "Found the game. It's your move", ClientState.InGamePlayerFirstMove, playerView);
                     }
                     else if (player == otherPlayer)
                     {
-                        await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "Found the game. It's opponent's move", ClientState.InGameOpponentMove, playerView);
+                        await Clients.Client(connectionId).SendAsync("ReceiveMessage", playerId, "Found the game. It's opponent's move", ClientState.InGameOpponentMove, playerView);
                     }
                     else
                     {
@@ -180,22 +175,27 @@ namespace HiveGame.Hubs
             {
                 PlayerViewDTO playerView = game.GetPlayerView(player);
 
+                var connectionId = _connectionManager.GetConnectionId(player);
+
+                if (string.IsNullOrEmpty(connectionId))
+                    throw new Exception("Connection not found");
+
                 if (gameOver)
                 {
-                    await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "Game is over", ClientState.GameOver, playerView);
+                    await Clients.Client(connectionId).SendAsync("ReceiveMessage", playerId, "Game is over", ClientState.GameOver, playerView);
                     continue;
                 }
 
                 if (player == game.GetCurrentPlayer().PlayerId)
                 {
                     if(game.Board.FirstMoves)
-                        await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "It's your first move", ClientState.InGamePlayerFirstMove, playerView);
+                        await Clients.Client(connectionId).SendAsync("ReceiveMessage", playerId, "It's your first move", ClientState.InGamePlayerFirstMove, playerView);
                     else
-                        await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "It's your move", ClientState.InGamePlayerMove, playerView);
+                        await Clients.Client(connectionId).SendAsync("ReceiveMessage", playerId, "It's your move", ClientState.InGamePlayerMove, playerView);
                 }
                 else
                 {
-                    await Clients.Client(PlayerConnectionDict[player]).SendAsync("ReceiveMessage", playerId, "It's opponent's move", ClientState.InGameOpponentMove, playerView);
+                    await Clients.Client(connectionId).SendAsync("ReceiveMessage", playerId, "It's opponent's move", ClientState.InGameOpponentMove, playerView);
                 }
             }
         }
