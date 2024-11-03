@@ -1,7 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Networking;
 
 public class VertexDTO
 {
@@ -15,4 +13,12 @@ public class VertexDTO
     public bool isthisplayerinsect { get; set; }
     public PlayerColor? playercolor { get; set; }
     public List<long> vertexidtomove { get; set; }
+
+    public string Details
+    {
+        get
+        {
+            return $"Hex_{x}_{y}_{z}_" + (insect == InsectType.Nothing ? "no insect" : "insect") + (" id: " + id);
+        }
+    }
 }

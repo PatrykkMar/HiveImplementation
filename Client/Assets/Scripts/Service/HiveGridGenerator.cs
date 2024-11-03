@@ -50,7 +50,7 @@ public class HexGridGenerator : MonoBehaviour
 
         foreach (var vertex in vertices)
         {
-            var name = $"Hex_{vertex.x}_{vertex.y}_{vertex.z}_" + (vertex.insect == InsectType.Nothing ? "no insect" : "insect") + (" id: " +vertex.id);
+            var name = vertex.Details;
             Vector3 position = CalculatePosition(vertex.x, vertex.y, vertex.z);
             GameObject hexPrism = Instantiate(hexPrismPrefab, position, Quaternion.identity);
             generatedVertices.Add(hexPrism);

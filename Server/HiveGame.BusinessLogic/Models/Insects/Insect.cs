@@ -67,6 +67,10 @@ namespace HiveGame.BusinessLogic.Models.Insects
 
         public bool BrokeHive(Vertex moveFrom, HiveBoard board)
         {
+            if (moveFrom.InsectStack.Count > 1) //if there is a stack of insects, hive won't be broke
+                return false;
+
+
             var vertices = board.NotEmptyVertices.Where(x=>x != moveFrom).ToList();
 
             if(vertices.Count == 0) 
