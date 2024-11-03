@@ -5,7 +5,6 @@ using UnityEngine.UI;
 public class MinorInformationText : MonoBehaviour
 {
     [SerializeField] private Text informationText;
-    [SerializeField] private bool clearAfterDelay;
 
     private void OnEnable()
     {
@@ -18,13 +17,13 @@ public class MinorInformationText : MonoBehaviour
         ServiceLocator.Services.EventAggregator.MinorInformationTextReceived -= UpdateInformationText;
     }
 
-    private void UpdateInformationText(string text)
+    private void UpdateInformationText(string text, float? delay)
     {
         if (informationText != null)
         {
             informationText.text = text;
-            if(clearAfterDelay)
-                StartCoroutine(ClearTextAfterDelay(5f));
+            if(delay.HasValue)
+                StartCoroutine(ClearTextAfterDelay(delay.Value));
         }
     }
 

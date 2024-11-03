@@ -21,7 +21,12 @@ namespace HiveGame.BusinessLogic.Models.Insects
             List<Vertex> vertices = BasicCheck(moveFrom, board, onlyEmpty: false);
 
             var freeHexesAround = CheckNotSurroundedFields(moveFrom, board)
-                .Union(board.GetAdjacentVerticesByCoordList(moveFrom).Where(x => !x.IsEmpty)).ToList(); //beetle can move on insect
+                .Union(board.GetAdjacentVerticesByCoordList(moveFrom).Where
+                    (
+                        x => !x.IsEmpty || //moving on insect
+                        (x.IsEmpty && moveFrom.InsectStack.Count > 1) //going down
+                    )
+                ).ToList(); //beetle can move on insect
 
             if (freeHexesAround.Count == 0)
                 return new List<Vertex>();

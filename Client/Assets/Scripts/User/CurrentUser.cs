@@ -11,6 +11,14 @@ public class CurrentUser
 
     public string Token { get; set; }
 
+    public bool HasToken
+    {
+        get
+        {
+            return !string.IsNullOrEmpty(Token);
+        }
+    }
+
 
     private TokenDatas DecodeToken()
     {

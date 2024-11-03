@@ -8,22 +8,17 @@ using UnityEngine.SceneManagement;
 public class EventAggregator
 {
     public event Action<string> InformationTextReceived;
-    public event Action<string> MinorInformationTextReceived;
+    public event Action<string, float?> MinorInformationTextReceived;
     public event Action<List<VertexDTO>> BoardUpdate;
     public event Action<Dictionary<InsectType, int>> PlayerInsectsUpdate;
-
-    //hex mouse actions
-    //public event Action<VertexDTO> HexClicked;
-    //public event Action<VertexDTO> MovedMouseOnHex;
-    //public event Action<VertexDTO> MovedMouseFromHex;
 
     public void InvokeInformationTextReceived(string text)
     {
         InformationTextReceived?.Invoke(text);
     }
-    public void InvokeMinorInformationTextReceived(string text)
+    public void InvokeMinorInformationTextReceived(string text, float? delay)
     {
-        InformationTextReceived?.Invoke(text);
+        MinorInformationTextReceived?.Invoke(text, delay);
     }
 
     public void InvokeBoardUpdate(List<VertexDTO> hexes)
@@ -35,20 +30,4 @@ public class EventAggregator
     {
         PlayerInsectsUpdate?.Invoke(insects);
     }
-
-    //public void InvokeHexClicked(VertexDTO hex)
-    //{
-    //    var stateStrategy = StateStrategyFactory.GetCurrentStateStrategy();
-    //    state
-    //}
-
-    //public void InvokeMovedMouseOnHex(VertexDTO hex)
-    //{
-    //    MovedMouseOnHex?.Invoke(hex);
-    //}
-
-    //public void InvokeMovedMouseFromHex(VertexDTO hex)
-    //{
-    //    MovedMouseFromHex?.Invoke(hex);
-    //}
 }

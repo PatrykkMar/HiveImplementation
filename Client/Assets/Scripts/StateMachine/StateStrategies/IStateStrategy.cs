@@ -7,12 +7,12 @@ public interface IStateStrategy
     List<ButtonHelper> GetAvailableButtonsList();
     string InformationText { get; }
     string Scene { get; }
-    public virtual void OnEntry()
+    public virtual void OnStateEntry()
     {
 
     }
 
-    public virtual void OnExit()
+    public virtual void OnStateExit()
     {
 
     }
@@ -25,5 +25,11 @@ public interface IStateStrategy
     public virtual void OnHexClick(VertexDTO hex)
     {
 
+    }
+
+    public virtual void OnHexMove(VertexDTO hex)
+    {
+        if(!hex.isempty)
+            ServiceLocator.Services.EventAggregator.InvokeMinorInformationTextReceived(Enum.GetName(typeof(InsectType), hex.insect), 3f);
     }
 }

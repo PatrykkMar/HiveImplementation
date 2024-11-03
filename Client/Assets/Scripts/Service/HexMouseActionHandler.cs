@@ -22,7 +22,8 @@ public class HexMouseActionHandler : MonoBehaviour
 
     void OnMouseEnter()
     {
-        //StateStrategy.ON
+        Debug.Log("Moved on hex: " + Vertex.id);
+        StateStrategy.OnHexMove(Vertex);
     }
 
     void OnMouseExit()

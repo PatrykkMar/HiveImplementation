@@ -15,10 +15,12 @@ public class HubService
 
     private readonly ConfigLoader _configLoader;
     private SynchronizationContext _mainThreadContext;
-    public HubService(ConfigLoader configLoader)
+    private readonly EventAggregator _eventAggregator;
+    public HubService(ConfigLoader configLoader, EventAggregator eventAggregator)
     {
         _configLoader = configLoader;
         _mainThreadContext = SynchronizationContext.Current;
+        _eventAggregator = eventAggregator;
     }
 
     private HubConnection _hubConnection;
@@ -129,15 +131,17 @@ public class HubService
     private async Task OnConnectionClosed(Exception ex)
     {
         Debug.LogError($"Connection closed: {ex?.Message}");
+        ServiceLocator.Services.EventAggregator.InvokeMinorInformationTextReceived("Connection closed", 3f);
     }
 
     private async Task OnReconnecting(Exception ex)
     {
         Debug.LogError("Attempting to reconnect...");
+        ServiceLocator.Services.EventAggregator.InvokeMinorInformationTextReceived("Attempting to reconnect...", null);
     }
 
     private async Task OnReconnected(string connectionId)
     {
-        Debug.LogError($"");
+        ServiceLocator.Services.EventAggregator.InvokeMinorInformationTextReceived("Successfully reconnected", 3f);
     }
 }

@@ -124,7 +124,7 @@ public class InGamePlayerMoveStateStrategy : IStateStrategy
     }
 
 
-    public void OnEntry()
+    public void OnStateEntry()
     {
         SetPlayerAction(PlayerMoveStateAction.None);
     }

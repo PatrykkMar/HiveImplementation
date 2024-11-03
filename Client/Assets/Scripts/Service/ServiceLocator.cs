@@ -37,8 +37,8 @@ public class ServiceLocator
         EventAggregator = new EventAggregator();
 
         ClientStateMachine = new ClientStateMachine();
-        HubService = new HubService(ConfigLoader);
-        HttpService = new HttpService(ConfigLoader, EventAggregator);
+        HubService = new HubService(ConfigLoader, EventAggregator);
+        HttpService = new HttpService(ConfigLoader, EventAggregator, CurrentUser);
         LogToFile = new LogToFile();
 
     }

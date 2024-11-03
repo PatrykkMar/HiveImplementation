@@ -9,7 +9,7 @@ namespace HiveGame.BusinessLogic.Models.Board
 {
     public class VertexDTO
     {
-        public VertexDTO(Vertex vertex, PlayerColor playerColor) 
+        public VertexDTO(Vertex vertex, PlayerColor playerColor)
         {
             id = vertex.Id;
             x = vertex.X;

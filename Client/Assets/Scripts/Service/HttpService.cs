@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using Unity.VisualScripting.Antlr3.Runtime;
+using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -15,17 +17,20 @@ public class HttpService
 
     private readonly ConfigLoader _configLoader;
     private readonly EventAggregator _eventAggregator;
+    private readonly CurrentUser _currentUser;
     public event Action<string> OnTokenReceived;
 
-    public HttpService(ConfigLoader configLoader, EventAggregator eventAggregator)
+    public HttpService(ConfigLoader configLoader, EventAggregator eventAggregator, CurrentUser currentUser)
     {
         _configLoader = configLoader;
         _eventAggregator = eventAggregator;
+        _currentUser = currentUser;
     } 
 
     public IEnumerator GetToken()
     {
         Debug.Log("Get token method");
+
         using (UnityWebRequest request = UnityWebRequest.Get(Url))
         {
             yield return request.SendWebRequest();
@@ -45,6 +50,12 @@ public class HttpService
     public IEnumerator GetTokenLoop()
     {
         Debug.Log("Attempting to get token...");
+
+        if (_currentUser.HasToken) //there is no need to create new token after reconnecting
+        {
+            OnTokenReceived?.Invoke(_currentUser.Token);
+            yield break;
+        }
 
         while (true)
         {

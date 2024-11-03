@@ -25,7 +25,6 @@ namespace HiveGame.Hubs
             string playerId = GetPlayerIdFromToken();
             _connectionManager.AddPlayerConnection(playerId, connectionId);
             await base.OnConnectedAsync();
-            await Clients.All.SendAsync($"user: {playerId}", "You connected to the server hub");
         }
 
         public override async Task OnDisconnectedAsync(Exception? exception)
