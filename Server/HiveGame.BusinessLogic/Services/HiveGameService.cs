@@ -110,7 +110,7 @@ namespace HiveGame.BusinessLogic.Services
 
         private BoardDTO GetBoardDTOFromBoard(Game game, PlayerColor color = PlayerColor.White)
         {
-            var verticesDTO = BoardDTOFactory.CreateBoardDTO(game.Board, color);
+            var verticesDTO = BoardDTOFactory.CreateBoardDTO(game.Board, color, game.Turn);
             return verticesDTO;
         }
     }

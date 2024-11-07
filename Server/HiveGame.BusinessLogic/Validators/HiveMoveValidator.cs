@@ -61,7 +61,7 @@ namespace HiveGame.BusinessLogic.Services
 
             var availableHexes = moveFromVertex.CurrentInsect.GetAvailableVertices(moveFromVertex, board);
 
-            if (!availableHexes.Contains(moveToVertex))
+            if (!availableHexes.AvailableVertices.Contains(moveToVertex))
                 throw new ArgumentException("Insect cannot move there");
         }
 
@@ -95,7 +95,7 @@ namespace HiveGame.BusinessLogic.Services
             if (!game.GetCurrentPlayer().RemoveInsectFromPlayerBoard(request.InsectToPut))
                 throw new Exception("Player can't put this insect");
 
-            if (game.NumberOfMove == 4 && board.AllInsects.FirstOrDefault(x => x.Type == InsectType.Queen && x.PlayerColor == game.GetCurrentPlayer().PlayerColor) == null)
+            if (game.Turn == 4 && board.AllInsects.FirstOrDefault(x => x.Type == InsectType.Queen && x.PlayerColor == game.GetCurrentPlayer().PlayerColor) == null && request.InsectToPut != InsectType.Queen)
                 throw new Exception("It's 4 turn and you still didn't put a queen");
         }
 

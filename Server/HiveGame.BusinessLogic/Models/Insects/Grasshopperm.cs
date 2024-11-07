@@ -17,15 +17,26 @@ namespace HiveGame.BusinessLogic.Models.Insects
             PlayerColor = color;
         }
 
-        public override IList<Vertex> GetAvailableVertices(Vertex moveFrom, HiveBoard board)
+        public override InsectValidationResult GetAvailableVertices(Vertex moveFrom, HiveBoard board)
         {
-            var vertices = BasicCheck(moveFrom, board);
+            var result = new InsectValidationResult();
+
+            var vertices = BasicCheck(moveFrom, board, out string? whyMoveImpossible);
+
+            if (vertices.Count == 0)
+            {
+                result.ReasonWhyEmpty = whyMoveImpossible;
+                return result;
+            }
+
             var possibleMoves = GetPossibleMovesForGrasshopperm(moveFrom, board);
 
-            return vertices
+            result.AvailableVertices = vertices
                 .Where(x => possibleMoves.Any(y => y.Equals(x)))
                 .Distinct()
                 .ToList();
+
+            return result;
         }
 
         public List<Vertex> GetPossibleMovesForGrasshopperm(Vertex moveFrom, HiveBoard board)

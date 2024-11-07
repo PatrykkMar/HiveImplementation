@@ -34,9 +34,16 @@ namespace HiveGame.BusinessLogic.Models.Board
             }
         }
 
-        public List<long> GetHexesToMove(Vertex vertex)
+        public List<long> GetHexesToMove(Vertex vertex, out string? whyMoveImpossible)
         {
-            var ids = vertex.CurrentInsect.GetAvailableVertices(vertex, this).Select(x => x.Id).ToList();
+            var availableVerticesResult = vertex.CurrentInsect.GetAvailableVertices(vertex, this);
+            whyMoveImpossible = "";
+            whyMoveImpossible = availableVerticesResult.ReasonWhyEmpty;
+
+            var ids = availableVerticesResult
+                .AvailableVertices
+                .Select(x => x.Id)
+                .ToList();
 
             if (ids.Count == 0)
                 return null;

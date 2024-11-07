@@ -12,8 +12,10 @@ namespace HiveGame.BusinessLogic.Models.Board
 {
     public class BoardDTOFactory
     {
-        public static BoardDTO CreateBoardDTO(HiveBoard board, PlayerColor playerColor)
+        public static BoardDTO CreateBoardDTO(HiveBoard board, PlayerColor playerColor, int turn)
         {
+            var boardDto = new BoardDTO();
+
             var toPut = board.EmptyVertices.Where(x =>
                 board.GetAdjacentVerticesByCoordList(x)
                     .Any(y => !y.IsEmpty && y.CurrentInsect?.PlayerColor == playerColor)
@@ -53,11 +55,18 @@ namespace HiveGame.BusinessLogic.Models.Board
                 }
             }
 
-            var boardDto = new BoardDTO()
+            boardDto.hexes = verticesDTO;
+            boardDto.vertexidtoput = toPut.Select(x => x.Id).ToList();
+            boardDto.queenrulemet = turn != 4 || board.AllInsects.Where(x => x.Type == InsectType.Queen).Any(x => x.PlayerColor == playerColor);
+
+            if (boardDto.queenrulemet)
             {
-                hexes = verticesDTO,
-                vertexidtoput = toPut.Select(x => x.Id).ToList()
-            };
+                int a = 1;
+            }
+            else
+            {
+                int a = 1;
+            }
 
             return boardDto;
         }

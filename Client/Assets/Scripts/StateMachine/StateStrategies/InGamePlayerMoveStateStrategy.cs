@@ -37,6 +37,12 @@ public class InGamePlayerMoveStateStrategy : IStateStrategy
             case PlayerMoveStateAction.None:
             case PlayerMoveStateAction.MoveInsect:
             case PlayerMoveStateAction.PutInsect:
+                if (insect != InsectType.Queen && !Board.Instance.QueenRuleMet)
+                {
+                    ServiceLocator.Services.EventAggregator.InvokeMinorInformationTextReceived("It's 4th turn, you have to put the queen now", 5);
+                    Board.Instance.CancelHighlighing();
+                    return;
+                }
                 Board.Instance.CancelHighlighing();
                 Board.Instance.HighlightHexesToPutInsects();
                 SetPlayerAction(PlayerMoveStateAction.PutInsect, insectToPut: insect);
@@ -101,21 +107,26 @@ public class InGamePlayerMoveStateStrategy : IStateStrategy
             case PlayerMoveStateAction.MoveInsect:
                 if (hexToMove == null)
                 {
-                    Debug.LogError("Hex to move not chosen");
+                    ServiceLocator.Services.EventAggregator.InvokeMinorInformationTextReceived("Hex to move not chosen", 5);
+                    return;
+                }
+                if(hexToMove != null && !string.IsNullOrEmpty(hexToMove.reasonwhymoveimpossible))
+                {
+                    ServiceLocator.Services.EventAggregator.InvokeMinorInformationTextReceived("You can't move this insect. " + hexToMove.reasonwhymoveimpossible, 5);
                     return;
                 }
                 break;
             case PlayerMoveStateAction.PutInsect:
                 if (!insectToPut.HasValue)
                 {
-                    Debug.LogError("Insect to put not chosen");
+                    ServiceLocator.Services.EventAggregator.InvokeMinorInformationTextReceived("Insect to put not chosen", 5);
                     return;
                 }
                 break;
             case PlayerMoveStateAction.None:
                 break;
         }
-
+        ServiceLocator.Services.EventAggregator.InvokeMinorInformationTextReceived("", 0.1f);
         CurrentAction = action;
         HexFromMove = hexToMove;
         InsectToPut = insectToPut;

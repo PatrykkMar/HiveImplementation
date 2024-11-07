@@ -30,16 +30,23 @@ namespace HiveGame.BusinessLogic.Models.Insects
         /// <param name="moveFrom"></param>
         /// <param name="board"></param>
         /// <returns></returns>
-        public List<Vertex> BasicCheck(Vertex moveFrom, HiveBoard board, bool onlyEmpty = true)
+        public List<Vertex> BasicCheck(Vertex moveFrom, HiveBoard board, out string? whyMoveImpossible, bool onlyEmpty = true)
         {
-
+            whyMoveImpossible = null;
             //hive can't divide to two separated hives
             if (BrokeHive(moveFrom, board))
+            {
+                whyMoveImpossible = "Moving this insect would break the hive";
                 return new List<Vertex>();
+            }
+
 
             //cannot move insects until queen is not in the game
             if (QueenNotSet(board))
+            {
+                whyMoveImpossible = "It's 4th turn, you have to put the queen now";
                 return new List<Vertex>();
+            }
 
             //most insects can move only on empty vertices
             List<Vertex> vertices = onlyEmpty ? board.EmptyVertices : board.Vertices;
@@ -163,7 +170,7 @@ namespace HiveGame.BusinessLogic.Models.Insects
             return CheckNotSurroundedFields(moveFrom, board).Count == 0;
         }
 
-        public abstract IList<Vertex> GetAvailableVertices(Vertex moveFrom, HiveBoard board);
+        public abstract InsectValidationResult GetAvailableVertices(Vertex moveFrom, HiveBoard board);
 
         public List<Vertex> GetVerticesByBFS(Vertex moveFrom, HiveBoard board, int? limit = null, int? onlyDistance = null)
         {

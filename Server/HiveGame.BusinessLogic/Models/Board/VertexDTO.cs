@@ -24,7 +24,11 @@ namespace HiveGame.BusinessLogic.Models.Board
 
         public void SetVertexToMove(Vertex vertex, HiveBoard board, PlayerColor playerColor)
         {
-            vertexidtomove = vertex.CurrentInsect != null && vertex.CurrentInsect.PlayerColor == playerColor ? board.GetHexesToMove(vertex) : null;
+            var hexesToMove = board.GetHexesToMove(vertex, out string? whyMoveImpossible);
+            vertexidtomove = vertex.CurrentInsect != null && vertex.CurrentInsect.PlayerColor == playerColor ? hexesToMove : null;
+
+            if(!string.IsNullOrEmpty(whyMoveImpossible))
+                reasonwhymoveimpossible = whyMoveImpossible;
         }
 
         public long id { get; set; }
@@ -37,5 +41,6 @@ namespace HiveGame.BusinessLogic.Models.Board
         public bool isthisplayerinsect { get; set; }
         public PlayerColor? playercolor { get; set; }
         public List<long> vertexidtomove { get; set; } = new List<long>();
+        public string reasonwhymoveimpossible { get; set; }
     }
 }

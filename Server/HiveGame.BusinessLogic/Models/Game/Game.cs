@@ -49,7 +49,7 @@ namespace HiveGame.BusinessLogic.Models
             var playerViewDTO = new PlayerViewDTO();
             var player = Players.FirstOrDefault(x=>x.PlayerId == playerId);
             playerViewDTO.PlayerInsects = player.PlayerInsects;
-            playerViewDTO.Board = BoardDTOFactory.CreateBoardDTO(Board, CurrentColorMove);
+            playerViewDTO.Board = BoardDTOFactory.CreateBoardDTO(Board, CurrentColorMove, Turn);
             return playerViewDTO;
         }
 

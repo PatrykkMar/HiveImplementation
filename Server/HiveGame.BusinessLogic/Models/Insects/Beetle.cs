@@ -16,9 +16,17 @@ namespace HiveGame.BusinessLogic.Models.Insects
             PlayerColor = color;
         }
 
-        public override IList<Vertex> GetAvailableVertices(Vertex moveFrom, HiveBoard board)
+        public override InsectValidationResult GetAvailableVertices(Vertex moveFrom, HiveBoard board)
         {
-            List<Vertex> vertices = BasicCheck(moveFrom, board, onlyEmpty: false);
+            var result = new InsectValidationResult();
+
+            List<Vertex> vertices = BasicCheck(moveFrom, board, out string? whyMoveImpossible, onlyEmpty: false);
+
+            if (vertices.Count == 0)
+            {
+                result.ReasonWhyEmpty = whyMoveImpossible;
+                return result;
+            }
 
             var freeHexesAround = CheckNotSurroundedFields(moveFrom, board)
                 .Union(board.GetAdjacentVerticesByCoordList(moveFrom).Where
@@ -29,11 +37,14 @@ namespace HiveGame.BusinessLogic.Models.Insects
                 ).ToList(); //beetle can move on insect
 
             if (freeHexesAround.Count == 0)
-                return new List<Vertex>();
+            {
+                result.ReasonWhyEmpty = "This insect is surrounded and can't move";
+                return result;
+            }
 
-            vertices = vertices.Intersect(freeHexesAround).ToList();
+            result.AvailableVertices = vertices.Intersect(freeHexesAround).ToList();
 
-            return vertices;
+            return result;
         }
     }
 }

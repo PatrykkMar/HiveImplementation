@@ -16,23 +16,34 @@ namespace HiveGame.BusinessLogic.Models.Insects
             PlayerColor = color;
         }
 
-        public override List<Vertex> GetAvailableVertices(Vertex moveFrom, HiveBoard board)
+        public override InsectValidationResult GetAvailableVertices(Vertex moveFrom, HiveBoard board)
         {
-            List<Vertex> vertices = BasicCheck(moveFrom, board);
+            var result = new InsectValidationResult();
+
+            List<Vertex> vertices = BasicCheck(moveFrom, board, out string? whyMoveImpossible);
+
+            if(vertices.Count == 0) 
+            {
+                result.ReasonWhyEmpty = whyMoveImpossible;
+                return result;
+            }
 
             var freeHexesAround = CheckNotSurroundedFields(moveFrom, board);
 
             if (freeHexesAround.Count == 0)
-                return new List<Vertex>();
+            {
+                result.ReasonWhyEmpty = "This insect is surrounded and can't move";
+                return result;
+            }
 
             List<Vertex> hexesToMoveFromfreeHexes = freeHexesAround
                 .SelectMany(x => GetVerticesByBFS(moveFrom, board))
                 .Distinct()
                 .ToList();
 
-            vertices = vertices.Intersect(hexesToMoveFromfreeHexes).ToList();
+            result.AvailableVertices = vertices.Intersect(hexesToMoveFromfreeHexes).ToList();
 
-            return vertices;
+            return result;
         }
     }
 }

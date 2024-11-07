@@ -11,5 +11,6 @@ namespace HiveGame.BusinessLogic.Models.Board
     {
         public List<VertexDTO> hexes { get; set; }
         public List<long> vertexidtoput { get; set; }
+        public bool queenrulemet { get; set; }
     }
 }

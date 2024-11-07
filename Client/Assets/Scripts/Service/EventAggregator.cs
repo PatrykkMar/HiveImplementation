@@ -16,7 +16,7 @@ public class EventAggregator
     {
         InformationTextReceived?.Invoke(text);
     }
-    public void InvokeMinorInformationTextReceived(string text, float? delay)
+    public void InvokeMinorInformationTextReceived(string text, float? delay = null)
     {
         MinorInformationTextReceived?.Invoke(text, delay);
     }

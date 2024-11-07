@@ -7,4 +7,5 @@ public class BoardDTO
 {
     public List<VertexDTO> hexes { get; set; }
     public List<long> vertexidtoput { get; set; }
+    public bool queenrulemet { get; set; }
 }
