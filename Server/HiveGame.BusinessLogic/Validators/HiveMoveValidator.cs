@@ -41,14 +41,14 @@ namespace HiveGame.BusinessLogic.Services
 
             var board = game.Board;
 
-            if (!request.MoveFrom.HasValue)
+            if (request.MoveFrom == null)
                 throw new ArgumentException("Empty moveFrom parameter");
 
-            if (!request.MoveTo.HasValue)
+            if (request.MoveTo == null)
                 throw new ArgumentException("Empty moveTo parameter");
 
-            var moveFromVertex = board.GetVertexByCoord(request.MoveFrom.Value);
-            var moveToVertex = board.GetVertexByCoord(request.MoveTo.Value);
+            var moveFromVertex = board.GetVertexByCoord(request.MoveFrom);
+            var moveToVertex = board.GetVertexByCoord(request.MoveTo);
 
             if (moveFromVertex == null || moveFromVertex.IsEmpty)
                 throw new ArgumentException("MoveFromVertex not found or empty");

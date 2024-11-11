@@ -18,4 +18,8 @@
     <ProjectReference Include="..\HiveGame.Core\HiveGame.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\Extensions\" />
+  </ItemGroup>
+
 </Project>

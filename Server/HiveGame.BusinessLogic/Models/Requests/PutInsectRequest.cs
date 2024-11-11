@@ -10,7 +10,7 @@ namespace HiveGame.BusinessLogic.Models.Requests
     public class PutInsectRequest
     {
         public InsectType InsectToPut { get; set; }
-        public (int, int)? WhereToPut { get; set; }
+        public Point2D? WhereToPut { get; set; }
         public string PlayerId { get; set; }
     }
 }

@@ -12,10 +12,10 @@ namespace HiveGame.BusinessLogic.Models.Board
 {
     public class HiveBoard
     {
-        private Dictionary<(int, int), Vertex> _board;
+        private Dictionary<Point2D, Vertex> _board;
         public HiveBoard()
         {
-            _board = new Dictionary<(int x, int y), Vertex>();
+            _board = new Dictionary<Point2D, Vertex>();
         }
 
         public List<Vertex> Vertices
@@ -76,7 +76,7 @@ namespace HiveGame.BusinessLogic.Models.Board
 
         public void AddVertex(Vertex vertex)
         {
-            _board[(vertex.X, vertex.Y)] = vertex;
+            _board[vertex.Coords] = vertex;
         }
 
         public void AddEmptyVerticesAround(Vertex vertex)
@@ -104,18 +104,18 @@ namespace HiveGame.BusinessLogic.Models.Board
 
         public Vertex? GetVertexByCoord(int x, int y)
         {
-            if (!_board.ContainsKey((x, y)))
+            if (!_board.ContainsKey(new Point2D(x, y)))
                 return null;
-            return _board[(x, y)];
+            return _board[new Point2D(x, y)];
 
         }
 
-        public Vertex? GetVertexByCoord((int X, int Y)? point)
+        public Vertex? GetVertexByCoord(Point2D? point)
         {
-            if(!point.HasValue)
+            if(point == null)
                 return null;
 
-            return GetVertexByCoord(point.Value.X, point.Value.Y);
+            return GetVertexByCoord(point.X, point.Y);
         }
 
 

@@ -132,14 +132,14 @@ namespace HiveGame.BusinessLogic.Models.Insects
                 .Where(x => x != Direction.Up && x != Direction.Down)
                 .Where(x =>
                     surroundings.Any(y => 
-                    y.X == NeighborOffsetsDict[x].dx + moveFrom.X && 
-                    y.Y == NeighborOffsetsDict[x].dy + moveFrom.Y
+                    y.X == NeighborOffsetsDict[x].X + moveFrom.X && 
+                    y.Y == NeighborOffsetsDict[x].Y + moveFrom.Y
                     )
                 );
 
             Direction currentDirection = 0;
 
-            var freePoints = new List<(int, int)>();
+            var freePoints = new List<Point2D>();
 
             for(int i=0;i<6/*number of directions*/;i++)
             {

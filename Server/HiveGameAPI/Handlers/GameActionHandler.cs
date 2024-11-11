@@ -13,8 +13,8 @@ namespace HiveGame.Handlers
     public interface IGameActionsHandler
     {
         Task PutFirstInsectAsync(InsectType type, string playerId, IHubCallerClients clients);
-        Task PutInsectAsync(InsectType type, (int x, int y) position, string playerId, IHubCallerClients clients);
-        Task MoveInsectAsync((int x, int y) moveFrom, (int x, int y) moveTo, string playerId, IHubCallerClients clients);
+        Task PutInsectAsync(InsectType type, Point2D position, string playerId, IHubCallerClients clients);
+        Task MoveInsectAsync(Point2D moveFrom, Point2D moveTo, string playerId, IHubCallerClients clients);
         Task JoinQueue(string playerId, IHubCallerClients clients);
         Task LeaveQueue(string playerId, IHubCallerClients clients);
     }
@@ -43,7 +43,7 @@ namespace HiveGame.Handlers
             await NotifyGameActionResultAsync(result, playerId, clients);
         }
 
-        public async Task PutInsectAsync(InsectType type, (int x, int y) position, string playerId, IHubCallerClients clients)
+        public async Task PutInsectAsync(InsectType type, Point2D position, string playerId, IHubCallerClients clients)
         {
             var request = new PutInsectRequest
             {
@@ -56,7 +56,7 @@ namespace HiveGame.Handlers
             await NotifyGameActionResultAsync(result, playerId, clients);
         }
 
-        public async Task MoveInsectAsync((int x, int y) moveFrom, (int x, int y) moveTo, string playerId, IHubCallerClients clients)
+        public async Task MoveInsectAsync(Point2D moveFrom, Point2D moveTo, string playerId, IHubCallerClients clients)
         {
             var request = new MoveInsectRequest
             {

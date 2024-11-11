@@ -35,8 +35,8 @@ namespace HiveGame.BusinessLogic.Services
             Game? game = _gameRepository.GetByPlayerId(request.PlayerId);
             var board = game.Board;
 
-            var moveFromVertex = board.GetVertexByCoord(request.MoveFrom.Value);
-            var moveToVertex = board.GetVertexByCoord(request.MoveTo.Value);
+            var moveFromVertex = board.GetVertexByCoord(request.MoveFrom);
+            var moveToVertex = board.GetVertexByCoord(request.MoveTo);
             var moveToVertexEmptyBeforeMove = moveToVertex.IsEmpty;
 
             var moveFromInsect = moveFromVertex.InsectStack.Pop();

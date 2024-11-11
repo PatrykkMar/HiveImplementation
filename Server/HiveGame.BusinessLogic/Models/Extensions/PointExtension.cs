@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace HiveGame.BusinessLogic.Models.Extensions
 {
+    [Obsolete]
     public static class PointExtensions
     {
         public static (int, int, int) Add(this (int, int, int) tuple1, (int, int, int) tuple2)

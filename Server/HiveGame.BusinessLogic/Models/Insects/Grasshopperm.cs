@@ -50,11 +50,11 @@ namespace HiveGame.BusinessLogic.Models.Insects
 
                 var currentPoint = moveFrom.Coords;
 
-                var (dx, dy) = NeighborOffsetsDict[direction].To2D();
+                var offset2D = NeighborOffsetsDict[direction].To2D();
 
                 while(!board.GetVertexByCoord(currentPoint).IsEmpty)
                 {
-                    currentPoint = (currentPoint.x + dx, currentPoint.y + dy);
+                    currentPoint = new Point2D(currentPoint.X + offset2D.X, currentPoint.Y + offset2D.Y);
                 }
 
                 possibleMoves.Add(board.GetVertexByCoord(currentPoint));

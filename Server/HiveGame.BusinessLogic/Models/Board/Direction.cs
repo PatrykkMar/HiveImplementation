@@ -14,16 +14,16 @@ namespace HiveGame.BusinessLogic.Models.Board
             TopRight, Right, BottomRight, BottomLeft, Left, TopLeft, Up, Down
         }
 
-        public static readonly Dictionary<Direction, (int dx, int dy, int dz)> NeighborOffsetsDict = new()
+        public static readonly Dictionary<Direction, Point3D> NeighborOffsetsDict = new()
         {
-            { Direction.Right, (1, 0, 0) },
-            { Direction.TopRight, (1, -1, 0) },
-            { Direction.TopLeft, (0, -1, 0) },
-            { Direction.Left, (-1, 0, 0) },
-            { Direction.BottomLeft, (-1, 1, 0) },
-            { Direction.BottomRight, (0, 1, 0) },
-            { Direction.Up, (0, 0, 1) },
-            { Direction.Down, (0, 0, -1) }
+            { Direction.Right, new Point3D(1, 0, 0) },
+            { Direction.TopRight, new Point3D(1, -1, 0) },
+            { Direction.TopLeft, new Point3D(0, -1, 0) },
+            { Direction.Left, new Point3D(-1, 0, 0) },
+            { Direction.BottomLeft,new Point3D(-1, 1, 0) },
+            { Direction.BottomRight, new Point3D(0, 1, 0) },
+            { Direction.Up, new Point3D(0, 0, 1) },
+            { Direction.Down, new Point3D(0, 0, -1) }
         };
 
         public static Direction OppositeDirection(Direction direction)

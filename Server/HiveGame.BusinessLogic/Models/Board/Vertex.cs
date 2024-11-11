@@ -1,5 +1,4 @@
-﻿using HiveGame.BusinessLogic.Models.Extensions;
-using HiveGame.BusinessLogic.Models.Insects;
+﻿using HiveGame.BusinessLogic.Models.Insects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +25,7 @@ namespace HiveGame.BusinessLogic.Models.Board
             CurrentInsect = insect;
         }
 
-        public Vertex(Vertex vertex, (int dx, int dy) offset) : this(vertex.X + offset.dx, vertex.Y + offset.dy)
+        public Vertex(Vertex vertex, Point2D offset) : this(vertex.X + offset.X, vertex.Y + offset.Y)
         {
 
         }
@@ -75,9 +74,9 @@ namespace HiveGame.BusinessLogic.Models.Board
         public int X { get; set; }
         public int Y { get; set; }
 
-        public (int x, int y) Coords
+        public Point2D Coords
         {
-            get { return (X, Y); }
+            get { return new Point2D(X, Y); }
         }
     }
 }
