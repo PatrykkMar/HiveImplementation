@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using HiveGame.BusinessLogic.Repositories;
+using System.Collections.Concurrent;
 
 namespace HiveGame.Managers
 {
@@ -15,6 +16,12 @@ namespace HiveGame.Managers
     {
         private static readonly ConcurrentDictionary<string, string> PlayerConnectionDict = new();
 
+        public ConnectionManager(IGameRepository gameRepository)
+        {
+            _gameRepository = gameRepository;
+        }
+
+        private IGameRepository _gameRepository { get; set; }
         public void AddPlayerConnection(string playerId, string connectionId)
         {
             PlayerConnectionDict.TryAdd(playerId, connectionId);
@@ -22,10 +29,17 @@ namespace HiveGame.Managers
 
         public void RemovePlayerConnection(string connectionId)
         {
-            var keysToRemove = PlayerConnectionDict.Where(kvp => kvp.Value.Equals(connectionId)).Select(kvp => kvp.Key).ToList();
-            foreach (var key in keysToRemove)
+            var keyToRemove = PlayerConnectionDict.Where(kvp => kvp.Value.Equals(connectionId)).Select(kvp => kvp.Key).FirstOrDefault();
+
+
+            //quick solution when player exits the game
+            var game = _gameRepository.GetByPlayerId(keyToRemove);
+            if(game != null) 
+                _gameRepository.Remove(game.Id);
+
+            if(keyToRemove != null)
             {
-                PlayerConnectionDict.TryRemove(key, out _);
+                PlayerConnectionDict.TryRemove(keyToRemove, out _);
             }
         }
 
