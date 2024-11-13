@@ -57,7 +57,8 @@ namespace HiveGame.BusinessLogic.Repositories
 
         public bool Update(string gameId, Game updatedItem)
         {
-            var result = _games.ReplaceOne(game => game.Id == gameId, updatedItem);
+            var filter = Builders<Game>.Filter.Eq(game => game.Id, gameId);
+            var result = _games.ReplaceOne(filter, updatedItem);
             return result.ModifiedCount > 0;
         }
 

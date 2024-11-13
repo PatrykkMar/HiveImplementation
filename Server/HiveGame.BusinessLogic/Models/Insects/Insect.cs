@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using HiveGame.BusinessLogic.Models.Extensions;
 using static HiveGame.BusinessLogic.Models.Board.DirectionConsts;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson;
 
 namespace HiveGame.BusinessLogic.Models.Insects
 {
@@ -20,8 +22,9 @@ namespace HiveGame.BusinessLogic.Models.Insects
             Type = type;
             PlayerColor = color;
         }
-
+        [BsonRepresentation(BsonType.String)]
         public InsectType Type { get; set; }
+        [BsonRepresentation(BsonType.String)]
         public PlayerColor PlayerColor { get; set; }
 
         /// <summary>

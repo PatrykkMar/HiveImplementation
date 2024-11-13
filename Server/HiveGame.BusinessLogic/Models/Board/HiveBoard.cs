@@ -12,10 +12,10 @@ namespace HiveGame.BusinessLogic.Models.Board
 {
     public class HiveBoard
     {
-        private Dictionary<Point2D, Vertex> _board;
+        public Dictionary<string, Vertex> _board;
         public HiveBoard()
         {
-            _board = new Dictionary<Point2D, Vertex>();
+            _board = new Dictionary<string, Vertex>();
         }
 
         public List<Vertex> Vertices
@@ -76,7 +76,7 @@ namespace HiveGame.BusinessLogic.Models.Board
 
         public void AddVertex(Vertex vertex)
         {
-            _board[vertex.Coords] = vertex;
+            _board[vertex.Coords.ToString()] = vertex;
         }
 
         public void AddEmptyVerticesAround(Vertex vertex)
@@ -99,14 +99,14 @@ namespace HiveGame.BusinessLogic.Models.Board
             var verticesToDelete = GetAdjacentVerticesByCoordList(vertex).Where(x=>x.IsEmpty && GetAdjacentVerticesByCoordList(x).Where(y=>!y.IsEmpty).Count()==0);
 
             foreach (var ver in verticesToDelete)
-                _board.Remove(ver.Coords);
+                _board.Remove(ver.Coords.ToString());
         }
 
         public Vertex? GetVertexByCoord(int x, int y)
         {
-            if (!_board.ContainsKey(new Point2D(x, y)))
+            if (!_board.ContainsKey(Point2D.ToString(x, y)))
                 return null;
-            return _board[new Point2D(x, y)];
+            return _board[Point2D.ToString(x, y)];
 
         }
 

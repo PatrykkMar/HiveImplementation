@@ -29,7 +29,7 @@ namespace HiveGame.BusinessLogic.Models
         public HiveBoard Board { get; set; }
 
         public Player[] Players { get; set; }
-
+        [BsonRepresentation(BsonType.String)]
         public PlayerColor CurrentColorMove { get; set; }
 
         public Player GetCurrentPlayer()
