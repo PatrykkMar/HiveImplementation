@@ -73,7 +73,7 @@ public class PlayerInsectView : MonoBehaviour
                 buttons[buttonIndex].enabled = true;
                 buttons[buttonIndex].onClick.AddListener(() => 
                 {
-                    ChooseInsect(insect, true);
+                    ChooseInsect(insect);
                     StateStrategyFactory.GetCurrentStateStrategy().OnInsectButtonClick(insect);
                 });
             }
@@ -84,7 +84,7 @@ public class PlayerInsectView : MonoBehaviour
         }
     }
 
-    public void ChooseInsect(InsectType insect, bool stateAction = true)
+    public void ChooseInsect(InsectType insect)
     {
         ChosenInsect = insect;
         Debug.Log("Chosen insect: " + Enum.GetName(typeof(InsectType), insect));
@@ -105,12 +105,6 @@ public class PlayerInsectView : MonoBehaviour
                 buttonImage.color = Color.white;
             }
 
-        }
-
-        if(stateAction == true) 
-        {
-            var stateStrategy = StateStrategyFactory.GetCurrentStateStrategy();
-            stateStrategy.OnInsectButtonClick(insect);
         }
     }
 }

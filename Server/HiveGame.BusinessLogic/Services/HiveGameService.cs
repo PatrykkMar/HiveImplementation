@@ -100,6 +100,7 @@ namespace HiveGame.BusinessLogic.Services
         public HiveActionResult AfterMoveActions(Game game)
         {
             game.AfterActionMade();
+            _gameRepository.Update(game.Id, game);
 
             var result = new HiveActionResult(game, GetBoardDTOFromBoard(game));
 

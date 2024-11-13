@@ -1,5 +1,6 @@
 ﻿using HiveGame.BusinessLogic.Models;
-using System;
+using HiveGame.BusinessLogic.Context;
+using MongoDB.Driver;
 using System.Collections.Generic;
 
 namespace HiveGame.BusinessLogic.Repositories
@@ -22,53 +23,48 @@ namespace HiveGame.BusinessLogic.Repositories
 
     public class GameRepository : IGameRepository
     {
-        private readonly List<Game> _items;
+        private readonly IMongoCollection<Game> _games;
 
-        public GameRepository()
+        public GameRepository(MongoDBContext context)
         {
-            _items = new List<Game>();
+            _games = context.Games;
         }
 
         public long Count
         {
-            get { return _items.Count; }
+            get { return _games.CountDocuments(_ => true); }
         }
 
         public void Add(Game item)
         {
-            _items.Add(item);
+            _games.InsertOne(item);
         }
 
         public IEnumerable<Game> GetAll()
         {
-            return _items;
+            return _games.Find(_ => true).ToList();
         }
 
         public Game? GetByGameId(string gameId)
         {
-            return _items.FirstOrDefault(x => x.Id == gameId);
-        }
-
-        public bool Update(string gameId, Game updatedItem)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Remove(string gameId)
-        {
-            var game = GetByGameId(gameId);
-
-            if (game != null)
-            {
-                _items.Remove(game);
-            }
-
-            return true;
+            return _games.Find(game => game.Id == gameId).FirstOrDefault();
         }
 
         public Game? GetByPlayerId(string playerId)
         {
-            return _items.FirstOrDefault(x => x.Players.Select(x => x.PlayerId).Contains(playerId));
+            return _games.Find(game => game.Players.Any(player => player.PlayerId == playerId)).FirstOrDefault();
+        }
+
+        public bool Update(string gameId, Game updatedItem)
+        {
+            var result = _games.ReplaceOne(game => game.Id == gameId, updatedItem);
+            return result.ModifiedCount > 0;
+        }
+
+        public bool Remove(string gameId)
+        {
+            var result = _games.DeleteOne(game => game.Id == gameId);
+            return result.DeletedCount > 0;
         }
     }
 }

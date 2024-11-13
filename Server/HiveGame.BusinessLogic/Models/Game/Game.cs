@@ -1,12 +1,7 @@
-﻿using AutoMapper;
-using HiveGame.BusinessLogic.Factories;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using HiveGame.BusinessLogic.Models.Board;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HiveGame.BusinessLogic.Models
 {
@@ -14,7 +9,7 @@ namespace HiveGame.BusinessLogic.Models
     {
         public Game(Player[] players, PlayerColor startingColor = PlayerColor.White)
         {
-            Id = Guid.NewGuid().ToString();
+            Id = ObjectId.GenerateNewId().ToString();
             Board = new HiveBoard();
             Players = players;
             CurrentColorMove = startingColor;
@@ -23,22 +18,25 @@ namespace HiveGame.BusinessLogic.Models
             NumberOfMove = 0;
         }
 
-        public int NumberOfMove { get; set; }
-        public int Turn
-        {
-            get
-            {
-                return NumberOfMove / 2 + 1;
-            }
-        }
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
+
+        public int NumberOfMove { get; set; }
+
+        public int Turn => NumberOfMove / 2 + 1;
+
         public HiveBoard Board { get; set; }
+
         public Player[] Players { get; set; }
+
         public PlayerColor CurrentColorMove { get; set; }
+
         public Player GetCurrentPlayer()
         {
             return Players.First(x => x.PlayerColor == CurrentColorMove);
         }
+
         public Player GetOtherPlayer()
         {
             return Players.First(x => x.PlayerColor != CurrentColorMove);
@@ -47,7 +45,7 @@ namespace HiveGame.BusinessLogic.Models
         public PlayerViewDTO GetPlayerView(string playerId)
         {
             var playerViewDTO = new PlayerViewDTO();
-            var player = Players.FirstOrDefault(x=>x.PlayerId == playerId);
+            var player = Players.FirstOrDefault(x => x.PlayerId == playerId);
             playerViewDTO.PlayerInsects = player.PlayerInsects;
             playerViewDTO.Board = BoardDTOFactory.CreateBoardDTO(Board, CurrentColorMove, Turn);
             return playerViewDTO;
@@ -61,18 +59,10 @@ namespace HiveGame.BusinessLogic.Models
 
         public bool CheckGameOverCondition()
         {
-            //if queen is surrounded, game is over
+            // Check if any queen is surrounded, indicating game over.
             var queensVertices = Board.Vertices.Where(x => x.InsectStack.Any(x => x.Type == Insects.InsectType.Queen));
-
-            var surroundedQueens = queensVertices.Where(x => Board.GetAdjacentVerticesByCoordList(x).Where(x=>!x.IsEmpty).Count() == 6);
-
-            var numberOfSurroundedQueens = surroundedQueens.Count();
-
-            if (numberOfSurroundedQueens > 0)
-                return true;
-
-            return false;
+            var surroundedQueens = queensVertices.Where(x => Board.GetAdjacentVerticesByCoordList(x).Count(v => !v.IsEmpty) == 6);
+            return surroundedQueens.Any();
         }
-
     }
 }
