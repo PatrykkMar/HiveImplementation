@@ -11,6 +11,7 @@ using HiveGame.Managers;
 using HiveGame.Handlers;
 using HiveGame.BusinessLogic.Context;
 using log4net;
+using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,8 +43,10 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddSignalR();
-
+builder.Services.AddSignalR(options =>
+{
+    options.AddFilter<ExceptionHandlingHubFilter>();
+});
 // Register application services
 builder.Services.AddScoped<IHiveGameService, HiveGameService>();
 builder.Services.AddScoped<IMatchmakingService, MatchmakingService>();
@@ -94,6 +97,7 @@ builder.Services.AddRouting(options =>
     options.LowercaseUrls = true;
     options.LowercaseQueryStrings = false;
 });
+
 
 var app = builder.Build();
 
