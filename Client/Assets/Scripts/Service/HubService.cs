@@ -97,6 +97,14 @@ public class HubService
             }, null);
         });
 
+        _hubConnection.On<string>("ReceiveError", (error) =>
+        {
+            _mainThreadContext.Post(async _ =>
+            {
+                _eventAggregator.InvokeMinorInformationTextReceived(error);
+            }, null);
+        });
+
         await _hubConnection.StartAsync();
     }
 
