@@ -10,8 +10,10 @@ using System.Text;
 using HiveGame.Managers;
 using HiveGame.Handlers;
 using HiveGame.BusinessLogic.Context;
+using log4net;
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 // Configuration for CORS
 builder.Services.AddCors(options =>
@@ -21,6 +23,11 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod()
               .AllowAnyHeader());
 });
+
+//Logging
+builder.Services.AddLogging(
+    x => x.AddLog4Net()
+);
 
 // Add services to the container
 builder.Services.AddControllersWithViews();
