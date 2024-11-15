@@ -9,11 +9,11 @@ using static HiveGame.BusinessLogic.Models.Board.DirectionConsts;
 
 namespace HiveGame.BusinessLogic.Models.Insects
 {
-    public class Grasshopperm : Insect
+    public class Grasshopper : Insect
     {
-        public Grasshopperm(PlayerColor color)
+        public Grasshopper(PlayerColor color)
         {
-            Type= InsectType.Grasshopperm;
+            Type= InsectType.Grasshopper;
             PlayerColor = color;
         }
 
@@ -29,7 +29,7 @@ namespace HiveGame.BusinessLogic.Models.Insects
                 return result;
             }
 
-            var possibleMoves = GetPossibleMovesForGrasshopperm(moveFrom, board);
+            var possibleMoves = GetPossibleMovesForGrasshopper(moveFrom, board);
 
             result.AvailableVertices = vertices
                 .Where(x => possibleMoves.Any(y => y.Equals(x)))
@@ -39,7 +39,7 @@ namespace HiveGame.BusinessLogic.Models.Insects
             return result;
         }
 
-        public List<Vertex> GetPossibleMovesForGrasshopperm(Vertex moveFrom, HiveBoard board)
+        public List<Vertex> GetPossibleMovesForGrasshopper(Vertex moveFrom, HiveBoard board)
         {
             var possibleMoves = new List<Vertex>();
 

@@ -30,9 +30,9 @@ namespace HiveGame.BusinessLogic.Services
 
         public HiveActionResult Move(MoveInsectRequest request)
         {
-            _moveValidator.ValidateMove(request);
-
             Game? game = _gameRepository.GetByPlayerId(request.PlayerId);
+            _moveValidator.ValidateMove(request, game);
+
             var board = game.Board;
 
             var moveFromVertex = board.GetVertexByCoord(request.MoveFrom);
@@ -57,9 +57,9 @@ namespace HiveGame.BusinessLogic.Services
 
         public HiveActionResult Put(PutInsectRequest request)
         {
-            _moveValidator.ValidatePut(request);
-
             Game? game = _gameRepository.GetByPlayerId(request.PlayerId);
+            _moveValidator.ValidatePut(request, game);
+
             var board = game.Board;
 
             var insect = _insectFactory.CreateInsect(request.InsectToPut, game.CurrentColorMove);
@@ -76,9 +76,10 @@ namespace HiveGame.BusinessLogic.Services
 
         public HiveActionResult PutFirstInsect(PutFirstInsectRequest request)
         {
-            _moveValidator.ValidatePutFirstInsect(request);
-
             Game? game = _gameRepository.GetByPlayerId(request.PlayerId);
+
+            _moveValidator.ValidatePutFirstInsect(request, game);
+
             var board = game.Board;
 
             Vertex vertex;

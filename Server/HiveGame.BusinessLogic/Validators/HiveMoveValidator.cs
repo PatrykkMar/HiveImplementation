@@ -8,24 +8,20 @@ namespace HiveGame.BusinessLogic.Services
 
     public interface IHiveMoveValidator
     {
-        public void ValidateMove(MoveInsectRequest request);
-        public void ValidatePut(PutInsectRequest request);
-        public void ValidatePutFirstInsect(PutFirstInsectRequest request);
+        public void ValidateMove(MoveInsectRequest request, Game? game);
+        public void ValidatePut(PutInsectRequest request, Game? game);
+        public void ValidatePutFirstInsect(PutFirstInsectRequest request, Game? game);
     }
 
     public class HiveMoveValidator : IHiveMoveValidator
     {
-        private readonly IGameRepository _gameRepository;
 
-        public HiveMoveValidator(IGameRepository gameRepository)
+        public HiveMoveValidator()
         {
-            _gameRepository = gameRepository;
         }
 
-        public void ValidateMove(MoveInsectRequest request)
+        public void ValidateMove(MoveInsectRequest request, Game? game)
         {
-            Game? game = _gameRepository.GetByPlayerId(request.PlayerId);
-
             if (game == null)
                 throw new Exception("Game not found");
 
@@ -65,10 +61,8 @@ namespace HiveGame.BusinessLogic.Services
                 throw new ArgumentException("Insect cannot move there");
         }
 
-        public void ValidatePut(PutInsectRequest request)
+        public void ValidatePut(PutInsectRequest request, Game? game)
         {
-            Game? game = _gameRepository.GetByPlayerId(request.PlayerId);
-
             if (game == null)
                 throw new Exception("Game not found");
 
@@ -99,10 +93,8 @@ namespace HiveGame.BusinessLogic.Services
                 throw new Exception("It's 4 turn and you still didn't put a queen");
         }
 
-        public void ValidatePutFirstInsect(PutFirstInsectRequest request)
+        public void ValidatePutFirstInsect(PutFirstInsectRequest request, Game? game)
         {
-            Game? game = _gameRepository.GetByPlayerId(request.PlayerId);
-
             if (game == null)
                 throw new Exception("Game not found");
 

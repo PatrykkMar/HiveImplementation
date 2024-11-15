@@ -24,8 +24,8 @@ namespace HiveGame.BusinessLogic.Factories
                     return new Ant(playerColor);
                 case InsectType.Spider:
                     return new Spider(playerColor);
-                case InsectType.Grasshopperm:
-                    return new Grasshopperm(playerColor);
+                case InsectType.Grasshopper:
+                    return new Grasshopper(playerColor);
                 case InsectType.Beetle:
                     return new Beetle(playerColor);
                 default:
