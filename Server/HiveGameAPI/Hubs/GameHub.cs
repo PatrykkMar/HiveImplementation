@@ -38,6 +38,7 @@ namespace HiveGame.Hubs
         public async Task JoinQueue()
         {
             var playerId = GetPlayerIdFromToken();
+            throw new Exception("Test");
             await _gameActionsHandler.JoinQueue(playerId, Clients);
         }
 
