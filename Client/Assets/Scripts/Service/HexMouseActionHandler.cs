@@ -5,7 +5,7 @@ public class HexMouseActionHandler : MonoBehaviour
 {
     public VertexDTO Vertex { get; set; }
 
-    private IStateStrategy StateStrategy
+    private IHexEventsHandling StateStrategy
     {
         get
         {

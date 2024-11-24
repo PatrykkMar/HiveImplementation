@@ -23,6 +23,17 @@ public class PlayerInsectView : MonoBehaviour
     {
         ServiceLocator.Services.EventAggregator.PlayerInsectsUpdate += UpdatePlayerInsectView;
         ServiceLocator.Services.HubService.OnStateReceived += ClearSetInsect;
+
+        var image = GetComponent<Image>();
+
+        if (Board.Instance.PlayerColor == PlayerColor.White)
+        {
+            image.color = Color.white;
+        }
+        else
+        {
+            image.color = Color.black;
+        }
     }
 
     private void OnDisable()

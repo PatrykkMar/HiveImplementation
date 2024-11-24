@@ -9,6 +9,7 @@ namespace HiveGame.BusinessLogic.Models.Board
 {
     public class BoardDTO
     {
+        public PlayerColor playercolor { get; set; }
         public List<VertexDTO> hexes { get; set; }
         public List<long> vertexidtoput { get; set; }
         public bool queenrulemet { get; set; }

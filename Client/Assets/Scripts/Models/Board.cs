@@ -17,6 +17,7 @@ public class Board
             return _instance;
         }
     }
+    public PlayerColor PlayerColor { get; set; }
 
     public List<VertexDTO> Hexes { get; private set; }
     public Dictionary<InsectType, int> PlayerInsects { get; private set; }
@@ -33,6 +34,7 @@ public class Board
     {
         HexesToPutInsectIds = board.vertexidtoput;
         QueenRuleMet = board.queenrulemet;
+        PlayerColor = board.playercolor;
         SetBoard(board.hexes, invokeEvent, highlighted);
     }
 

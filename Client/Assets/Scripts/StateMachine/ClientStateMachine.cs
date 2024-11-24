@@ -42,8 +42,10 @@ public class ClientStateMachine
 
     private void HandleStateChanged(ClientState oldState, ClientState newState)
     {
-        StateStrategyFactory.GetStrategy(oldState).OnStateEntry();
-        StateStrategyFactory.GetStrategy(newState).OnStateEntry();
+        var stateLifecycle = StateStrategyFactory.GetStrategy(oldState);
+
+        stateLifecycle.OnStateExit();
+        stateLifecycle.OnStateEntry();
 
         GameManager.GameState = newState;
         GameManager.GameScene = StateStrategyFactory.GetStrategy(newState).Scene;

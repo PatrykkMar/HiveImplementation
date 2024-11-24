@@ -54,19 +54,10 @@ namespace HiveGame.BusinessLogic.Models.Board
                     verticesDTO.Add(lastVertexDTO);
                 }
             }
-
+            boardDto.playercolor = playerColor;
             boardDto.hexes = verticesDTO;
             boardDto.vertexidtoput = toPut.Select(x => x.Id).ToList();
             boardDto.queenrulemet = turn != 4 || board.AllInsects.Where(x => x.Type == InsectType.Queen).Any(x => x.PlayerColor == playerColor);
-
-            if (boardDto.queenrulemet)
-            {
-                int a = 1;
-            }
-            else
-            {
-                int a = 1;
-            }
 
             return boardDto;
         }
