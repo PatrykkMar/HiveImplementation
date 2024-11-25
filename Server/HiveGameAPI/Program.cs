@@ -45,7 +45,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddSignalR(options =>
 {
-    options.AddFilter<ExceptionHandlingHubFilter>();
+    options.AddFilter<HubFilter>();
 });
 // Register application services
 builder.Services.AddScoped<IHiveGameService, HiveGameService>();

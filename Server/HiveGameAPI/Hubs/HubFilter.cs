@@ -5,11 +5,11 @@ namespace HiveGame.Hubs
 {
 
 
-    public class ExceptionHandlingHubFilter : IHubFilter
+    public class HubFilter : IHubFilter
     {
-        private readonly ILogger<ExceptionHandlingHubFilter> _logger;
+        private readonly ILogger<HubFilter> _logger;
 
-        public ExceptionHandlingHubFilter(ILogger<ExceptionHandlingHubFilter> logger)
+        public HubFilter(ILogger<HubFilter> logger)
         {
             _logger = logger;
         }
@@ -20,6 +20,10 @@ namespace HiveGame.Hubs
         {
             try
             {
+                _logger.LogInformation("SignalR Request: Hub: {HubName}, Method: {MethodName}, Arguments: {Arguments}",
+                invocationContext.HubMethodName,
+                invocationContext.Context.UserIdentifier,
+                invocationContext.HubMethodArguments);
                 return await next(invocationContext);
             }
             catch (Exception ex)

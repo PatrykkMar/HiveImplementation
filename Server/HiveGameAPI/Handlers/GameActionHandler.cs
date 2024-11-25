@@ -85,14 +85,19 @@ namespace HiveGame.Handlers
                     var currentPlayer = game.GetCurrentPlayer().PlayerId;
                     var otherPlayer = game.GetOtherPlayer().PlayerId;
 
+                    var connection = _connectionManager.GetConnectionId(player);
+
+                    if (connection == null)
+                        throw new Exception("Connection not found");
+
                     if (player == currentPlayer)
                     {
-                        await clients.Client(_connectionManager.GetConnectionId(player))
+                        await clients.Client(connection)
                             .SendAsync("ReceiveMessage", playerId, "Found the game. It's your move", ClientState.InGamePlayerFirstMove, playerView);
                     }
                     else if (player == otherPlayer)
                     {
-                        await clients.Client(_connectionManager.GetConnectionId(player))
+                        await clients.Client(connection)
                             .SendAsync("ReceiveMessage", playerId, "Found the game. It's opponent's move", ClientState.InGameOpponentMove, playerView);
                     }
                     else
