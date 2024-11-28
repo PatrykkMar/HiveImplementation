@@ -77,6 +77,11 @@ namespace HiveGame.BusinessLogic.Models.Board
         public Point2D Coords
         {
             get { return new Point2D(X, Y); }
+            set
+            {
+                X = value.X; 
+                Y = value.Y;
+            }
         }
     }
 }
