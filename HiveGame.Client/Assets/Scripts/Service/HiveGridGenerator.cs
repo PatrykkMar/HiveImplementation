@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using HiveGame.Core.Models;
+using Unity.VisualScripting;
 
 public class HexGridGenerator : MonoBehaviour
 {
@@ -51,7 +52,7 @@ public class HexGridGenerator : MonoBehaviour
 
         foreach (var vertex in vertices)
         {
-            var name = vertex.Details;
+            var name = $"Hex_{vertex.x}_{vertex.y}_{vertex.z}_" + (vertex.insect == InsectType.Nothing ? "no insect" : "insect") + (" id: " + vertex.id);
             Vector3 position = CalculatePosition(vertex.x, vertex.y, vertex.z);
             GameObject hexPrism = Instantiate(hexPrismPrefab, position, Quaternion.identity);
             generatedVertices.Add(hexPrism);

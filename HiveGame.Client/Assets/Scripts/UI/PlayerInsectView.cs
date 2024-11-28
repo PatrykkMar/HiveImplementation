@@ -56,10 +56,6 @@ public class PlayerInsectView : MonoBehaviour
             {
                 if (ins == InsectType.Nothing)
                     continue;
-
-                var button = InsectButtonDict[ins];
-                var buttonImage = button.GetComponent<Image>();
-                buttonImage.color = Color.white;
             }
     }
 
