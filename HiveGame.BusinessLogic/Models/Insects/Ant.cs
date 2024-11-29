@@ -17,11 +17,11 @@ namespace HiveGame.BusinessLogic.Models.Insects
             PlayerColor = color;
         }
 
-        public override InsectValidationResult GetAvailableVertices(Vertex moveFrom, HiveBoard board)
+        public override InsectValidationResult GetAvailableVertices(IVertex moveFrom, IHiveBoard board)
         {
             var result = new InsectValidationResult();
 
-            List<Vertex> vertices = BasicCheck(moveFrom, board, out string? whyMoveImpossible);
+            List<IVertex> vertices = BasicCheck(moveFrom, board, out string? whyMoveImpossible);
 
             if(vertices.Count == 0) 
             {
@@ -37,7 +37,7 @@ namespace HiveGame.BusinessLogic.Models.Insects
                 return result;
             }
 
-            List<Vertex> hexesToMoveFromfreeHexes = freeHexesAround
+            List<IVertex> hexesToMoveFromfreeHexes = freeHexesAround
                 .SelectMany(x => GetVerticesByBFS(moveFrom, board))
                 .Distinct()
                 .ToList();

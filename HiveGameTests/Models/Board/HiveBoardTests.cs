@@ -8,11 +8,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HiveGameTests.Board
+namespace HiveGameTests.Models.Board
 {
     public class HiveBoardTests
     {
-        private readonly HiveBoard _board;
+        private readonly IHiveBoard _board;
 
         public HiveBoardTests()
         {
@@ -33,10 +33,12 @@ namespace HiveGameTests.Board
         [Fact]
         public void EmptyVertices_ShouldReturnOnlyEmptyVertices()
         {
-            var emptyVertexMock = new Mock<Vertex>();
+            var emptyVertexMock = new Mock<IVertex>();
+            emptyVertexMock.Setup(x => x.Coords).Returns(new Point2D(0, 0));
             emptyVertexMock.Setup(v => v.IsEmpty).Returns(true);
 
-            var nonEmptyVertexMock = new Mock<Vertex>();
+            var nonEmptyVertexMock = new Mock<IVertex>();
+            nonEmptyVertexMock.Setup(x => x.Coords).Returns(new Point2D(0, 1));
             nonEmptyVertexMock.Setup(v => v.IsEmpty).Returns(false);
 
             _board.AddVertex(emptyVertexMock.Object);
@@ -50,7 +52,8 @@ namespace HiveGameTests.Board
         [Fact]
         public void FirstMoves_ShouldReturnTrueWhenLessThanTwoNonEmptyVertices()
         {
-            var nonEmptyVertexMock = new Mock<Vertex>();
+            var nonEmptyVertexMock = new Mock<IVertex>();
+            nonEmptyVertexMock.Setup(x => x.Coords).Returns(new Point2D(0, 1));
             nonEmptyVertexMock.Setup(v => v.IsEmpty).Returns(false);
 
             _board.AddVertex(nonEmptyVertexMock.Object);
@@ -63,10 +66,12 @@ namespace HiveGameTests.Board
         [Fact]
         public void FirstMoves_ShouldReturnFalseWhenTwoOrMoreNonEmptyVertices()
         {
-            var nonEmptyVertexMock1 = new Mock<Vertex>();
+            var nonEmptyVertexMock1 = new Mock<IVertex>();
             nonEmptyVertexMock1.Setup(v => v.IsEmpty).Returns(false);
-            var nonEmptyVertexMock2 = new Mock<Vertex>();
+            nonEmptyVertexMock1.Setup(x => x.Coords).Returns(new Point2D(0, 0));
+            var nonEmptyVertexMock2 = new Mock<IVertex>();
             nonEmptyVertexMock2.Setup(v => v.IsEmpty).Returns(false);
+            nonEmptyVertexMock2.Setup(x => x.Coords).Returns(new Point2D(0, 1));
 
             _board.AddVertex(nonEmptyVertexMock1.Object);
             _board.AddVertex(nonEmptyVertexMock2.Object);
@@ -98,7 +103,7 @@ namespace HiveGameTests.Board
         [Fact]
         public void AddEmptyVerticesAround_ShouldBe7Vertices()
         {
-            var vertexMock = new Mock<Vertex>();
+            var vertexMock = new Mock<IVertex>();
             vertexMock.Setup(v => v.Coords).Returns(new Point2D(0, 0));
 
             _board.AddVertex(vertexMock.Object);

@@ -17,11 +17,11 @@ namespace HiveGame.BusinessLogic.Models.Insects
             PlayerColor = color;
         }
 
-        public override InsectValidationResult GetAvailableVertices(Vertex moveFrom, HiveBoard board)
+        public override InsectValidationResult GetAvailableVertices(IVertex moveFrom, IHiveBoard board)
         {
             var result = new InsectValidationResult();
 
-            List<Vertex> vertices = BasicCheck(moveFrom, board, out string? whyMoveImpossible, onlyEmpty: false);
+            List<IVertex> vertices = BasicCheck(moveFrom, board, out string? whyMoveImpossible, onlyEmpty: false);
 
             if (vertices.Count == 0)
             {

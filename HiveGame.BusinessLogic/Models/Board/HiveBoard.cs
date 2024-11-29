@@ -11,15 +11,34 @@ using static HiveGame.BusinessLogic.Models.Board.DirectionConsts;
 
 namespace HiveGame.BusinessLogic.Models.Board
 {
-    public class HiveBoard
+    public interface  IHiveBoard
     {
-        private Dictionary<string, Vertex> _board;
+        List<IVertex> Vertices { get; }
+        List<Insect> AllInsects { get; }
+        List<IVertex> NotEmptyVertices { get; }
+        List<IVertex> EmptyVertices { get; }
+        bool FirstMoves { get; }
+
+        void AddVertex(IVertex vertex);
+        void AddEmptyVerticesAround(IVertex vertex);
+        void RemoveAllEmptyUnconnectedVerticesAround(IVertex vertex);
+        IVertex? GetVertexByCoord(int x, int y);
+        IVertex? GetVertexByCoord(Point2D? point);
+        Dictionary<Direction, IVertex> GetAdjacentVerticesByCoordDict(IVertex vertex);
+        List<IVertex> GetAdjacentVerticesByCoordList(IVertex vertex);
+        IVertex? GetVertexFromVertexAtDirection(IVertex vertex, Direction direction);
+        List<long> GetHexesToMove(IVertex vertex, out string? whyMoveImpossible);
+    }
+
+    public class HiveBoard :  IHiveBoard
+    {
+        private Dictionary<string, IVertex> _board;
         public HiveBoard()
         {
-            _board = new Dictionary<string, Vertex>();
+            _board = new Dictionary<string, IVertex>();
         }
 
-        public List<Vertex> Vertices
+        public List<IVertex> Vertices
         {
             get
             {
@@ -35,7 +54,7 @@ namespace HiveGame.BusinessLogic.Models.Board
             }
         }
 
-        public List<long> GetHexesToMove(Vertex vertex, out string? whyMoveImpossible)
+        public List<long> GetHexesToMove(IVertex vertex, out string? whyMoveImpossible)
         {
             var availableVerticesResult = vertex.CurrentInsect.GetAvailableVertices(vertex, this);
             whyMoveImpossible = "";
@@ -51,7 +70,7 @@ namespace HiveGame.BusinessLogic.Models.Board
             return ids;
         }
 
-        public List<Vertex> NotEmptyVertices
+        public List<IVertex> NotEmptyVertices
         {
             get
             {
@@ -59,7 +78,7 @@ namespace HiveGame.BusinessLogic.Models.Board
             }
         }
 
-        public List<Vertex> EmptyVertices
+        public List<IVertex> EmptyVertices
         {
             get
             {
@@ -75,12 +94,12 @@ namespace HiveGame.BusinessLogic.Models.Board
             }
         }
 
-        public void AddVertex(Vertex vertex)
+        public void AddVertex(IVertex vertex)
         {
             _board[vertex.Coords.ToString()] = vertex;
         }
 
-        public void AddEmptyVerticesAround(Vertex vertex)
+        public void AddEmptyVerticesAround(IVertex vertex)
         {
             var board = this;
             var adjacentVertices = GetAdjacentVerticesByCoordDict(vertex);
@@ -95,7 +114,7 @@ namespace HiveGame.BusinessLogic.Models.Board
             }
         }
 
-        public void RemoveAllEmptyUnconnectedVerticesAround(Vertex vertex)
+        public void RemoveAllEmptyUnconnectedVerticesAround(IVertex vertex)
         {
             var verticesToDelete = GetAdjacentVerticesByCoordList(vertex).Where(x=>x.IsEmpty && GetAdjacentVerticesByCoordList(x).Where(y=>!y.IsEmpty).Count()==0);
 
@@ -103,7 +122,7 @@ namespace HiveGame.BusinessLogic.Models.Board
                 _board.Remove(ver.Coords.ToString());
         }
 
-        public Vertex? GetVertexByCoord(int x, int y)
+        public IVertex? GetVertexByCoord(int x, int y)
         {
             if (!_board.ContainsKey(Point2D.ToString(x, y)))
                 return null;
@@ -111,7 +130,7 @@ namespace HiveGame.BusinessLogic.Models.Board
 
         }
 
-        public Vertex? GetVertexByCoord(Point2D? point)
+        public IVertex? GetVertexByCoord(Point2D? point)
         {
             if(point == null)
                 return null;
@@ -120,9 +139,9 @@ namespace HiveGame.BusinessLogic.Models.Board
         }
 
 
-        public Dictionary<Direction, Vertex> GetAdjacentVerticesByCoordDict(Vertex vertex)
+        public Dictionary<Direction, IVertex> GetAdjacentVerticesByCoordDict(IVertex vertex)
         {
-            var dict = new Dictionary<Direction, Vertex>();
+            var dict = new Dictionary<Direction, IVertex>();
 
             foreach (var direction in Get2DDirections())
             {
@@ -137,12 +156,12 @@ namespace HiveGame.BusinessLogic.Models.Board
             return dict;
         }
 
-        public List<Vertex> GetAdjacentVerticesByCoordList(Vertex vertex)
+        public List<IVertex> GetAdjacentVerticesByCoordList(IVertex vertex)
         {
             return GetAdjacentVerticesByCoordDict(vertex).Values.ToList();
         }
 
-        public Vertex? GetVertexFromVertexAtDirection(Vertex vertex, Direction direction) 
+        public IVertex? GetVertexFromVertexAtDirection(IVertex vertex, Direction direction) 
         { 
             var point = vertex.Coords.Add(NeighborOffsetsDict[direction].To2D());
             return GetVertexByCoord(point);

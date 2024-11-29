@@ -8,7 +8,20 @@ using static HiveGame.BusinessLogic.Models.Board.DirectionConsts;
 
 namespace HiveGame.BusinessLogic.Models.Board
 {
-    public class Vertex
+    public interface IVertex
+    {
+        long Id { get; set; }
+        int X { get; set; }
+        int Y { get; set; }
+        Point2D Coords { get; set; }
+        Insect? CurrentInsect { get; set; }
+        bool IsEmpty { get; }
+        Stack<Insect> InsectStack { get; }
+        string PrintVertex();
+        void AddInsectToStack(Insect insect);
+    }
+
+    public class Vertex : IVertex
     {
         public static long MaxId { get; set; } = 0;
         public Vertex() { }
@@ -25,12 +38,12 @@ namespace HiveGame.BusinessLogic.Models.Board
             CurrentInsect = insect;
         }
 
-        public Vertex(Vertex vertex, Point2D offset) : this(vertex.X + offset.X, vertex.Y + offset.Y)
+        public Vertex(IVertex vertex, Point2D offset) : this(vertex.X + offset.X, vertex.Y + offset.Y)
         {
 
         }
 
-        public Vertex(Vertex vertex, Direction direction) : this(vertex, NeighborOffsetsDict[direction].To2D())
+        public Vertex(IVertex vertex, Direction direction) : this(vertex, NeighborOffsetsDict[direction].To2D())
         {
 
         }

@@ -18,7 +18,7 @@ namespace HiveGame.BusinessLogic.Models.Insects
             PlayerColor = color;
         }
 
-        public override InsectValidationResult GetAvailableVertices(Vertex moveFrom, HiveBoard board)
+        public override InsectValidationResult GetAvailableVertices(IVertex moveFrom, IHiveBoard board)
         {
             var result = new InsectValidationResult();
 
@@ -40,9 +40,9 @@ namespace HiveGame.BusinessLogic.Models.Insects
             return result;
         }
 
-        public List<Vertex> GetPossibleMovesForGrasshopper(Vertex moveFrom, HiveBoard board)
+        public List<IVertex> GetPossibleMovesForGrasshopper(IVertex moveFrom, IHiveBoard board)
         {
-            var possibleMoves = new List<Vertex>();
+            var possibleMoves = new List<IVertex>();
 
             foreach ( var direction in Enum.GetValues<Direction>()) 
             {

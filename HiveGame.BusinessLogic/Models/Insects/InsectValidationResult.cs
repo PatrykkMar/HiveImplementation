@@ -11,7 +11,7 @@ namespace HiveGame.BusinessLogic.Models.Insects
 {
     public class InsectValidationResult
     {
-        public List<Vertex> AvailableVertices { get; set; } = new List<Vertex>();
+        public List<IVertex> AvailableVertices { get; set; } = new List<IVertex>();
         public string? ReasonWhyEmpty { get; set; }
     }
 }

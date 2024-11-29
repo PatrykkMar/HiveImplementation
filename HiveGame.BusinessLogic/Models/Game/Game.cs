@@ -7,7 +7,23 @@ using HiveGame.Core.Extensions;
 
 namespace HiveGame.BusinessLogic.Models
 {
-    public class Game
+    public interface IGame
+    {
+        string Id { get; set; }
+        int NumberOfMove { get; set; }
+        int Turn { get; }
+        IHiveBoard Board { get; set; }
+        Player[] Players { get; set; }
+        PlayerColor CurrentColorMove { get; set; }
+
+        Player GetCurrentPlayer();
+        Player GetOtherPlayer();
+        PlayerViewDTO GetPlayerView(string playerId);
+        void AfterActionMade();
+        bool CheckGameOverCondition();
+    }
+
+    public class Game : IGame
     {
         public Game(Player[] players, PlayerColor startingColor = PlayerColor.White)
         {
@@ -15,7 +31,8 @@ namespace HiveGame.BusinessLogic.Models
             Board = new HiveBoard();
             Players = players;
             CurrentColorMove = startingColor;
-            players = players.Shuffle().ToArray();
+            //TODO: Randoming first player
+            //players = players.Shuffle().ToArray();
             players[0].PlayerColor = PlayerColor.White;
             players[1].PlayerColor = PlayerColor.Black;
             NumberOfMove = 0;
@@ -28,7 +45,7 @@ namespace HiveGame.BusinessLogic.Models
 
         public int Turn => NumberOfMove / 2 + 1;
 
-        public HiveBoard Board { get; set; }
+        public IHiveBoard Board { get; set; }
 
         public Player[] Players { get; set; }
 

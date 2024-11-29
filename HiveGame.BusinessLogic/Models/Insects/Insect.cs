@@ -32,14 +32,14 @@ namespace HiveGame.BusinessLogic.Models.Insects
         /// <param name="moveFrom"></param>
         /// <param name="board"></param>
         /// <returns></returns>
-        public List<Vertex> BasicCheck(Vertex moveFrom, HiveBoard board, out string? whyMoveImpossible, bool onlyEmpty = true)
+        public List<IVertex> BasicCheck(IVertex moveFrom, IHiveBoard board, out string? whyMoveImpossible, bool onlyEmpty = true)
         {
             whyMoveImpossible = null;
             //hive can't divide to two separated hives
             if (BrokeHive(moveFrom, board))
             {
                 whyMoveImpossible = "Moving this insect would break the hive";
-                return new List<Vertex>();
+                return new List<IVertex>();
             }
 
 
@@ -47,11 +47,11 @@ namespace HiveGame.BusinessLogic.Models.Insects
             if (QueenNotSet(board))
             {
                 whyMoveImpossible = "It's 4th turn, you have to put the queen now";
-                return new List<Vertex>();
+                return new List<IVertex>();
             }
 
             //most insects can move only on empty vertices
-            List<Vertex> vertices = onlyEmpty ? board.EmptyVertices : board.Vertices;
+            List<IVertex> vertices = onlyEmpty ? board.EmptyVertices : board.Vertices;
 
 
             //cannot move on empty vertex which would be deleted after move
@@ -74,7 +74,7 @@ namespace HiveGame.BusinessLogic.Models.Insects
             return vertices;
         }
 
-        public bool BrokeHive(Vertex moveFrom, HiveBoard board)
+        public bool BrokeHive(IVertex moveFrom, IHiveBoard board)
         {
             if (moveFrom.InsectStack.Count > 1) //if there is a stack of insects, hive won't be broke
                 return false;
@@ -86,9 +86,9 @@ namespace HiveGame.BusinessLogic.Models.Insects
                 return false;
 
 
-            var result = new List<Vertex>();
-            var visited = new HashSet<Vertex>();
-            var queue = new Queue<Vertex>();
+            var result = new List<IVertex>();
+            var visited = new HashSet<IVertex>();
+            var queue = new Queue<IVertex>();
 
             queue.Enqueue(vertices[0]);
             visited.Add(vertices[0]);
@@ -117,13 +117,13 @@ namespace HiveGame.BusinessLogic.Models.Insects
             return vertices.Count != result.Count;
         }
 
-        public bool QueenNotSet(HiveBoard board)
+        public bool QueenNotSet(IHiveBoard board)
         {
             var queen = board.NotEmptyVertices.SelectMany(x=>x.InsectStack).FirstOrDefault(x => x.PlayerColor == PlayerColor && x.Type == InsectType.Queen);
             return queen == null;
         }
 
-        public List<Vertex> CheckNotSurroundedFields(Vertex moveFrom, HiveBoard board)
+        public List<IVertex> CheckNotSurroundedFields(IVertex moveFrom, IHiveBoard board)
         {
             var surroundings = board
                 .GetAdjacentVerticesByCoordList(moveFrom)
@@ -158,7 +158,7 @@ namespace HiveGame.BusinessLogic.Models.Insects
                 currentDirection = NextDirection(currentDirection);
             }
 
-            List<Vertex> freeVertices = freePoints
+            List<IVertex> freeVertices = freePoints
                 .Distinct()
                 .Select(x => board.GetVertexByCoord(x))
                 .Where(x => x != null)
@@ -167,18 +167,18 @@ namespace HiveGame.BusinessLogic.Models.Insects
             return freeVertices;
         }
 
-        public bool CheckIfSurrounded(Vertex moveFrom, HiveBoard board)
+        public bool CheckIfSurrounded(IVertex moveFrom, IHiveBoard board)
         {
             return CheckNotSurroundedFields(moveFrom, board).Count == 0;
         }
 
-        public abstract InsectValidationResult GetAvailableVertices(Vertex moveFrom, HiveBoard board);
+        public abstract InsectValidationResult GetAvailableVertices(IVertex moveFrom, IHiveBoard board);
 
-        public List<Vertex> GetVerticesByBFS(Vertex moveFrom, HiveBoard board, int? limit = null, int? onlyDistance = null)
+        public List<IVertex> GetVerticesByBFS(IVertex moveFrom, IHiveBoard board, int? limit = null, int? onlyDistance = null)
         {
-            var result = new List<Vertex>();
-            var visited = new HashSet<Vertex>();
-            var queue = new Queue<(Vertex vertex, int distance)>();
+            var result = new List<IVertex>();
+            var visited = new HashSet<IVertex>();
+            var queue = new Queue<(IVertex vertex, int distance)>();
 
             queue.Enqueue((moveFrom, 0));
             visited.Add(moveFrom);

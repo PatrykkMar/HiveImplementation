@@ -14,7 +14,7 @@ namespace HiveGame.BusinessLogic.AutoMapper
     {
         public AutoMapperProfile()
         {
-            CreateMap<Vertex, VertexDTO>()
+            CreateMap<IVertex, VertexDTO>()
                 .ForMember(dest => dest.x, opt => opt.MapFrom(src => src.X))  
                 .ForMember(dest => dest.y, opt => opt.MapFrom(src => src.Y)) 
                 .ForMember(dest => dest.highlighted, opt => opt.MapFrom(src => src.IsEmpty));

@@ -85,7 +85,7 @@ namespace HiveGame.BusinessLogic.Services
 
             var board = game.Board;
 
-            Vertex vertex;
+            IVertex vertex;
             Insect insect = _insectFactory.CreateInsect(request.InsectToPut, game.CurrentColorMove);
 
             if (board.NotEmptyVertices.Count == 0)

@@ -5,7 +5,7 @@ namespace HiveGame.BusinessLogic.Models.Board
 {
     public class BoardDTOFactory
     {
-        public static BoardDTO CreateBoardDTO(HiveBoard board, PlayerColor playerColor, int turn)
+        public static BoardDTO CreateBoardDTO(IHiveBoard board, PlayerColor playerColor, int turn)
         {
             var boardDto = new BoardDTO();
 
@@ -55,7 +55,7 @@ namespace HiveGame.BusinessLogic.Models.Board
             return boardDto;
         }
 
-        public static VertexDTO CreateVertexDTO(Vertex vertex, PlayerColor playerColor)
+        public static VertexDTO CreateVertexDTO(IVertex vertex, PlayerColor playerColor)
         {
             var vertexDTO = new VertexDTO();
             vertexDTO.id = vertex.Id;
@@ -70,7 +70,7 @@ namespace HiveGame.BusinessLogic.Models.Board
             return vertexDTO;
         }
 
-        public static void SetVertexToMove(VertexDTO dto, Vertex vertex, HiveBoard board, PlayerColor playerColor)
+        public static void SetVertexToMove(VertexDTO dto, IVertex vertex, IHiveBoard board, PlayerColor playerColor)
         {
             var hexesToMove = board.GetHexesToMove(vertex, out string? whyMoveImpossible);
             dto.vertexidtomove = vertex.CurrentInsect != null && vertex.CurrentInsect.PlayerColor == playerColor ? hexesToMove : null;
