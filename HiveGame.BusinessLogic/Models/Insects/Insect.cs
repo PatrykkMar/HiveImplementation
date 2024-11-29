@@ -23,9 +23,7 @@ namespace HiveGame.BusinessLogic.Models.Insects
             Type = type;
             PlayerColor = color;
         }
-        [BsonRepresentation(BsonType.String)]
         public InsectType Type { get; set; }
-        [BsonRepresentation(BsonType.String)]
         public PlayerColor PlayerColor { get; set; }
 
         /// <summary>

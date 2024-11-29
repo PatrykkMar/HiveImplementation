@@ -3,6 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 using HiveGame.BusinessLogic.Models.Board;
 using System.Linq;
 using HiveGame.Core.Models;
+using HiveGame.Core.Extensions;
 
 namespace HiveGame.BusinessLogic.Models
 {
@@ -14,6 +15,7 @@ namespace HiveGame.BusinessLogic.Models
             Board = new HiveBoard();
             Players = players;
             CurrentColorMove = startingColor;
+            players = players.Shuffle().ToArray();
             players[0].PlayerColor = PlayerColor.White;
             players[1].PlayerColor = PlayerColor.Black;
             NumberOfMove = 0;
