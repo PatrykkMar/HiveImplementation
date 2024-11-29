@@ -19,13 +19,5 @@ namespace HiveGame.Core.Models
         public PlayerColor? playercolor { get; set; }
         public List<long> vertexidtomove { get; set; } = new List<long>();
         public string reasonwhymoveimpossible { get; set; }
-
-        public string Details
-        {
-            get
-            {
-                return $"Hex_{x}_{y}_{z}_" + (insect == InsectType.Nothing ? "no insect" : "insect") + (" id: " + id);
-            }
-        }
     }
 }

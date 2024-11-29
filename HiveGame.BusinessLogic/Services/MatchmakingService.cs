@@ -8,6 +8,8 @@ using HiveGame.BusinessLogic.Models.WebSocketModels;
 using HiveGame.BusinessLogic.Factories;
 using HiveGame.BusinessLogic.Models.Board;
 using HiveGame.BusinessLogic.Repositories;
+using HiveGame.BusinessLogic.Utils;
+using HiveGame.DataAccess.Repositories;
 
 namespace HiveGame.BusinessLogic.Services
 {
@@ -24,12 +26,14 @@ namespace HiveGame.BusinessLogic.Services
 
         private readonly IMatchmakingRepository _matchmakingRepository;
         private readonly IGameRepository _gameRepository;
+        private readonly IGameConverter _converter;
         private readonly IGameFactory _gameFactory;
-        public MatchmakingService(IMatchmakingRepository matchmakingRepository, IGameRepository gameRepository, IGameFactory gameFactory)
+        public MatchmakingService(IMatchmakingRepository matchmakingRepository, IGameRepository gameRepository, IGameFactory gameFactory, IGameConverter converter)
         {
             _matchmakingRepository = matchmakingRepository;
             _gameRepository = gameRepository;
             _gameFactory = gameFactory;
+            _converter = converter;
         }
 
         public Game? JoinQueue(string clientId)
@@ -41,7 +45,7 @@ namespace HiveGame.BusinessLogic.Services
             {
                 var players = _matchmakingRepository.GetAndRemoveFirstTwo().ToArray();
                 var game = _gameFactory.CreateGame(players);
-                _gameRepository.Add(game);
+                _gameRepository.Add(_converter.ToGameDbModel(game));
                 return game;
             }
 

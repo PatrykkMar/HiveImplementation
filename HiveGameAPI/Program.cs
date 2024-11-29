@@ -9,9 +9,10 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using HiveGame.Managers;
 using HiveGame.Handlers;
-using HiveGame.BusinessLogic.Context;
 using log4net;
 using Microsoft.AspNetCore.SignalR;
+using HiveGame.DataAccess.Repositories;
+using HiveGame.DataAccess.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,6 +65,7 @@ builder.Services.AddScoped<ITokenUtils, TokenUtils>();
 builder.Services.AddScoped<IHiveMoveValidator, HiveMoveValidator>();
 builder.Services.AddScoped<IConnectionManager, ConnectionManager>();
 builder.Services.AddScoped<IGameActionsHandler, GameActionsHandler>();
+builder.Services.AddScoped<IGameConverter, GameConverter>();
 
 // Database context
 builder.Services.Configure<DatabaseSettings>(

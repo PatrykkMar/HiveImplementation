@@ -19,8 +19,7 @@ namespace HiveGame.BusinessLogic.Models
             NumberOfMove = 0;
         }
 
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
+
         public string Id { get; set; }
 
         public int NumberOfMove { get; set; }
@@ -30,7 +29,7 @@ namespace HiveGame.BusinessLogic.Models
         public HiveBoard Board { get; set; }
 
         public Player[] Players { get; set; }
-        [BsonRepresentation(BsonType.String)]
+
         public PlayerColor CurrentColorMove { get; set; }
 
         public Player GetCurrentPlayer()

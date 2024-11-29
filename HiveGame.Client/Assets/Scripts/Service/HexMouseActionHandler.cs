@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using HiveGame.Core.Models;
+using UnityEngine.UIElements;
 
 public class HexMouseActionHandler : MonoBehaviour
 {
@@ -20,10 +21,9 @@ public class HexMouseActionHandler : MonoBehaviour
         Debug.Log("Clicked hex: " + Vertex.id);
         StateStrategy.OnHexClick(Vertex);
     }
-
     void OnMouseEnter()
     {
-        Debug.Log("Moved mouse on hex: " + Vertex.Details);
+        Debug.Log("Moved mouse on hex: " + $"Hex_{Vertex.x}_{Vertex.y}_{Vertex.z}_" + (Vertex.insect == InsectType.Nothing ? "no insect" : "insect") + (" id: " + Vertex.id));
         StateStrategy.OnHexMove(Vertex);
     }
 

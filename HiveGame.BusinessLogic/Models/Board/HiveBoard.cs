@@ -2,6 +2,7 @@
 using HiveGame.BusinessLogic.Factories;
 using HiveGame.BusinessLogic.Models.Extensions;
 using HiveGame.BusinessLogic.Models.Insects;
+using HiveGame.DataAccess.Models;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace HiveGame.BusinessLogic.Models.Board
 {
     public class HiveBoard
     {
-        public Dictionary<string, Vertex> _board;
+        private Dictionary<string, Vertex> _board;
         public HiveBoard()
         {
             _board = new Dictionary<string, Vertex>();

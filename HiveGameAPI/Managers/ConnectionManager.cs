@@ -1,4 +1,5 @@
 ﻿using HiveGame.BusinessLogic.Repositories;
+using HiveGame.DataAccess.Repositories;
 using System.Collections.Concurrent;
 
 namespace HiveGame.Managers

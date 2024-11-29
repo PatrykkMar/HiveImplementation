@@ -1,19 +1,17 @@
-﻿using HiveGame.BusinessLogic.Models.Board;
-using HiveGame.BusinessLogic.Models;
+﻿using HiveGame.Core.Models;
+using HiveGame.DataAccess.Models;
+using Microsoft.Extensions.Options;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MongoDB.Driver;
-using Microsoft.Extensions.Options;
-using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.Serializers;
-using MongoDB.Bson;
-using HiveGame.BusinessLogic.Models.Insects;
-using HiveGame.Core.Models;
 
-namespace HiveGame.BusinessLogic.Context
+namespace HiveGame.DataAccess.Context
 {
     public class MongoDBContext
     {
@@ -26,7 +24,7 @@ namespace HiveGame.BusinessLogic.Context
             BsonSerializer.RegisterSerializer(new EnumSerializer<InsectType>(BsonType.String));
         }
 
-        public IMongoCollection<Game> Games => _database.GetCollection<Game>("games");
+        public IMongoCollection<GameDbModel> Games => _database.GetCollection<GameDbModel>("games");
 
     }
 

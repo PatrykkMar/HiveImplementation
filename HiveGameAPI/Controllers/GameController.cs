@@ -1,6 +1,8 @@
 using HiveGame.BusinessLogic.Models;
 using HiveGame.BusinessLogic.Models.Requests;
 using HiveGame.BusinessLogic.Repositories;
+using HiveGame.BusinessLogic.Utils;
+using HiveGame.DataAccess.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
@@ -11,10 +13,12 @@ namespace HiveGameAPI.Controllers
     public class GameController : ControllerBase
     {
         private readonly IGameRepository _gameRepository;
+        private readonly IGameConverter _converter;
 
-        public GameController(IGameRepository repository)
+        public GameController(IGameRepository repository, IGameConverter converter)
         {
             _gameRepository = repository;
+            _converter = converter;
         }
 
         // GET: /Game
@@ -62,7 +66,7 @@ namespace HiveGameAPI.Controllers
                 return BadRequest("Invalid game data.");
             }
 
-            _gameRepository.Add(game);
+            _gameRepository.Add(_converter.ToGameDbModel(game));
 
             return CreatedAtAction(nameof(GetGameById), new { gameId = game.Id }, game);
         }

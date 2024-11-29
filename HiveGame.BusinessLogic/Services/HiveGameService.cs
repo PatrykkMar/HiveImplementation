@@ -3,9 +3,9 @@ using HiveGame.BusinessLogic.Models.Board;
 using HiveGame.BusinessLogic.Models.Insects;
 using HiveGame.BusinessLogic.Models.Requests;
 using HiveGame.BusinessLogic.Models;
-using HiveGame.BusinessLogic.Repositories;
-using HiveGame.BusinessLogic.Services;
 using HiveGame.Core.Models;
+using HiveGame.DataAccess.Repositories;
+using HiveGame.BusinessLogic.Utils;
 
 namespace HiveGame.BusinessLogic.Services
 {
@@ -21,17 +21,19 @@ namespace HiveGame.BusinessLogic.Services
         private readonly IGameRepository _gameRepository;
         private readonly IInsectFactory _insectFactory;
         private readonly IHiveMoveValidator _moveValidator;
+        private readonly IGameConverter _converter;
 
-        public HiveGameService(IInsectFactory insectFactory, IGameRepository gameRepository, IHiveMoveValidator hiveMoveValidator)
+        public HiveGameService(IInsectFactory insectFactory, IGameRepository gameRepository, IHiveMoveValidator hiveMoveValidator, IGameConverter converter)
         {
             _gameRepository = gameRepository;
             _insectFactory = insectFactory;
             _moveValidator = hiveMoveValidator;
+            _converter = converter;
         }
 
         public HiveActionResult Move(MoveInsectRequest request)
         {
-            Game? game = _gameRepository.GetByPlayerId(request.PlayerId);
+            Game? game = _converter.FromGameDbModel(_gameRepository.GetByPlayerId(request.PlayerId));
             _moveValidator.ValidateMove(request, game);
 
             var board = game.Board;
@@ -58,7 +60,7 @@ namespace HiveGame.BusinessLogic.Services
 
         public HiveActionResult Put(PutInsectRequest request)
         {
-            Game? game = _gameRepository.GetByPlayerId(request.PlayerId);
+            Game? game = _converter.FromGameDbModel(_gameRepository.GetByPlayerId(request.PlayerId));
             _moveValidator.ValidatePut(request, game);
 
             var board = game.Board;
@@ -77,7 +79,7 @@ namespace HiveGame.BusinessLogic.Services
 
         public HiveActionResult PutFirstInsect(PutFirstInsectRequest request)
         {
-            Game? game = _gameRepository.GetByPlayerId(request.PlayerId);
+            Game? game = _converter.FromGameDbModel(_gameRepository.GetByPlayerId(request.PlayerId));
 
             _moveValidator.ValidatePutFirstInsect(request, game);
 
@@ -102,7 +104,7 @@ namespace HiveGame.BusinessLogic.Services
         public HiveActionResult AfterMoveActions(Game game)
         {
             game.AfterActionMade();
-            _gameRepository.Update(game.Id, game);
+            _gameRepository.Update(game.Id, _converter.ToGameDbModel(game));
 
             var result = new HiveActionResult(game, GetBoardDTOFromBoard(game));
 
