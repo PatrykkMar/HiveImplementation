@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace HiveGame.Core.Models
 {
+    [Serializable]
     public class BoardDTO
     {
         public PlayerColor playercolor { get; set; }

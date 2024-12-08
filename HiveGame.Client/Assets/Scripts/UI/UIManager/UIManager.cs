@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using HiveGame.Core.Models;
 
 public class UIManager : MonoBehaviour
 {

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 using TMPro;
 using Stateless;
 using UnityEngine.Events;
+using HiveGame.Core.Models;
 
 public class Scenes
 {

@@ -7,6 +7,7 @@ using TMPro;
 using Stateless;
 using UnityEngine.SceneManagement;
 using UnityEngine.Events;
+using HiveGame.Core.Models;
 
 public class ClientStateMachine
 {

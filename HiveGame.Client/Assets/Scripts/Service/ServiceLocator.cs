@@ -1,3 +1,4 @@
+using HiveGame.Core.Models;
 using UnityEngine;
 
 public class ServiceLocator

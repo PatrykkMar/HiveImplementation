@@ -21,7 +21,6 @@ namespace HiveGameAPI.Controllers
             _converter = converter;
         }
 
-        // GET: /Game
         [HttpGet]
         public ActionResult<IEnumerable<Game>> GetAllGames()
         {

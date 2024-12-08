@@ -1,14 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using HiveGame.Core.Models;
+using HiveGame.Core.Models.Requests;
 using Microsoft.AspNetCore.SignalR.Client;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
 
 public class HubService
 {
@@ -55,20 +52,20 @@ public class HubService
         _hubConnection.Reconnecting += OnReconnecting;
         _hubConnection.Reconnected += OnReconnected;
 
-        _hubConnection.On<string, string, ClientState?, PlayerViewDTO>("ReceiveMessage", (player, message, state, playerView) =>
+        _hubConnection.On<ReceiveMessageRequest>("ReceiveMessage", (request) =>
         {
             _mainThreadContext.Post(async _ =>
             {
-                Debug.Log($"Player: {player}. Message from server: {message}. Has trigger: {state.HasValue}");
+                Debug.Log($"Player: {request.PlayerId}. Message from server: {request.Message}. Has trigger: {request.State.HasValue}");
 
 
-                if (state.HasValue)
+                if (request.State.HasValue)
                 {
                     Debug.Log($"HubService: Got state");
 
-                    if(state.HasValue) 
+                    if(request.State.HasValue) 
                     {
-                        var nextStateScene = Scenes.GetSceneByState(state.Value);
+                        var nextStateScene = Scenes.GetSceneByState(request.State.Value);
                         if(nextStateScene != GameManager.GameScene)
                         {
                             AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(nextStateScene);
@@ -80,20 +77,20 @@ public class HubService
                         }
                     }
 
-                    OnStateReceived?.Invoke(state.Value);
+                    OnStateReceived?.Invoke(request.State.Value);
                 }
 
 
-                if (playerView?.PlayerInsects != null)
+                if (request.PlayerView?.PlayerInsects != null)
                 {
                     Debug.Log($"HubService: Got player insects");
-                    Board.Instance.SetPlayerInsects(playerView.PlayerInsects, invokeEvent: true);
+                    Board.Instance.SetPlayerInsects(request.PlayerView.PlayerInsects, invokeEvent: true);
                 }
 
-                if (playerView?.Board != null)
+                if (request.PlayerView?.Board != null)
                 {
                     Debug.Log($"HubService: Got board");
-                    Board.Instance.SetBoardFromDTO(playerView.Board, invokeEvent: true);
+                    Board.Instance.SetBoardFromDTO(request.PlayerView.Board, invokeEvent: true);
                 }
             }, null);
         });

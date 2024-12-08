@@ -8,7 +8,7 @@ namespace HiveGame.Managers
     public interface IConnectionManager
     {
         public void AddPlayerConnection(string playerId, string connectionId);
-        public void RemovePlayerConnection(string connectionId);
+        public string? RemovePlayerConnection(string connectionId);
         public void UpdatePlayerConnection(string playerId, string connectionId);
         public string? GetConnectionId(string playerId);
     }
@@ -28,8 +28,22 @@ namespace HiveGame.Managers
             PlayerConnectionDict.TryAdd(playerId, connectionId);
         }
 
-        public void RemovePlayerConnection(string connectionId)
+        public string? GetPlayerFromConnection(string connectionId)
         {
+            foreach (var pair in PlayerConnectionDict)
+            {
+                if (pair.Value == connectionId)
+                {
+                    return pair.Key;
+                }
+            }
+
+            return null;
+        }
+
+        public string? RemovePlayerConnection(string connectionId)
+        {
+            var playerId = GetPlayerFromConnection(connectionId);
             var keyToRemove = PlayerConnectionDict.Where(kvp => kvp.Value.Equals(connectionId)).Select(kvp => kvp.Key).FirstOrDefault();
 
 
@@ -42,6 +56,8 @@ namespace HiveGame.Managers
             {
                 PlayerConnectionDict.TryRemove(keyToRemove, out _);
             }
+
+            return playerId;
         }
 
         public string? GetConnectionId(string playerId) => PlayerConnectionDict.TryGetValue(playerId, out var connectionId) ? connectionId : null;

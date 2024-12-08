@@ -1,4 +1,4 @@
-﻿namespace HiveGame.Models
+﻿namespace HiveGame.Core.Models
 {
     public enum ClientState
     {

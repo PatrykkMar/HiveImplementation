@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System;
+using HiveGame.Core.Models;
 
 public static class StateStrategyFactory
 {

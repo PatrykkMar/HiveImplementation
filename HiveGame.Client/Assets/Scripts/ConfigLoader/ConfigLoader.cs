@@ -52,6 +52,8 @@ public class ConfigLoader
         {
 #if UNITY_EDITOR
             return Path.Combine(Directory.GetCurrentDirectory(), ConfigFileName);
+#elif UNITY_WEBGL
+        return WebGlDatas.Datas;
 #else
         return Path.Combine(Application.dataPath, ConfigFileName);
 #endif

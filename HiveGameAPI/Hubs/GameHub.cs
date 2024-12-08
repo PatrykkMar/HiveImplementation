@@ -74,6 +74,13 @@ namespace HiveGame.Hubs
             await _gameActionsHandler.MoveInsectAsync(fromPosition, toPosition, playerId, Clients);
         }
 
+        [Authorize]
+        public async Task FinishGame()
+        {
+            
+        }
+
+
         private string GetPlayerIdFromToken()
         {
             var playerIdClaim = Context.User?.FindFirst("PlayerId");

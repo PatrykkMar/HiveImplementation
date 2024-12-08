@@ -1,12 +1,12 @@
 ﻿using HiveGame.BusinessLogic.Models.Insects;
 using HiveGame.BusinessLogic.Models.Requests;
 using HiveGame.BusinessLogic.Models;
-using HiveGame.Models;
 using Microsoft.AspNetCore.Authorization;
 using HiveGame.BusinessLogic.Services;
 using HiveGame.Managers;
 using Microsoft.AspNetCore.SignalR;
 using HiveGame.Core.Models;
+using HiveGame.Core.Models.Requests;
 
 namespace HiveGame.Handlers
 {
@@ -94,12 +94,12 @@ namespace HiveGame.Handlers
                     if (player == currentPlayer)
                     {
                         await clients.Client(connection)
-                            .SendAsync("ReceiveMessage", playerId, "Found the game. It's your move", ClientState.InGamePlayerFirstMove, playerView);
+                            .SendAsync("ReceiveMessage", new ReceiveMessageRequest(playerId, "Found the game. It's your move", ClientState.InGamePlayerFirstMove, playerView));
                     }
                     else if (player == otherPlayer)
                     {
                         await clients.Client(connection)
-                            .SendAsync("ReceiveMessage", playerId, "Found the game. It's opponent's move", ClientState.InGameOpponentMove, playerView);
+                            .SendAsync("ReceiveMessage", new ReceiveMessageRequest(playerId, "Found the game. It's opponent's move", ClientState.InGameOpponentMove, playerView));
                     }
                     else
                     {
@@ -109,7 +109,7 @@ namespace HiveGame.Handlers
             }
             else
             {
-                await clients.Caller.SendAsync("ReceiveMessage", playerId, "Waiting for player", ClientState.WaitingForPlayers, null);
+                await clients.Caller.SendAsync("ReceiveMessage", new ReceiveMessageRequest(playerId, "Waiting for player", ClientState.WaitingForPlayers, null));
             }
         }
 
@@ -119,7 +119,7 @@ namespace HiveGame.Handlers
 
             _matchmakingService.LeaveQueue(playerId);
 
-            await clients.Caller.SendAsync("ReceiveMessage", playerId, "Left the queue", ClientState.Connected, null);
+            await clients.Caller.SendAsync("ReceiveMessage", new ReceiveMessageRequest(playerId, "Left the queue", ClientState.Connected, null));
         }
 
         private async Task NotifyGameActionResultAsync(HiveActionResult result, string playerId, IHubCallerClients clients)
@@ -137,17 +137,17 @@ namespace HiveGame.Handlers
                 {
                     if (isGameOver)
                     {
-                        await clients.Client(connectionId).SendAsync("ReceiveMessage", playerId, "Game is over", ClientState.GameOver, playerView);
+                        await clients.Client(connectionId).SendAsync("ReceiveMessage", new ReceiveMessageRequest(playerId, "Game is over", ClientState.GameOver, playerView));
                     }
                     else if (isCurrentPlayer)
                     {
                         var message = game.Board.FirstMoves ? "It's your first move" : "It's your move";
                         var state = game.Board.FirstMoves ? ClientState.InGamePlayerFirstMove : ClientState.InGamePlayerMove;
-                        await clients.Client(connectionId).SendAsync("ReceiveMessage", playerId, message, state, playerView);
+                        await clients.Client(connectionId).SendAsync("ReceiveMessage", new ReceiveMessageRequest(playerId, message, state, playerView));
                     }
                     else
                     {
-                        await clients.Client(connectionId).SendAsync("ReceiveMessage", playerId, "It's opponent's move", ClientState.InGameOpponentMove, playerView);
+                        await clients.Client(connectionId).SendAsync("ReceiveMessage", new ReceiveMessageRequest(playerId, "It's opponent's move", ClientState.InGameOpponentMove, playerView));
                     }
                 }
             }
