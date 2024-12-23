@@ -3,13 +3,16 @@ using HiveGame.BusinessLogic.Models.Requests;
 using HiveGame.BusinessLogic.Repositories;
 using HiveGame.BusinessLogic.Utils;
 using HiveGame.DataAccess.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Data;
 
 namespace HiveGameAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize(Roles = Roles.Admin)]
     public class GameController : ControllerBase
     {
         private readonly IGameRepository _gameRepository;

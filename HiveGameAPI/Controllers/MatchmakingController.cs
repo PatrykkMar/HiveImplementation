@@ -1,5 +1,7 @@
 using HiveGame.BusinessLogic.Models;
 using HiveGame.BusinessLogic.Repositories;
+using HiveGame.BusinessLogic.Utils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
@@ -7,6 +9,7 @@ namespace HiveGameAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize(Roles = Roles.Admin)]
     public class MatchmakingController : ControllerBase
     {
         private readonly IMatchmakingRepository _matchmakingRepository;

@@ -24,5 +24,12 @@ namespace HiveGameAPI.Controllers
             var result = _utils.CreateToken("PlayerId" + Guid.NewGuid().ToString());
             return Ok(result);
         }
+
+        [HttpGet("admin")]
+        public IActionResult LoginAsAdmin([FromQuery] string password)
+        {
+            var result = _utils.CreateAdminToken(password);
+            return Ok(result);
+        }
     }
 }

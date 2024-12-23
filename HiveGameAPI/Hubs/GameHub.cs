@@ -20,7 +20,7 @@ namespace HiveGame.Hubs
             _gameActionsHandler = gameActionsHandler;
         }
 
-        [Authorize]
+        [Authorize(Roles = Roles.Player)]
         public override async Task OnConnectedAsync()
         {
             string connectionId = Context.ConnectionId;
@@ -35,14 +35,14 @@ namespace HiveGame.Hubs
             await base.OnDisconnectedAsync(exception);
         }
 
-        [Authorize]
+        [Authorize(Roles = Roles.Player)]
         public async Task JoinQueue()
         {
             var playerId = GetPlayerIdFromToken();
             await _gameActionsHandler.JoinQueue(playerId, Clients);
         }
 
-        [Authorize]
+        [Authorize(Roles = Roles.Player)]
         public async Task LeaveQueue()
         {
 
@@ -50,14 +50,14 @@ namespace HiveGame.Hubs
             await _gameActionsHandler.LeaveQueue(playerId, Clients);
         }
 
-        [Authorize]
+        [Authorize(Roles = Roles.Player)]
         public async Task PutFirstInsect(InsectType type)
         {
             var playerId = GetPlayerIdFromToken();
             await _gameActionsHandler.PutFirstInsectAsync(type, playerId, Clients);
         }
 
-        [Authorize]
+        [Authorize(Roles = Roles.Player)]
         public async Task PutInsect(InsectType type, int[] whereToPut)
         {
             var playerId = GetPlayerIdFromToken();
@@ -65,7 +65,7 @@ namespace HiveGame.Hubs
             await _gameActionsHandler.PutInsectAsync(type, position, playerId, Clients);
         }
 
-        [Authorize]
+        [Authorize(Roles = Roles.Player)]
         public async Task MoveInsect(int[] moveFrom, int[] moveTo)
         {
             var playerId = GetPlayerIdFromToken();
@@ -74,7 +74,7 @@ namespace HiveGame.Hubs
             await _gameActionsHandler.MoveInsectAsync(fromPosition, toPosition, playerId, Clients);
         }
 
-        [Authorize]
+        [Authorize(Roles = Roles.Player)]
         public async Task FinishGame()
         {
             
