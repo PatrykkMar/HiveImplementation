@@ -8,5 +8,8 @@
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 	  <Exec Command="copy /Y &quot;$(TargetDir)$(TargetName).dll&quot; &quot;..\HiveGame.Client\Assets\Scripts\HiveGameDlls\$(TargetName).dll&quot;" />
 	</Target>
+	<ItemGroup>
+	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	</ItemGroup>
 
 </Project>

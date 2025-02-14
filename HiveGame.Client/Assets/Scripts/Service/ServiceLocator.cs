@@ -17,7 +17,7 @@ public class ServiceLocator
         }
     }
 
-    public HubService HubService { get; private set; }
+    public IHubService HubService { get; private set; }
     public HttpService HttpService { get; private set; }
     public ClientStateMachine ClientStateMachine { get; private set; }
     public ConfigLoader ConfigLoader { get; private set; }
@@ -37,8 +37,20 @@ public class ServiceLocator
         CurrentUser = new CurrentUser();
         EventAggregator = new EventAggregator();
 
+        if (Application.platform == RuntimePlatform.WebGLPlayer)
+        {
+            GameObject hubServiceObject = new GameObject("WebGlHubService");
+            WebGlHubService webGLHubService = hubServiceObject.AddComponent<WebGlHubService>();
+            webGLHubService.Initialize(ConfigLoader, EventAggregator);
+
+            HubService = webGLHubService;
+        }
+        else
+        {
+            HubService = new HubService(ConfigLoader, EventAggregator);
+        }
+
         ClientStateMachine = new ClientStateMachine();
-        HubService = new HubService(ConfigLoader, EventAggregator);
         HttpService = new HttpService(ConfigLoader, EventAggregator, CurrentUser);
         LogToFile = new LogToFile();
 

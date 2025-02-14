@@ -21,9 +21,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowOrigin", policy =>
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader());
+    policy.WithOrigins("http://localhost:63007")
+          .AllowAnyMethod()
+          .AllowAnyHeader()
+          .AllowCredentials());
+    //policy.AllowAnyOrigin()
+    //      .AllowAnyMethod()
+    //      .AllowAnyHeader());
 });
 
 //Logging
@@ -115,6 +119,20 @@ builder.Services
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
                 builder.Configuration["Jwt:AuthKey"] ?? throw new Exception("Auth key not found")))
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+                var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/matchmakinghub"))
+                {
+                    context.Token = accessToken;
+                }
+                return Task.CompletedTask;
+            }
         };
     });
 
