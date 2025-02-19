@@ -89,10 +89,9 @@ public class WebGlHubService : MonoBehaviour, IHubService
 
     public void ReceiveMessage(string json)
     {
-        var request = JsonUtility.FromJson<ReceiveMessageRequest>(json);
+        var unityRequest = JsonUtility.FromJson<ReceiveMessageRequestForUnitySerialization>(json);
 
-        Debug.Log(request.playerId);
-        Debug.Log(request.message);
+        var request = ReceiveMessageRequestForUnitySerialization.ConvertToOriginal(unityRequest);
 
         try
         {

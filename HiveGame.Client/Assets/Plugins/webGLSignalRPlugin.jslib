@@ -11,7 +11,10 @@ mergeInto(LibraryManager.library, {
             .build();
 
         window.hubConnection.on("ReceiveMessage", function (message) {
+					console.log('TestWebGL: ' + message);
+					console.log(message);
             const jsonString = JSON.stringify(message);
+			console.log('TestWebGL: ' +jsonString);
             SendMessage('WebGlHubService', 'ReceiveMessage', jsonString);
         });
 

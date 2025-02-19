@@ -81,16 +81,16 @@ public class HubService : IHubService
                 }
 
 
-                if (request.playerView?.playerinsects != null)
+                if (request.playerView?.PlayerInsects != null)
                 {
                     Debug.Log($"HubService: Got player insects");
-                    Board.Instance.SetPlayerInsects(request.playerView.playerinsects, invokeEvent: true);
+                    Board.Instance.SetPlayerInsects(request.playerView.PlayerInsects, invokeEvent: true);
                 }
 
-                if (request.playerView?.board != null)
+                if (request.playerView?.Board != null)
                 {
                     Debug.Log($"HubService: Got board");
-                    Board.Instance.SetBoardFromDTO(request.playerView.board, invokeEvent: true);
+                    Board.Instance.SetBoardFromDTO(request.playerView.Board, invokeEvent: true);
                 }
             }, null);
         });

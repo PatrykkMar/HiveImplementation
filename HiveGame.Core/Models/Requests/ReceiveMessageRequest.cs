@@ -10,15 +10,15 @@ namespace HiveGame.Core.Models.Requests
     {
         public ReceiveMessageRequest(string playerId, string message, ClientState? state, PlayerViewDTO playerView)
         {
-            PlayerId = playerId;
-            Message = message;
-            State = state;
-            PlayerView = playerView;
+            this.playerId = playerId;
+            this.message = message;
+            this.state = state;
+            this.playerView = playerView;
         }
 
-        public string PlayerId { get; set; }
-        public string Message { get; set; }
-        public ClientState? State { get; set; }
-        public PlayerViewDTO PlayerView { get; set; }
+        public string playerId { get; set; }
+        public string message { get; set; }
+        public ClientState? state { get; set; }
+        public PlayerViewDTO playerView { get; set; }
     }
 }
