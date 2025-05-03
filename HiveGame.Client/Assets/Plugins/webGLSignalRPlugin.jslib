@@ -29,13 +29,11 @@ mergeInto(LibraryManager.library, {
         window.hubConnection.invoke("LeaveQueue").catch(err => console.error(err));
     },
 
-    PutInsect: function (insectPtr, x, y, z) {
-        const insect = UTF8ToString(insectPtr);
+    PutInsect: function (insect, x, y, z) {
         window.hubConnection.invoke("PutInsect", insect, [x, y, z]).catch(err => console.error(err));
     },
 
-    PutFirstInsect: function (insectPtr) {
-        const insect = UTF8ToString(insectPtr);
+    PutFirstInsect: function (insect) {
         window.hubConnection.invoke("PutFirstInsect", insect).catch(err => console.error(err));
     },
 

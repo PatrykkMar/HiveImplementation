@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 
 
@@ -28,7 +29,7 @@ public class VertexDTOForUnitySerialization
     public bool highlighted;
     public bool isempty;
     public bool isthisplayerinsect;
-    public PlayerColor? playercolor;
+    public PlayerColor playercolor;
     public List<long> vertexidtomove;
     public string reasonwhymoveimpossible;
 }
@@ -36,8 +37,8 @@ public class VertexDTOForUnitySerialization
 [Serializable]
 public class PlayerViewDTOForUnitySerialization
 {
-    public BoardDTOForUnitySerialization Board;
-    public Dictionary<InsectType, int> PlayerInsects;
+    public BoardDTOForUnitySerialization board;
+    public List<PlayerInsectTypePairDTOForUnitySerialization> playerInsectTypePairs;
 }
 
 [Serializable]
@@ -58,8 +59,8 @@ public class ReceiveMessageRequestForUnitySerialization
             {
                 Board = new BoardDTO
                 {
-                    playercolor = serialized.playerView.Board.playercolor,
-                    hexes = serialized.playerView.Board.hexes?.ConvertAll(v => new VertexDTO
+                    playercolor = serialized.playerView.board.playercolor,
+                    hexes = serialized.playerView.board.hexes?.ConvertAll(v => new VertexDTO
                     {
                         id = v.id,
                         x = v.x,
@@ -73,11 +74,17 @@ public class ReceiveMessageRequestForUnitySerialization
                         vertexidtomove = v.vertexidtomove,
                         reasonwhymoveimpossible = v.reasonwhymoveimpossible
                     }),
-                    vertexidtoput = serialized.playerView.Board.vertexidtoput,
-                    queenrulemet = serialized.playerView.Board.queenrulemet
+                    vertexidtoput = serialized.playerView.board.vertexidtoput,
+                    queenrulemet = serialized.playerView.board.queenrulemet
                 },
-                PlayerInsects = serialized.playerView.PlayerInsects
+                PlayerInsectTypePairs = serialized.playerView.playerInsectTypePairs.Select(x=>new PlayerInsectTypePairDTO { amount=x.amount, type=x.type }).ToList()
             }
         );
     }
+}
+[Serializable]
+public class PlayerInsectTypePairDTOForUnitySerialization
+{
+    public InsectType type;
+    public int amount;
 }

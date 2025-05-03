@@ -65,7 +65,7 @@ namespace HiveGame.BusinessLogic.Models
         {
             var playerViewDTO = new PlayerViewDTO();
             var player = Players.FirstOrDefault(x => x.PlayerId == playerId);
-            playerViewDTO.PlayerInsects = player.PlayerInsects;
+            playerViewDTO.PlayerInsectTypePairs = player.PlayerInsects.Select(x => new PlayerInsectTypePairDTO { type = x.Key, amount = x.Value }).ToList();
             playerViewDTO.Board = BoardDTOFactory.CreateBoardDTO(Board, CurrentColorMove, Turn);
             return playerViewDTO;
         }

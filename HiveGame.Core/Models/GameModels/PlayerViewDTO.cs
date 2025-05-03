@@ -10,7 +10,17 @@ namespace HiveGame.Core.Models
     public class PlayerViewDTO
     {
         public BoardDTO Board { get; set; }
+        public List<PlayerInsectTypePairDTO> PlayerInsectTypePairs { get; set; }
 
-        public Dictionary<InsectType, int> PlayerInsects { get; set; }
+        public Dictionary<InsectType, int>? PlayerInsects
+        {
+            get
+            {
+                if (PlayerInsectTypePairs == null)
+                    return null;
+
+                return PlayerInsectTypePairs.ToDictionary(pair => pair.type, pair => pair.amount);
+            }
+        }
     }
 }

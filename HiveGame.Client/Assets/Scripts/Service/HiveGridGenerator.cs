@@ -34,16 +34,19 @@ public class HexGridGenerator : MonoBehaviour
 
     private void CreateMaterialDictionary()
     {
+        Debug.Log("Creating material dictionary");
         materialDictionary = new Dictionary<(PlayerColor,InsectType),Material>();
         foreach(var pair in insectObjectPairs)
         {
             var tuple = (pair.PlayerColor, pair.InsectType);
             materialDictionary.Add(tuple, pair.UV);
         }
+        Debug.Log("Material dictionary created. Count: " + materialDictionary.Count);
     }
 
     public void GenerateVertices(List<VertexDTO> vertices)
     {
+        Debug.Log($"Vertices are creating. Number of vertices: {vertices.Count}");
         foreach(var genVertex in generatedVertices)
         {
             Destroy(genVertex);
@@ -65,7 +68,7 @@ public class HexGridGenerator : MonoBehaviour
             }
             else
             {
-                if(!vertex.highlighted)
+                if (!vertex.highlighted)
                 {
 #if UNITY_EDITOR
                     Renderer hexPrismRenderer = hexPrism.GetComponent<Renderer>();
@@ -82,11 +85,10 @@ public class HexGridGenerator : MonoBehaviour
                     AddCollider(hexPrism);
                 }
             }
-
             hexPrism.name = name;
 
             hexPrism.AddComponent<HexMouseActionHandler>().Vertex = vertex;
-
+            Debug.Log($"Vertices created. Number of vertices: {vertices.Count}");
             WarningIfDuplicates(vertices);
         }
     }
@@ -105,6 +107,7 @@ public class HexGridGenerator : MonoBehaviour
 
     private void AddCollider(GameObject obj)
     {
+        Debug.Log("Add colider");
         if (!obj.GetComponent<Collider>())
         {
             obj.AddComponent<BoxCollider>();

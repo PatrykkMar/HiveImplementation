@@ -1,5 +1,6 @@
 ﻿using HiveGame.Core.Models;
 using HiveGame.Core.Models.Requests;
+using Microsoft.AspNetCore.SignalR.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 
 public class WebGlHubService : MonoBehaviour, IHubService
@@ -48,10 +50,10 @@ public class WebGlHubService : MonoBehaviour, IHubService
     private static extern void LeaveQueue();
 
     [DllImport("__Internal")]
-    private static extern void PutInsect(string insect, int x, int y, int z);
+    private static extern void PutInsect(InsectType insect, int x, int y, int z);
 
     [DllImport("__Internal")]
-    private static extern void PutFirstInsect(string insect);
+    private static extern void PutFirstInsect(InsectType insect);
 
     [DllImport("__Internal")]
     private static extern void MoveInsect(int fromX, int fromY, int fromZ, int toX, int toY, int toZ);
@@ -74,12 +76,12 @@ public class WebGlHubService : MonoBehaviour, IHubService
 
     public async Task PutInsectAsync(InsectType insect, (int, int, int) position)
     {
-        PutInsect(insect.ToString(), position.Item1, position.Item2, position.Item3);
+        PutInsect(insect, position.Item1, position.Item2, position.Item3);
     }
 
     public async Task PutFirstInsectAsync(InsectType insect)
     {
-        PutFirstInsect(insect.ToString());
+        PutFirstInsect(insect);
     }
 
     public async Task MoveInsectAsync((int, int, int) moveFrom, (int, int, int) moveTo)
@@ -89,17 +91,49 @@ public class WebGlHubService : MonoBehaviour, IHubService
 
     public void ReceiveMessage(string json)
     {
-        var unityRequest = JsonUtility.FromJson<ReceiveMessageRequestForUnitySerialization>(json);
-
-        var request = ReceiveMessageRequestForUnitySerialization.ConvertToOriginal(unityRequest);
-
-        try
+        _mainThreadContext.Post(async _ =>
         {
-            OnStateReceived?.Invoke(request.state.Value);
 
-        }
-        catch (Exception e) {
-            Debug.Log("Not found Value xd");
-        }
+            var unityRequest = JsonUtility.FromJson<ReceiveMessageRequestForUnitySerialization>(json);
+
+            var request = ReceiveMessageRequestForUnitySerialization.ConvertToOriginal(unityRequest);
+
+            Debug.Log($"Player: {request.playerId}. Message from server: {request.message}. Has trigger: {request.state.HasValue}");
+
+
+            if (request.state.HasValue)
+            {
+                Debug.Log($"HubService: Got state");
+
+                if (request.state.HasValue)
+                {
+                    var nextStateScene = Scenes.GetSceneByState(request.state.Value);
+                    if (nextStateScene != GameManager.GameScene)
+                    {
+                        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(nextStateScene);
+
+                        while (!asyncLoad.isDone)
+                        {
+                            await Task.Yield();
+                        }
+                    }
+                }
+
+                OnStateReceived?.Invoke(request.state.Value);
+            }
+
+
+            if (request.playerView?.PlayerInsects != null)
+            {
+                Debug.Log($"HubService: Got player insects");
+                Board.Instance.SetPlayerInsects(request.playerView.PlayerInsects, invokeEvent: true);
+            }
+
+            if (request.playerView?.Board != null)
+            {
+                Debug.Log($"HubService: Got board");
+                Board.Instance.SetBoardFromDTO(request.playerView.Board, invokeEvent: true);
+            }
+        }, null);
     }
 }

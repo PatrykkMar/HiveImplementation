@@ -46,6 +46,7 @@ public class PlayerInsectView : MonoBehaviour
 
     public void UpdatePlayerInsectView(Dictionary<InsectType, int> dict)
     {
+        Debug.Log("PlayerInsectView: Updating insect view. Count: " + dict.Count);
         SetInsects(dict);
     }
 
@@ -69,6 +70,9 @@ public class PlayerInsectView : MonoBehaviour
         {
             if (insect == InsectType.Nothing)
                 continue;
+
+            if (!insectDict.ContainsKey(insect))
+                insectDict.Add(insect, 0);
 
             buttons[buttonIndex].gameObject.transform.GetChild(0).GetComponent<Text>().text = Enum.GetName(typeof(InsectType), insect) + ": " + insectDict[insect].ToString();
             buttons[buttonIndex].onClick.RemoveAllListeners();
