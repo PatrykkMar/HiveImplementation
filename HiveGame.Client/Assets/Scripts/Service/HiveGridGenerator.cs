@@ -55,14 +55,18 @@ public class HexGridGenerator : MonoBehaviour
 
         foreach (var vertex in vertices)
         {
-            var name = $"Hex_{vertex.x}_{vertex.y}_{vertex.z}_" + (vertex.insect == InsectType.Nothing ? "no insect" : "insect") + (" id: " + vertex.id);
+            var name = $"Hex_{vertex.x}_{vertex.y}_{vertex.z}_" + 
+                Enum.GetName(typeof(PlayerColor), vertex.playercolor) + "_" +
+                (vertex.insect == InsectType.Nothing ? "no insect" : "insect") + 
+                (" id: " + vertex.id);
+            Debug.Log($"Creating: {name}");
             Vector3 position = CalculatePosition(vertex.x, vertex.y, vertex.z);
             GameObject hexPrism = Instantiate(hexPrismPrefab, position, Quaternion.identity);
             generatedVertices.Add(hexPrism);
             if(vertex.insect != InsectType.Nothing)
             {
                 Renderer hexPrismRenderer = hexPrism.GetComponent<Renderer>();
-                var tuple = (vertex.playercolor.Value, vertex.insect);
+                var tuple = (vertex.playercolor, vertex.insect);
                 hexPrismRenderer.material = materialDictionary[tuple];
                 AddCollider(hexPrism);
             }

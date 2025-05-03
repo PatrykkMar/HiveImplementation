@@ -8,6 +8,6 @@ namespace HiveGame.Core.Models
 {
     public enum PlayerColor
     {
-        White, Black
+        NoColor, White, Black
     }
 }
