@@ -34,16 +34,19 @@ public class HexGridGenerator : MonoBehaviour
 
     private void CreateMaterialDictionary()
     {
+        Debug.Log("Creating material dictionary");
         materialDictionary = new Dictionary<(PlayerColor,InsectType),Material>();
         foreach(var pair in insectObjectPairs)
         {
             var tuple = (pair.PlayerColor, pair.InsectType);
             materialDictionary.Add(tuple, pair.UV);
         }
+        Debug.Log("Material dictionary created. Count: " + materialDictionary.Count);
     }
 
     public void GenerateVertices(List<VertexDTO> vertices)
     {
+        Debug.Log($"Vertices are creating. Number of vertices: {vertices.Count}");
         foreach(var genVertex in generatedVertices)
         {
             Destroy(genVertex);
@@ -52,20 +55,24 @@ public class HexGridGenerator : MonoBehaviour
 
         foreach (var vertex in vertices)
         {
-            var name = $"Hex_{vertex.x}_{vertex.y}_{vertex.z}_" + (vertex.insect == InsectType.Nothing ? "no insect" : "insect") + (" id: " + vertex.id);
+            var name = $"Hex_{vertex.x}_{vertex.y}_{vertex.z}_" + 
+                Enum.GetName(typeof(PlayerColor), vertex.playercolor) + "_" +
+                (vertex.insect == InsectType.Nothing ? "no insect" : "insect") + 
+                (" id: " + vertex.id);
+            Debug.Log($"Creating: {name}");
             Vector3 position = CalculatePosition(vertex.x, vertex.y, vertex.z);
             GameObject hexPrism = Instantiate(hexPrismPrefab, position, Quaternion.identity);
             generatedVertices.Add(hexPrism);
             if(vertex.insect != InsectType.Nothing)
             {
                 Renderer hexPrismRenderer = hexPrism.GetComponent<Renderer>();
-                var tuple = (vertex.playercolor.Value, vertex.insect);
+                var tuple = (vertex.playercolor, vertex.insect);
                 hexPrismRenderer.material = materialDictionary[tuple];
                 AddCollider(hexPrism);
             }
             else
             {
-                if(!vertex.highlighted)
+                if (!vertex.highlighted)
                 {
 #if UNITY_EDITOR
                     Renderer hexPrismRenderer = hexPrism.GetComponent<Renderer>();
@@ -82,11 +89,10 @@ public class HexGridGenerator : MonoBehaviour
                     AddCollider(hexPrism);
                 }
             }
-
             hexPrism.name = name;
 
             hexPrism.AddComponent<HexMouseActionHandler>().Vertex = vertex;
-
+            Debug.Log($"Vertices created. Number of vertices: {vertices.Count}");
             WarningIfDuplicates(vertices);
         }
     }
@@ -105,6 +111,7 @@ public class HexGridGenerator : MonoBehaviour
 
     private void AddCollider(GameObject obj)
     {
+        Debug.Log("Add colider");
         if (!obj.GetComponent<Collider>())
         {
             obj.AddComponent<BoxCollider>();

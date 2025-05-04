@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace HiveGame.Core.Models
 {
-    public enum PlayerColor
+    public class PlayerInsectTypePairDTO
     {
-        NoColor, White, Black
+        public InsectType type { get; set; }
+        public int amount { get; set; }
     }
 }

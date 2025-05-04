@@ -14,7 +14,7 @@ namespace HiveGame.BusinessLogic.Models
         int Turn { get; }
         IHiveBoard Board { get; set; }
         Player[] Players { get; set; }
-        PlayerColor CurrentColorMove { get; set; }
+        PlayerColor CurrentColorMove { get; }
 
         Player GetCurrentPlayer();
         Player GetOtherPlayer();
@@ -49,7 +49,7 @@ namespace HiveGame.BusinessLogic.Models
 
         public Player[] Players { get; set; }
 
-        public PlayerColor CurrentColorMove { get; set; }
+        public PlayerColor CurrentColorMove { get; private set; }
 
         public Player GetCurrentPlayer()
         {
@@ -65,14 +65,26 @@ namespace HiveGame.BusinessLogic.Models
         {
             var playerViewDTO = new PlayerViewDTO();
             var player = Players.FirstOrDefault(x => x.PlayerId == playerId);
-            playerViewDTO.PlayerInsects = player.PlayerInsects;
+            playerViewDTO.PlayerInsectTypePairs = player.PlayerInsects.Select(x => new PlayerInsectTypePairDTO { type = x.Key, amount = x.Value }).ToList();
             playerViewDTO.Board = BoardDTOFactory.CreateBoardDTO(Board, CurrentColorMove, Turn);
             return playerViewDTO;
         }
 
         public void AfterActionMade()
         {
-            CurrentColorMove = (PlayerColor)(((int)(CurrentColorMove + 1)) % 2);
+            //setting next color
+            switch (CurrentColorMove)
+            {
+                case PlayerColor.Black:
+                    CurrentColorMove = PlayerColor.White;
+                    break;
+                case PlayerColor.White:
+                    CurrentColorMove = PlayerColor.Black;
+                    break;
+                case PlayerColor.NoColor:
+                    throw new Exception("There cannot be current player without a color");
+            }
+
             NumberOfMove++;
         }
 

@@ -6,30 +6,18 @@ using UnityEngine;
 
 public class ConfigLoader
 {
-    private const string ConfigFileName = "settings.config";
-
     private Dictionary<string, string> LoadConfig()
     {
-        if (!File.Exists(ConfigPath))
-        {
-            throw new FileNotFoundException($"Config file not found at {ConfigPath}!");
-        }
 
-        var configValues = new Dictionary<string, string>();
 
-        XmlDocument xmlDoc = new XmlDocument();
-        xmlDoc.Load(ConfigPath);
 
-        XmlNodeList nodes = xmlDoc.DocumentElement.ChildNodes;
-        foreach (XmlNode node in nodes)
-        {
-            if (node.NodeType == XmlNodeType.Element)
-            {
-                configValues[node.Name] = node.InnerText;
-            }
-        }
-
-        return configValues;
+#if UNITY_EDITOR
+        return WindowsConfig.LoadConfig();
+#elif UNITY_WEBGL
+            return WebGlConfig.Datas;
+#else
+        return WindowsConfig.LoadConfig(); //default config loading
+#endif
     }
 
     public string GetConfigValue(string key)
@@ -43,21 +31,6 @@ public class ConfigLoader
         else
         {
             throw new ArgumentException($"Config key '{key}' not found!");
-        }
-    }
-
-    private string ConfigPath
-    {
-        get
-        {
-#if UNITY_EDITOR
-            return Path.Combine(Directory.GetCurrentDirectory(), ConfigFileName);
-#elif UNITY_WEBGL
-        return WebGlDatas.Datas;
-#else
-        return Path.Combine(Application.dataPath, ConfigFileName);
-#endif
-
         }
     }
 }

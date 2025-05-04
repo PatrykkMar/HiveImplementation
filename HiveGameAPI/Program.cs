@@ -21,13 +21,20 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowOrigin", policy =>
-    policy.WithOrigins("http://localhost:63007")
-          .AllowAnyMethod()
-          .AllowAnyHeader()
-          .AllowCredentials());
-    //policy.AllowAnyOrigin()
-    //      .AllowAnyMethod()
-    //      .AllowAnyHeader());
+    policy.SetIsOriginAllowed(origin =>
+    {
+        return true;
+        // desktop client
+        if (string.IsNullOrEmpty(origin))
+        {
+            return true;
+        }
+        // web client
+        return origin == "http://localhost:59843";
+    })
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .AllowCredentials());
 });
 
 //Logging

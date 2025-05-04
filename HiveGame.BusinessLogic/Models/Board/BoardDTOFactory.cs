@@ -66,7 +66,7 @@ namespace HiveGame.BusinessLogic.Models.Board
             vertexDTO.highlighted = false;
             vertexDTO.isempty = vertex.IsEmpty;
             vertexDTO.isthisplayerinsect = vertex.CurrentInsect != null ? vertex.CurrentInsect.PlayerColor == playerColor : false;
-            vertexDTO.playercolor = vertex.CurrentInsect?.PlayerColor;
+            vertexDTO.playercolor = vertex.CurrentInsect?.PlayerColor ?? PlayerColor.NoColor;
             return vertexDTO;
         }
 

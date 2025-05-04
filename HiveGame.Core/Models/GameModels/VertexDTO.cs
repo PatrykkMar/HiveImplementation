@@ -16,7 +16,7 @@ namespace HiveGame.Core.Models
         public bool highlighted { get; set; }
         public bool isempty { get; set; }
         public bool isthisplayerinsect { get; set; }
-        public PlayerColor? playercolor { get; set; }
+        public PlayerColor playercolor { get; set; }
         public List<long> vertexidtomove { get; set; } = new List<long>();
         public string reasonwhymoveimpossible { get; set; }
     }
