@@ -134,6 +134,11 @@ public class WebGlHubService : MonoBehaviour, IHubService
                 Debug.Log($"HubService: Got board");
                 Board.Instance.SetBoardFromDTO(request.playerView.Board, invokeEvent: true);
             }
+
+            if (!string.IsNullOrEmpty(request.message))
+            {
+                _eventAggregator.InvokeMinorInformationTextReceived(request.message, 5);
+            }
         }, null);
     }
 }
