@@ -44,7 +44,7 @@ public class WebGlHubService : MonoBehaviour, IHubService
     private static extern void InitializeSignalR(string serverUrl, string token);
 
     [DllImport("__Internal")]
-    private static extern void JoinQueue();
+    private static extern void JoinQueue(string nick);
 
     [DllImport("__Internal")]
     private static extern void LeaveQueue();
@@ -64,9 +64,9 @@ public class WebGlHubService : MonoBehaviour, IHubService
         InitializeSignalR(_configLoader.GetConfigValue(ConfigLoaderConsts.MatchmakingHubUrlKey), token);
     }
 
-    public async Task JoinQueueAsync()
+    public async Task JoinQueueAsync(string nick)
     {
-        JoinQueue();
+        JoinQueue(nick);
     }
 
     public async Task LeaveQueueAsync()

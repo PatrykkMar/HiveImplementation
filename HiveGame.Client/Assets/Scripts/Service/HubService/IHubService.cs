@@ -10,7 +10,7 @@ public interface IHubService
     event Action<ClientState> OnStateReceived;
 
     Task InitializeMatchmakingServiceAsync(string token);
-    Task JoinQueueAsync();
+    Task JoinQueueAsync(string nick);
     Task LeaveQueueAsync();
     Task PutInsectAsync(InsectType insect, (int, int, int) position);
     Task PutFirstInsectAsync(InsectType insect);

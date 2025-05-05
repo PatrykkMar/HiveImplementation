@@ -16,7 +16,7 @@ namespace HiveGame.Handlers
         Task PutFirstInsectAsync(InsectType type, string playerId, IHubCallerClients clients);
         Task PutInsectAsync(InsectType type, Point2D position, string playerId, IHubCallerClients clients);
         Task MoveInsectAsync(Point2D moveFrom, Point2D moveTo, string playerId, IHubCallerClients clients);
-        Task JoinQueue(string playerId, IHubCallerClients clients);
+        Task JoinQueue(string playerId, string playerNick, IHubCallerClients clients);
         Task LeaveQueue(string playerId, IHubCallerClients clients);
     }
     public class GameActionsHandler : IGameActionsHandler
@@ -71,10 +71,10 @@ namespace HiveGame.Handlers
         }
 
         [Authorize]
-        public async Task JoinQueue(string playerId, IHubCallerClients clients)
+        public async Task JoinQueue(string playerId, string playerNick, IHubCallerClients clients)
         {
 
-            var game = _matchmakingService.JoinQueue(playerId);
+            var game = _matchmakingService.JoinQueue(playerId, playerNick);
 
             if (game != null)
             {
@@ -85,6 +85,7 @@ namespace HiveGame.Handlers
                     PlayerViewDTO playerView = game.GetPlayerView(player);
                     var currentPlayer = game.GetCurrentPlayer().PlayerId;
                     var otherPlayer = game.GetOtherPlayer().PlayerId;
+                    var otherPlayerNick = game.GetOtherPlayer().PlayerNick;
 
                     var connection = _connectionManager.GetConnectionId(player);
 
@@ -94,12 +95,12 @@ namespace HiveGame.Handlers
                     if (player == currentPlayer)
                     {
                         await clients.Client(connection)
-                            .SendAsync("ReceiveMessage", new ReceiveMessageRequest(playerId, "Found the game. It's your move", ClientState.InGamePlayerFirstMove, playerView));
+                            .SendAsync("ReceiveMessage", new ReceiveMessageRequest(playerId, $"Your opponent is {otherPlayerNick}. It's your move", ClientState.InGamePlayerFirstMove, playerView));
                     }
                     else if (player == otherPlayer)
                     {
                         await clients.Client(connection)
-                            .SendAsync("ReceiveMessage", new ReceiveMessageRequest(playerId, "Found the game. It's opponent's move", ClientState.InGameOpponentMove, playerView));
+                            .SendAsync("ReceiveMessage", new ReceiveMessageRequest(playerId, $"Your opponent is {otherPlayerNick}. It's opponent's move", ClientState.InGameOpponentMove, playerView));
                     }
                     else
                     {

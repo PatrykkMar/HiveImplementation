@@ -16,7 +16,7 @@ namespace HiveGame.BusinessLogic.Services
 
     public interface IMatchmakingService
     {
-        Game? JoinQueue(string clientId);
+        Game? JoinQueue(string clientId, string playerNick);
         void LeaveQueue(string clientId);
     }
 
@@ -36,10 +36,10 @@ namespace HiveGame.BusinessLogic.Services
             _converter = converter;
         }
 
-        public Game? JoinQueue(string clientId)
+        public Game? JoinQueue(string clientId, string playerNick)
         {
             if(_matchmakingRepository.GetByPlayerId(clientId) == null)
-                _matchmakingRepository.Add(new Player { PlayerId = clientId });
+                _matchmakingRepository.Add(new Player { PlayerId = clientId, PlayerNick = playerNick });
 
             if (_matchmakingRepository.Count >= PLAYERS_TO_START_GAME)
             {

@@ -6,7 +6,6 @@ public class DisconnectedStateStrategy : IStateStrategy
     {
         return new List<ButtonHelper>
         {
-            new ButtonHelper("Get token", () => ServiceLocator.Services.HttpService.GetToken())
         };
     }
 

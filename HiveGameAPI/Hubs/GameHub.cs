@@ -5,6 +5,7 @@ using HiveGame.Core.Models;
 using HiveGame.Handlers;
 using HiveGame.Managers;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 
 namespace HiveGame.Hubs
@@ -36,10 +37,10 @@ namespace HiveGame.Hubs
         }
 
         [Authorize(Roles = Roles.Player)]
-        public async Task JoinQueue()
+        public async Task JoinQueue(string nick)
         {
             var playerId = GetPlayerIdFromToken();
-            await _gameActionsHandler.JoinQueue(playerId, Clients);
+            await _gameActionsHandler.JoinQueue(playerId, nick, Clients);
         }
 
         [Authorize(Roles = Roles.Player)]

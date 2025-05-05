@@ -25,25 +25,6 @@ public class HttpService
         _currentUser = currentUser;
     } 
 
-    public IEnumerator GetToken()
-    {
-        Debug.Log("Get token method");
-
-        using (UnityWebRequest request = UnityWebRequest.Get(Url))
-        {
-            yield return request.SendWebRequest();
-            if (request.result != UnityWebRequest.Result.Success)
-            {
-                Debug.LogError("Can't connect to server");
-            }
-            else
-            {
-                string token = request.downloadHandler.text;
-                OnTokenReceived?.Invoke(token);
-                Debug.Log("Token: " + token);
-            }
-        }
-    }
 
     public IEnumerator GetTokenLoop()
     {

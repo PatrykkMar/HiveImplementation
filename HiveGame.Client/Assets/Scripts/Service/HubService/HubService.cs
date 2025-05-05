@@ -106,9 +106,9 @@ public class HubService : IHubService
         await _hubConnection.StartAsync();
     }
 
-    public async Task JoinQueueAsync()
+    public async Task JoinQueueAsync(string playerNick)
     {
-        await _hubConnection.InvokeAsync("JoinQueue");
+        await _hubConnection.InvokeAsync("JoinQueue", playerNick);
     }
 
     public async Task LeaveQueueAsync()

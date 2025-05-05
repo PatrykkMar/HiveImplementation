@@ -112,7 +112,8 @@ namespace HiveGame.BusinessLogic.Utils
 
             var datas = new Player()
             {
-                PlayerId = claims.FirstOrDefault(x => x.Type == "playerId").Value
+                PlayerId = claims.FirstOrDefault(x => x.Type == "playerId")?.Value,
+                PlayerNick = claims.FirstOrDefault(x => x.Type == "playerNick")?.Value,
             };
             return datas;
         }

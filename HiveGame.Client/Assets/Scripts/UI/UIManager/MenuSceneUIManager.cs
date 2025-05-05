@@ -13,6 +13,16 @@ using HiveGame.Core.Models;
 
 public class MenuSceneUIManager : UIManager
 {
+    public InputField nickText;
+    void Start()
+    {
+        nickText.onValueChanged.AddListener(OnNickChanged);
+    }
+
+    private void OnNickChanged(string newNick)
+    {
+        Board.Instance.PlayerNick = newNick;
+    }
     public override string Name
     {
         get

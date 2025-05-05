@@ -1897,6 +1897,7 @@ MonoBehaviour:
   - {fileID: 162637092}
   - {fileID: 817789457}
   - {fileID: 1538833710}
+  nickText: {fileID: 1142571688}
 --- !u!1 &1975601965
 GameObject:
   m_ObjectHideFlags: 0

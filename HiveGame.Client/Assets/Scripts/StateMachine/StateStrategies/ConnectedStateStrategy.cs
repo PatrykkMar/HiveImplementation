@@ -6,7 +6,14 @@ public class ConnectedStateStrategy : IStateStrategy
     {
         return new List<ButtonHelper>
         {
-            new ButtonHelper("Join the queue", async () => await ServiceLocator.Services.HubService.JoinQueueAsync())
+            new ButtonHelper("Join the queue", async () => {
+                var nick = Board.Instance.PlayerNick;
+                if(string.IsNullOrEmpty(nick))
+                    ServiceLocator.Services.EventAggregator.InvokeInformationTextReceived("There is no nick entered");
+                else
+                    await ServiceLocator.Services.HubService.JoinQueueAsync(nick);
+                }
+            )
         };
     }
 

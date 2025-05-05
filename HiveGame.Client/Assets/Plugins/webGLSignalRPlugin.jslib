@@ -11,18 +11,15 @@ mergeInto(LibraryManager.library, {
             .build();
 
         window.hubConnection.on("ReceiveMessage", function (message) {
-					console.log('TestWebGL: ' + message);
-					console.log(message);
             const jsonString = JSON.stringify(message);
-			console.log('TestWebGL: ' +jsonString);
             SendMessage('WebGlHubService', 'ReceiveMessage', jsonString);
         });
 
         window.hubConnection.start().catch(err => console.error(err));
     },
 
-    JoinQueue: function () {
-        window.hubConnection.invoke("JoinQueue").catch(err => console.error(err));
+    JoinQueue: function (nick) {
+        window.hubConnection.invoke("JoinQueue", nick).catch(err => console.error(err));
     },
 
     LeaveQueue: function () {
