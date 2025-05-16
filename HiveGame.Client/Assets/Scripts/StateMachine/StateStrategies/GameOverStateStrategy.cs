@@ -1,3 +1,4 @@
+using HiveGame.Core.Models;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,7 +12,8 @@ public class GameOverStateStrategy : IStateStrategy
     {
         return new List<ButtonHelper>
         {
-            new ButtonHelper("Exit the game", async () => ExitGame())
+            new ButtonHelper("Exit the game", async () => ExitGame()),
+            new ButtonHelper("Go back to joining queue screen", async () => JoinQueueScreen())
         };
     }
 
@@ -22,5 +24,10 @@ public class GameOverStateStrategy : IStateStrategy
 #else
             Application.Quit();
 #endif
+    }
+
+    private void JoinQueueScreen()
+    {
+        ServiceLocator.Services.ClientStateMachine.Fire(ClientState.Connected);
     }
 }
