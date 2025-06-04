@@ -24,9 +24,9 @@ public class ClientStateMachine
 
     }
 
-    public void Fire(ClientState state)
+    public async Task ChangeStateAsync(ClientState state)
     {
-        HandleStateChanged(CurrentState, state);
+        await HandleStateChangedAsync(CurrentState, state);
         CurrentState = state;
     }
 
@@ -41,8 +41,10 @@ public class ClientStateMachine
         OnStateChanged?.Invoke(GetCurrentState());
     }
 
-    private void HandleStateChanged(ClientState oldState, ClientState newState)
+    private async Task HandleStateChangedAsync(ClientState oldState, ClientState newState)
     {
+        await ChangeSceneAsync(newState);
+
         var stateLifecycle = StateStrategyFactory.GetStrategy(oldState);
 
         stateLifecycle.OnStateExit();
@@ -52,5 +54,19 @@ public class ClientStateMachine
         GameManager.GameScene = StateStrategyFactory.GetStrategy(newState).Scene;
 
         OnStateChanged?.Invoke(newState);
+    }
+
+    private async Task ChangeSceneAsync(ClientState state)
+    {
+        var nextStateScene = Scenes.GetSceneByState(state);
+        if (nextStateScene != GameManager.GameScene)
+        {
+            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(nextStateScene);
+
+            while (!asyncLoad.isDone)
+            {
+                await Task.Yield();
+            }
+        }
     }
 }

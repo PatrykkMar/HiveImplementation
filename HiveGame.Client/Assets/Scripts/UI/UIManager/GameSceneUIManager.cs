@@ -13,6 +13,8 @@ public class GameSceneUIManager : UIManager
     public override void UpdateUI(ClientState state)
     {
         base.UpdateUI(state);
+        Board.Instance.UpdateBoardUI();
+        Board.Instance.UpdatePlayerInsectsUI();
     }
 
 }

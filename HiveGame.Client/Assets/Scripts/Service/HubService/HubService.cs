@@ -9,7 +9,7 @@ using UnityEngine.SceneManagement;
 
 public class HubService : IHubService
 {
-    public event Action<ClientState> OnStateReceived;
+    public event Action<ClientState> OnStateFromServerReceived;
 
     private readonly ConfigLoader _configLoader;
     private SynchronizationContext _mainThreadContext;
@@ -62,24 +62,8 @@ public class HubService : IHubService
                 if (request.state.HasValue)
                 {
                     Debug.Log($"HubService: Got state");
-
-                    if(request.state.HasValue) 
-                    {
-                        var nextStateScene = Scenes.GetSceneByState(request.state.Value);
-                        if(nextStateScene != GameManager.GameScene)
-                        {
-                            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(nextStateScene);
-
-                            while (!asyncLoad.isDone)
-                            {
-                                await Task.Yield();
-                            }
-                        }
-                    }
-
-                    OnStateReceived?.Invoke(request.state.Value);
+                    OnStateFromServerReceived?.Invoke(request.state.Value);
                 }
-
 
                 if (request.playerView?.PlayerInsects != null)
                 {

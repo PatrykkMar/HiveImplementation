@@ -40,7 +40,7 @@ public class InGamePlayerMoveStateStrategy : IStateStrategy
             case PlayerMoveStateAction.PutInsect:
                 if (insect != InsectType.Queen && !Board.Instance.QueenRuleMet)
                 {
-                    ServiceLocator.Services.EventAggregator.InvokeMinorInformationTextReceived("It's 4th turn, you have to put the queen now", 5);
+                    ServiceLocator.Services.EventAggregator.InvokeMinorInformationTextReceived("It's 4th turn, you have to put the queen now", 5, 3);
                     Board.Instance.CancelHighlighing();
                     return;
                 }
@@ -108,19 +108,19 @@ public class InGamePlayerMoveStateStrategy : IStateStrategy
             case PlayerMoveStateAction.MoveInsect:
                 if (hexToMove == null)
                 {
-                    ServiceLocator.Services.EventAggregator.InvokeMinorInformationTextReceived("Hex to move not chosen", 5);
+                    ServiceLocator.Services.EventAggregator.InvokeMinorInformationTextReceived("Hex to move not chosen", 5, 3);
                     return;
                 }
                 if(hexToMove != null && !string.IsNullOrEmpty(hexToMove.reasonwhymoveimpossible))
                 {
-                    ServiceLocator.Services.EventAggregator.InvokeMinorInformationTextReceived("You can't move this insect. " + hexToMove.reasonwhymoveimpossible, 5);
+                    ServiceLocator.Services.EventAggregator.InvokeMinorInformationTextReceived("You can't move this insect. " + hexToMove.reasonwhymoveimpossible, 5, 3);
                     return;
                 }
                 break;
             case PlayerMoveStateAction.PutInsect:
                 if (!insectToPut.HasValue)
                 {
-                    ServiceLocator.Services.EventAggregator.InvokeMinorInformationTextReceived("Insect to put not chosen", 5);
+                    ServiceLocator.Services.EventAggregator.InvokeMinorInformationTextReceived("Insect to put not chosen", 5, 3);
                     return;
                 }
                 break;

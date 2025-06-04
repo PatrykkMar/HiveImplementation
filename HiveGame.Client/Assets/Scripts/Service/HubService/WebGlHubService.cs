@@ -15,7 +15,7 @@ using UnityEngine.SceneManagement;
 
 public class WebGlHubService : MonoBehaviour, IHubService
 {
-    public event Action<ClientState> OnStateReceived;
+    public event Action<ClientState> OnStateFromServerReceived;
 
     private ConfigLoader _configLoader;
     private SynchronizationContext _mainThreadContext;
@@ -119,7 +119,7 @@ public class WebGlHubService : MonoBehaviour, IHubService
                     }
                 }
 
-                OnStateReceived?.Invoke(request.state.Value);
+                OnStateFromServerReceived?.Invoke(request.state.Value);
             }
 
 

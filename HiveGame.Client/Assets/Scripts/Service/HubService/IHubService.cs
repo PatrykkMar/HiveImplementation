@@ -7,7 +7,7 @@ using UnityEngine;
 
 public interface IHubService
 {
-    event Action<ClientState> OnStateReceived;
+    event Action<ClientState> OnStateFromServerReceived;
 
     Task InitializeMatchmakingServiceAsync(string token);
     Task JoinQueueAsync(string nick);

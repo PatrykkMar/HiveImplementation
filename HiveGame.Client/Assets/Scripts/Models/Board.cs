@@ -99,4 +99,14 @@ public class Board
             ServiceLocator.Services.EventAggregator.InvokePlayerInsectsUpdate(insects);
         }
     }
+
+    public void UpdatePlayerInsectsUI()
+    {
+        ServiceLocator.Services.EventAggregator.InvokePlayerInsectsUpdate(PlayerInsects);
+    }
+
+    public void UpdateBoardUI()
+    {
+        ServiceLocator.Services.EventAggregator.InvokeBoardUpdate(Hexes);
+    }
 }

@@ -9,6 +9,10 @@ public class MinorInformationText : MonoBehaviour
     private float clearTextDelay = 0f;
     private bool isClearTimerActive = false;
 
+    private float unstoppableTimeTimer = 0f;
+    private float unstoppableTimeSet = 0f;
+    private bool isUnstoppableTimerActive = false;
+
     private void OnEnable()
     {
         ServiceLocator.Services.EventAggregator.MinorInformationTextReceived += UpdateInformationText;
@@ -33,11 +37,23 @@ public class MinorInformationText : MonoBehaviour
                 isClearTimerActive = false;
             }
         }
+
+        if (isUnstoppableTimerActive)
+        {
+            unstoppableTimeTimer += Time.deltaTime;
+
+            if (unstoppableTimeTimer >= unstoppableTimeSet)
+            {
+                unstoppableTimeSet = 0f; 
+                unstoppableTimeTimer = 0f;
+                isUnstoppableTimerActive = false;
+            }
+        }
     }
 
-    private void UpdateInformationText(string text, float? delay)
+    private void UpdateInformationText(string text, float? delay = null, float? unstoppableTime = null)
     {
-        if (informationText != null)
+        if (informationText != null && !isUnstoppableTimerActive)
         {
             informationText.text = text;
 
@@ -51,6 +67,18 @@ public class MinorInformationText : MonoBehaviour
             {
                 isClearTimerActive = false;
             }
+
+            if (unstoppableTime.HasValue)
+            {
+                unstoppableTimeTimer = 0f;
+                unstoppableTimeSet = 0f;
+                isUnstoppableTimerActive = true;
+            }
+            else
+            {
+                isUnstoppableTimerActive = false;
+            }
+
         }
     }
 }

@@ -23,7 +23,7 @@ public class PlayerInsectView : MonoBehaviour
     private void OnEnable()
     {
         ServiceLocator.Services.EventAggregator.PlayerInsectsUpdate += UpdatePlayerInsectView;
-        ServiceLocator.Services.HubService.OnStateReceived += ClearSetInsect;
+        ServiceLocator.Services.HubService.OnStateFromServerReceived += ClearSetInsect;
 
 		//TODO: Some information for player about his color
         //var image = GetComponent<Image>();
@@ -41,7 +41,7 @@ public class PlayerInsectView : MonoBehaviour
     private void OnDisable()
     {
         ServiceLocator.Services.EventAggregator.PlayerInsectsUpdate -= UpdatePlayerInsectView;
-        ServiceLocator.Services.HubService.OnStateReceived -= ClearSetInsect;
+        ServiceLocator.Services.HubService.OnStateFromServerReceived -= ClearSetInsect;
     }
 
     public void UpdatePlayerInsectView(Dictionary<InsectType, int> dict)

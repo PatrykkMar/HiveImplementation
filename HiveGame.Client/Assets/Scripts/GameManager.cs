@@ -16,9 +16,9 @@ public class GameManager : MonoBehaviour
         InitializeServiceLocator();
     }
 
-    private void Start()
+    async void Start()
     {
-        ServiceLocator.Services.ClientStateMachine.Fire(ClientState.Disconnected);
+        await ServiceLocator.Services.ClientStateMachine.ChangeStateAsync(ClientState.Disconnected);
 
         StartCoroutine(ServiceLocator.Services.HttpService.GetTokenLoop());
     }

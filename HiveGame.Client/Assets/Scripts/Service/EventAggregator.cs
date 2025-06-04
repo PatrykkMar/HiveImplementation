@@ -9,7 +9,7 @@ using UnityEngine.SceneManagement;
 public class EventAggregator
 {
     public event Action<string> InformationTextReceived;
-    public event Action<string, float?> MinorInformationTextReceived;
+    public event Action<string, float?, float?> MinorInformationTextReceived;
     public event Action<List<VertexDTO>> BoardUpdate;
     public event Action<Dictionary<InsectType, int>> PlayerInsectsUpdate;
 
@@ -18,10 +18,10 @@ public class EventAggregator
         Debug.Log("InvokeInformationTextReceived");
         InformationTextReceived?.Invoke(text);
     }
-    public void InvokeMinorInformationTextReceived(string text, float? delay = null)
+    public void InvokeMinorInformationTextReceived(string text, float? delay = null, float? unstoppableTime = null)
     {
         Debug.Log("InvokeMinorInformationTextReceived");
-        MinorInformationTextReceived?.Invoke(text, delay);
+        MinorInformationTextReceived?.Invoke(text, delay, unstoppableTime);
     }
 
     public void InvokeBoardUpdate(List<VertexDTO> hexes)
