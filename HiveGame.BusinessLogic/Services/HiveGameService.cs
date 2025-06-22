@@ -6,6 +6,7 @@ using HiveGame.BusinessLogic.Models;
 using HiveGame.Core.Models;
 using HiveGame.DataAccess.Repositories;
 using HiveGame.BusinessLogic.Utils;
+using HiveGame.BusinessLogic.Repositories;
 
 namespace HiveGame.BusinessLogic.Services
 {
@@ -19,16 +20,19 @@ namespace HiveGame.BusinessLogic.Services
     public class HiveGameService : IHiveGameService
     {
         private readonly IGameRepository _gameRepository;
+        private readonly IMatchmakingRepository _matchmakingRepository;
         private readonly IInsectFactory _insectFactory;
         private readonly IHiveMoveValidator _moveValidator;
         private readonly IGameConverter _converter;
 
-        public HiveGameService(IInsectFactory insectFactory, IGameRepository gameRepository, IHiveMoveValidator hiveMoveValidator, IGameConverter converter)
+        public HiveGameService(IInsectFactory insectFactory, IGameRepository gameRepository, IHiveMoveValidator hiveMoveValidator, 
+            IGameConverter converter, IMatchmakingRepository matchmakingRepository)
         {
             _gameRepository = gameRepository;
             _insectFactory = insectFactory;
             _moveValidator = hiveMoveValidator;
             _converter = converter;
+            _matchmakingRepository = matchmakingRepository;
         }
 
         public HiveActionResult Move(MoveInsectRequest request)
@@ -107,6 +111,20 @@ namespace HiveGame.BusinessLogic.Services
             _gameRepository.Update(game.Id, _converter.ToGameDbModel(game));
 
             var result = new HiveActionResult(game, GetBoardDTOFromBoard(game));
+
+            var players = game.Players;
+            foreach ( var player in players)
+            {
+                if (player.PlayerState == ClientState.InGamePlayerFirstMove || player.PlayerState == ClientState.InGamePlayerMove)
+                {
+                    player.PlayerState = ClientState.InGameOpponentMove;
+                }
+                else if(player.PlayerState == ClientState.InGameOpponentMove)
+                {
+                    player.PlayerState = game.Board.FirstMoves ? ClientState.InGamePlayerFirstMove : ClientState.InGamePlayerMove;
+                }
+
+            }
 
             result.GameOver = game.CheckGameOverCondition();
 
