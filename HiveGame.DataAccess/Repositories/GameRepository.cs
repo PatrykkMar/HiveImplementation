@@ -7,18 +7,18 @@ namespace HiveGame.DataAccess.Repositories
 {
     public interface IGameRepository
     {
-        long Count { get; }
+        Task<long> CountAsync();
 
-        void Add(GameDbModel item);
+        Task AddAsync(GameDbModel item);
 
-        IEnumerable<GameDbModel> GetAll();
+        Task<IEnumerable<GameDbModel>> GetAllAsync();
 
-        GameDbModel? GetByGameId(string gameId);
-        GameDbModel? GetByPlayerId(string playerId);
+        Task<GameDbModel?> GetByGameIdAsync(string gameId);
+        Task<GameDbModel?> GetByPlayerIdAsync(string playerId);
 
-        bool Update(string gameId, GameDbModel updatedItem);
+        Task<bool> UpdateAsync(string gameId, GameDbModel updatedItem);
 
-        bool Remove(string gameId);
+        Task<bool> RemoveAsync(string gameId);
     }
 
     public class GameRepository : IGameRepository
@@ -30,41 +30,44 @@ namespace HiveGame.DataAccess.Repositories
             _games = context.Games;
         }
 
-        public long Count
+        public async Task<long> CountAsync()
         {
-            get { return _games.CountDocuments(_ => true); }
+            return await _games.CountDocumentsAsync(_ => true);
         }
 
-        public void Add(GameDbModel item)
+        public async Task AddAsync(GameDbModel item)
         {
-            _games.InsertOne(item);
+            await _games.InsertOneAsync(item);
         }
 
-        public IEnumerable<GameDbModel> GetAll()
+        public async Task<IEnumerable<GameDbModel>> GetAllAsync()
         {
-            return _games.Find(_ => true).ToList();
+            var result = await _games.FindAsync(_ => true);
+            return result.ToList();
         }
 
-        public GameDbModel? GetByGameId(string gameId)
+        public async Task<GameDbModel?> GetByGameIdAsync(string gameId)
         {
-            return _games.Find(game => game.Id == gameId).FirstOrDefault();
+            var result = await _games.FindAsync(game => game.Id == gameId);
+            return await result.FirstOrDefaultAsync();
         }
 
-        public GameDbModel? GetByPlayerId(string playerId)
+        public async Task<GameDbModel?> GetByPlayerIdAsync(string playerId)
         {
-            return _games.Find(game => game.Players.Any(player => player.PlayerId == playerId)).FirstOrDefault();
+            var result = await _games.FindAsync(game => game.Players.Any(player => player.PlayerId == playerId));
+            return await result.FirstOrDefaultAsync();
         }
 
-        public bool Update(string gameId, GameDbModel updatedItem)
+        public async Task<bool> UpdateAsync(string gameId, GameDbModel updatedItem)
         {
             var filter = Builders<GameDbModel>.Filter.Eq(game => game.Id, gameId);
-            var result = _games.ReplaceOne(filter, updatedItem);
+            var result = await _games.ReplaceOneAsync(filter, updatedItem);
             return result.ModifiedCount > 0;
         }
 
-        public bool Remove(string gameId)
+        public async Task<bool> RemoveAsync(string gameId)
         {
-            var result = _games.DeleteOne(game => game.Id == gameId);
+            var result = await _games.DeleteOneAsync(game => game.Id == gameId);
             return result.DeletedCount > 0;
         }
     }

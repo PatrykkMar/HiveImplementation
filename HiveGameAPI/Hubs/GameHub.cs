@@ -32,7 +32,7 @@ namespace HiveGame.Hubs
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            _connectionManager.RemovePlayerConnection(Context.ConnectionId);
+            await _connectionManager.RemovePlayerConnectionAsync(Context.ConnectionId);
             await base.OnDisconnectedAsync(exception);
         }
 

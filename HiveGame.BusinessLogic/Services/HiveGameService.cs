@@ -13,9 +13,9 @@ namespace HiveGame.BusinessLogic.Services
 {
     public interface IHiveGameService
     {
-        public HiveActionResult Move(MoveInsectRequest request);
-        public HiveActionResult Put(PutInsectRequest request);
-        public HiveActionResult PutFirstInsect(PutFirstInsectRequest request);
+        Task<HiveActionResult> MoveAsync(MoveInsectRequest request);
+        Task<HiveActionResult> PutAsync(PutInsectRequest request);
+        Task<HiveActionResult> PutFirstInsectAsync(PutFirstInsectRequest request);
     }
 
     public class HiveGameService : IHiveGameService
@@ -26,7 +26,7 @@ namespace HiveGame.BusinessLogic.Services
         private readonly IHiveMoveValidator _moveValidator;
         private readonly IGameConverter _converter;
 
-        public HiveGameService(IInsectFactory insectFactory, IGameRepository gameRepository, IHiveMoveValidator hiveMoveValidator, 
+        public HiveGameService(IInsectFactory insectFactory, IGameRepository gameRepository, IHiveMoveValidator hiveMoveValidator,
             IGameConverter converter, IMatchmakingRepository matchmakingRepository)
         {
             _gameRepository = gameRepository;
@@ -36,9 +36,10 @@ namespace HiveGame.BusinessLogic.Services
             _matchmakingRepository = matchmakingRepository;
         }
 
-        public HiveActionResult Move(MoveInsectRequest request)
+        public async Task<HiveActionResult> MoveAsync(MoveInsectRequest request)
         {
-            Game? game = _converter.FromGameDbModel(_gameRepository.GetByPlayerId(request.PlayerId));
+            var dbModel = await _gameRepository.GetByPlayerIdAsync(request.PlayerId);
+            Game? game = _converter.FromGameDbModel(dbModel);
             _moveValidator.ValidateMove(request, game);
 
             var board = game.Board;
@@ -60,12 +61,13 @@ namespace HiveGame.BusinessLogic.Services
                 board.AddEmptyVerticesAround(moveToVertex);
             }
 
-            return AfterMoveActions(game);
+            return await AfterMoveActionsAsync(game);
         }
 
-        public HiveActionResult Put(PutInsectRequest request)
+        public async Task<HiveActionResult> PutAsync(PutInsectRequest request)
         {
-            Game? game = _converter.FromGameDbModel(_gameRepository.GetByPlayerId(request.PlayerId));
+            var dbModel = await _gameRepository.GetByPlayerIdAsync(request.PlayerId);
+            Game? game = _converter.FromGameDbModel(dbModel);
             _moveValidator.ValidatePut(request, game);
 
             var board = game.Board;
@@ -79,12 +81,13 @@ namespace HiveGame.BusinessLogic.Services
             where.AddInsectToStack(insect);
             board.AddEmptyVerticesAround(where);
 
-            return AfterMoveActions(game);
+            return await AfterMoveActionsAsync(game);
         }
 
-        public HiveActionResult PutFirstInsect(PutFirstInsectRequest request)
+        public async Task<HiveActionResult> PutFirstInsectAsync(PutFirstInsectRequest request)
         {
-            Game? game = _converter.FromGameDbModel(_gameRepository.GetByPlayerId(request.PlayerId));
+            var dbModel = await _gameRepository.GetByPlayerIdAsync(request.PlayerId);
+            Game? game = _converter.FromGameDbModel(dbModel);
 
             _moveValidator.ValidatePutFirstInsect(request, game);
 
@@ -103,21 +106,21 @@ namespace HiveGame.BusinessLogic.Services
             board.AddVertex(vertex);
             board.AddEmptyVerticesAround(vertex);
 
-            return AfterMoveActions(game);
+            return await AfterMoveActionsAsync(game);
         }
 
-        public HiveActionResult AfterMoveActions(Game game)
+        private async Task<HiveActionResult> AfterMoveActionsAsync(Game game)
         {
             game.AfterActionMade();
 
             var result = new HiveActionResult(game);
+            result.GameOver = game.GameOverConditionMet();
 
             var players = game.Players;
-            foreach ( var player in players)
+            foreach (var player in players)
             {
-                if (!game.GameOverConditionMet())
+                if (!result.GameOver)
                 {
-
                     if (player.PlayerState == ClientState.InGamePlayerFirstMove || player.PlayerState == ClientState.InGamePlayerMove)
                     {
                         player.PlayerState = ClientState.InGameOpponentMove;
@@ -126,15 +129,15 @@ namespace HiveGame.BusinessLogic.Services
                     {
                         player.PlayerState = game.Board.FirstMoves ? ClientState.InGamePlayerFirstMove : ClientState.InGamePlayerMove;
                     }
+
+                    await _gameRepository.UpdateAsync(game.Id, _converter.ToGameDbModel(game));
                 }
-                else //game finished
+                else
                 {
                     player.PlayerState = ClientState.GameOver;
+                    await _gameRepository.RemoveAsync(game.Id);
                 }
             }
-
-            _gameRepository.Update(game.Id, _converter.ToGameDbModel(game));
-
 
             return result;
         }

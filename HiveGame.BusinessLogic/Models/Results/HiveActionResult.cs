@@ -5,6 +5,7 @@ namespace HiveGame.BusinessLogic.Models
 {
     public class HiveActionResult
     {
+        public bool GameOver { get; set; }
         public HiveActionResult(Game game) 
         {
             Game = game;

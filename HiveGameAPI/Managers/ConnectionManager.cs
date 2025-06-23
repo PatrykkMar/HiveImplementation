@@ -8,7 +8,7 @@ namespace HiveGame.Managers
     public interface IConnectionManager
     {
         public void AddPlayerConnection(string playerId, string connectionId);
-        public string? RemovePlayerConnection(string connectionId);
+        public Task<string?> RemovePlayerConnectionAsync(string connectionId);
         public void UpdatePlayerConnection(string playerId, string connectionId);
         public string? GetConnectionId(string playerId);
     }
@@ -41,16 +41,16 @@ namespace HiveGame.Managers
             return null;
         }
 
-        public string? RemovePlayerConnection(string connectionId)
+        public async Task<string?> RemovePlayerConnectionAsync(string connectionId)
         {
             var playerId = GetPlayerFromConnection(connectionId);
             var keyToRemove = PlayerConnectionDict.Where(kvp => kvp.Value.Equals(connectionId)).Select(kvp => kvp.Key).FirstOrDefault();
 
 
             //quick solution when player exits the game
-            var game = _gameRepository.GetByPlayerId(keyToRemove);
+            var game = await _gameRepository.GetByPlayerIdAsync(keyToRemove);
             if(game != null) 
-                _gameRepository.Remove(game.Id);
+                await _gameRepository.RemoveAsync(game.Id);
 
             if(keyToRemove != null)
             {

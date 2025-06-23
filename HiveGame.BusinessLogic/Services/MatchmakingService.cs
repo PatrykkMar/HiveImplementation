@@ -51,7 +51,7 @@ namespace HiveGame.BusinessLogic.Services
                     _matchmakingRepository.Update(playerInGame.PlayerId, playerInGame);
 
                 var result = new JoinQueueResult { Game = game };
-                _gameRepository.Add(_converter.ToGameDbModel(game));
+                _gameRepository.AddAsync(_converter.ToGameDbModel(game));
                 return result;
             }
 

@@ -66,7 +66,7 @@ namespace HiveGame.Handlers
                 PlayerId = playerId
             };
 
-            var result = _gameService.PutFirstInsect(request);
+            var result = await _gameService.PutFirstInsectAsync(request);
             foreach (var playerInGame in result.Game.Players)
                 await SendPlayerStateAndViewAsync(clients, playerInGame, playerView: result.Game.GetPlayerView(playerInGame.PlayerId));
         }
@@ -80,7 +80,7 @@ namespace HiveGame.Handlers
                 WhereToPut = position
             };
 
-            var result = _gameService.Put(request);
+            var result = await _gameService.PutAsync(request);
             foreach (var playerInGame in result.Game.Players)
                 await SendPlayerStateAndViewAsync(clients, playerInGame, additionalMessage: $"Your opponent is {result.Game.GetOtherPlayer(playerInGame.PlayerId)}", playerView: result.Game.GetPlayerView(playerInGame.PlayerId));
         }
@@ -94,7 +94,7 @@ namespace HiveGame.Handlers
                 PlayerId = playerId
             };
 
-            var result = _gameService.Move(request);
+            var result = await _gameService.MoveAsync(request);
             foreach (var playerInGame in result.Game.Players)
                 await SendPlayerStateAndViewAsync(clients, playerInGame, additionalMessage: $"Your opponent is {result.Game.GetOtherPlayer(playerInGame.PlayerId)}", playerView: result.Game.GetPlayerView(playerInGame.PlayerId));
         }
