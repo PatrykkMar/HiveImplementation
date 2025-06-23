@@ -21,7 +21,7 @@ namespace HiveGame.BusinessLogic.Models
         Player GetOtherPlayer(string playerId);
         PlayerViewDTO GetPlayerView(string playerId);
         void AfterActionMade();
-        bool CheckGameOverCondition();
+        bool GameOverConditionMet();
     }
 
     public class Game : IGame
@@ -89,7 +89,7 @@ namespace HiveGame.BusinessLogic.Models
             NumberOfMove++;
         }
 
-        public bool CheckGameOverCondition()
+        public bool GameOverConditionMet()
         {
             // Check if any queen is surrounded, indicating game over.
             var queensVertices = Board.Vertices.Where(x => x.InsectStack.Any(x => x.Type == InsectType.Queen));

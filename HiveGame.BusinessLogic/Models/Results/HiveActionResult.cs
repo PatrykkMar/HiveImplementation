@@ -10,6 +10,5 @@ namespace HiveGame.BusinessLogic.Models
             Game = game;
         }
         public Game Game { get; set; }
-        public bool GameOver { get; set; }
     }
 }

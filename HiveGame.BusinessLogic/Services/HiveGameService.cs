@@ -115,17 +115,24 @@ namespace HiveGame.BusinessLogic.Services
             var players = game.Players;
             foreach ( var player in players)
             {
-                if (player.PlayerState == ClientState.InGamePlayerFirstMove || player.PlayerState == ClientState.InGamePlayerMove)
+                if (!game.GameOverConditionMet())
                 {
-                    player.PlayerState = ClientState.InGameOpponentMove;
+
+                    if (player.PlayerState == ClientState.InGamePlayerFirstMove || player.PlayerState == ClientState.InGamePlayerMove)
+                    {
+                        player.PlayerState = ClientState.InGameOpponentMove;
+                    }
+                    else if (player.PlayerState == ClientState.InGameOpponentMove)
+                    {
+                        player.PlayerState = game.Board.FirstMoves ? ClientState.InGamePlayerFirstMove : ClientState.InGamePlayerMove;
+                    }
                 }
-                else if(player.PlayerState == ClientState.InGameOpponentMove)
+                else //game finished
                 {
-                    player.PlayerState = game.Board.FirstMoves ? ClientState.InGamePlayerFirstMove : ClientState.InGamePlayerMove;
+                    player.PlayerState = ClientState.GameOver;
                 }
             }
 
-            result.GameOver = game.CheckGameOverCondition();
             _gameRepository.Update(game.Id, _converter.ToGameDbModel(game));
 
 
