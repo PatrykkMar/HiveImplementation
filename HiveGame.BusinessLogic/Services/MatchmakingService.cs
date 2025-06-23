@@ -1,12 +1,5 @@
-﻿using AutoMapper;
-using HiveGame.BusinessLogic.Models;
-using HiveGame.BusinessLogic.Models;
-using HiveGame.BusinessLogic.Models.Insects;
-using HiveGame.BusinessLogic.Models.Requests;
-using System.Net.WebSockets;
-using HiveGame.BusinessLogic.Models.WebSocketModels;
+﻿using HiveGame.BusinessLogic.Models;
 using HiveGame.BusinessLogic.Factories;
-using HiveGame.BusinessLogic.Models.Board;
 using HiveGame.BusinessLogic.Repositories;
 using HiveGame.BusinessLogic.Utils;
 using HiveGame.DataAccess.Repositories;
@@ -17,8 +10,8 @@ namespace HiveGame.BusinessLogic.Services
 
     public interface IMatchmakingService
     {
-        Game? JoinQueue(string clientId, string playerNick);
-        void LeaveQueue(string clientId);
+        JoinQueueResult JoinQueue(string clientId, string playerNick);
+        LeaveQueueResult LeaveQueue(string clientId);
         Player CreatePlayer();
     }
 
@@ -38,29 +31,39 @@ namespace HiveGame.BusinessLogic.Services
             _converter = converter;
         }
 
-        public Game? JoinQueue(string clientId, string playerNick)
+        public JoinQueueResult JoinQueue(string clientId, string playerNick)
         {
             var player = _matchmakingRepository.GetByPlayerId(clientId);
             player.PlayerNick = playerNick;
+            player.PlayerState = ClientState.WaitingForPlayers;
 
             _matchmakingRepository.Update(clientId, player);
+            //TODO: Can avoid unnecessary update
+            var countInQueue = _matchmakingRepository.CountInQueue;
 
-            if (_matchmakingRepository.Count >= PLAYERS_TO_START_GAME)
+            if (countInQueue >= PLAYERS_TO_START_GAME)
             {
-                var players = _matchmakingRepository.GetAndRemoveFirstTwo().ToArray();
+                var players = _matchmakingRepository.GetAndRemoveFirstTwoInQueue().ToArray();
                 var game = _gameFactory.CreateGame(players);
+                players[0].PlayerState = ClientState.InGamePlayerFirstMove;
+                players[1].PlayerState = ClientState.InGameOpponentMove;
+                foreach(var playerInGame in players)
+                    _matchmakingRepository.Update(playerInGame.PlayerId, playerInGame);
+
+                var result = new JoinQueueResult { Game = game };
                 _gameRepository.Add(_converter.ToGameDbModel(game));
-                return game;
+                return result;
             }
 
-            return null;
+            return new JoinQueueResult { Player = player };
         }
 
-        public void LeaveQueue(string clientId)
+        public LeaveQueueResult LeaveQueue(string clientId)
         {
             var player = _matchmakingRepository.GetByPlayerId(clientId);
             player.PlayerState = ClientState.Connected;
             _matchmakingRepository.Update(clientId, player);
+            return new LeaveQueueResult { Player = player };
         }
 
         public Player CreatePlayer()

@@ -53,7 +53,9 @@ namespace HiveGame.BusinessLogic.Utils
                     PlayerInsects = player.PlayerInsects.ToDictionary(
                         kvp => kvp.Key.ToString(),
                         kvp => kvp.Value
-                    )
+                    ),
+                    PlayerState = player.PlayerState.ToString(),
+                    PlayerNick = player.PlayerNick
                 }).ToList()
             };
         }
@@ -67,7 +69,9 @@ namespace HiveGame.BusinessLogic.Utils
                 PlayerInsects = player.PlayerInsects.ToDictionary(
                     kvp => Enum.Parse<InsectType>(kvp.Key),
                     kvp => kvp.Value
-                )
+                ),
+                PlayerState = Enum.Parse<ClientState>(player.PlayerState),
+                PlayerNick = player.PlayerNick
             }).ToArray();
 
             var game = new Game(players, Enum.Parse<PlayerColor>(gameDbModel.CurrentColorMove))

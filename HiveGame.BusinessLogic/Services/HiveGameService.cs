@@ -7,6 +7,7 @@ using HiveGame.Core.Models;
 using HiveGame.DataAccess.Repositories;
 using HiveGame.BusinessLogic.Utils;
 using HiveGame.BusinessLogic.Repositories;
+using System.Numerics;
 
 namespace HiveGame.BusinessLogic.Services
 {
@@ -108,9 +109,8 @@ namespace HiveGame.BusinessLogic.Services
         public HiveActionResult AfterMoveActions(Game game)
         {
             game.AfterActionMade();
-            _gameRepository.Update(game.Id, _converter.ToGameDbModel(game));
 
-            var result = new HiveActionResult(game, GetBoardDTOFromBoard(game));
+            var result = new HiveActionResult(game);
 
             var players = game.Players;
             foreach ( var player in players)
@@ -123,18 +123,13 @@ namespace HiveGame.BusinessLogic.Services
                 {
                     player.PlayerState = game.Board.FirstMoves ? ClientState.InGamePlayerFirstMove : ClientState.InGamePlayerMove;
                 }
-
             }
 
             result.GameOver = game.CheckGameOverCondition();
+            _gameRepository.Update(game.Id, _converter.ToGameDbModel(game));
+
 
             return result;
-        }
-
-        private BoardDTO GetBoardDTOFromBoard(Game game, PlayerColor color = PlayerColor.White)
-        {
-            var verticesDTO = BoardDTOFactory.CreateBoardDTO(game.Board, color, game.Turn);
-            return verticesDTO;
         }
     }
 }

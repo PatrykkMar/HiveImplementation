@@ -13,9 +13,9 @@ namespace HiveGame.Hubs
     public class GameHub : Hub
     {
         private readonly IConnectionManager _connectionManager;
-        private readonly IGameActionsHandler _gameActionsHandler;
+        private readonly IGameActionsResponseHandler _gameActionsHandler;
 
-        public GameHub(IConnectionManager connectionManager, IGameActionsHandler gameActionsHandler)
+        public GameHub(IConnectionManager connectionManager, IGameActionsResponseHandler gameActionsHandler)
         {
             _connectionManager = connectionManager;
             _gameActionsHandler = gameActionsHandler;

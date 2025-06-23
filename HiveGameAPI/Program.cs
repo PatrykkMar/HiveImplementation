@@ -100,7 +100,7 @@ builder.Services.AddScoped<IGameFactory, GameFactory>();
 builder.Services.AddScoped<ITokenUtils, TokenUtils>();
 builder.Services.AddScoped<IHiveMoveValidator, HiveMoveValidator>();
 builder.Services.AddScoped<IConnectionManager, ConnectionManager>();
-builder.Services.AddScoped<IGameActionsHandler, GameActionsHandler>();
+builder.Services.AddScoped<IGameActionsResponseHandler, GameActionsResponseHandler>();
 builder.Services.AddScoped<IGameConverter, GameConverter>();
 
 // Database context

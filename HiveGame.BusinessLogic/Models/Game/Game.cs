@@ -17,7 +17,8 @@ namespace HiveGame.BusinessLogic.Models
         PlayerColor CurrentColorMove { get; }
 
         Player GetCurrentPlayer();
-        Player GetOtherPlayer();
+        Player GetWaitingPlayer();
+        Player GetOtherPlayer(string playerId);
         PlayerViewDTO GetPlayerView(string playerId);
         void AfterActionMade();
         bool CheckGameOverCondition();
@@ -56,7 +57,7 @@ namespace HiveGame.BusinessLogic.Models
             return Players.First(x => x.PlayerColor == CurrentColorMove);
         }
 
-        public Player GetOtherPlayer()
+        public Player GetWaitingPlayer()
         {
             return Players.First(x => x.PlayerColor != CurrentColorMove);
         }
@@ -94,6 +95,11 @@ namespace HiveGame.BusinessLogic.Models
             var queensVertices = Board.Vertices.Where(x => x.InsectStack.Any(x => x.Type == InsectType.Queen));
             var surroundedQueens = queensVertices.Where(x => Board.GetAdjacentVerticesByCoordList(x).Count(v => !v.IsEmpty) == 6);
             return surroundedQueens.Any();
+        }
+
+        public Player GetOtherPlayer(string playerId)
+        {
+            return Players.First(x => x.PlayerId != playerId);
         }
     }
 }
