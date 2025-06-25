@@ -16,6 +16,7 @@ namespace HiveGame.BusinessLogic.Models
         Player[] Players { get; set; }
         PlayerColor CurrentColorMove { get; }
 
+        Player? GetPlayerById(string playerId);
         Player GetCurrentPlayer();
         Player GetWaitingPlayer();
         Player GetOtherPlayer(string playerId);
@@ -100,6 +101,11 @@ namespace HiveGame.BusinessLogic.Models
         public Player GetOtherPlayer(string playerId)
         {
             return Players.First(x => x.PlayerId != playerId);
+        }
+
+        public Player? GetPlayerById(string playerId)
+        {
+            return Players.FirstOrDefault(x => x.PlayerId == playerId);
         }
     }
 }

@@ -9,6 +9,7 @@ using HiveGame.Core.Models;
 using HiveGame.Core.Models.Requests;
 using MongoDB.Driver.Core.Connections;
 using System.Numerics;
+using Microsoft.AspNetCore.Mvc.Diagnostics;
 
 namespace HiveGame.Handlers
 {
@@ -20,6 +21,7 @@ namespace HiveGame.Handlers
         Task MoveInsectAsync(Point2D moveFrom, Point2D moveTo, string playerId, IHubCallerClients clients);
         Task JoinQueue(string playerId, string playerNick, IHubCallerClients clients);
         Task LeaveQueue(string playerId, IHubCallerClients clients);
+        Task OnPlayerDisconnectedFromGameAsync(string playerId, IHubCallerClients clients);
     }
     public class GameActionsResponseHandler : IGameActionsResponseHandler
     {
@@ -32,6 +34,11 @@ namespace HiveGame.Handlers
             _gameService = gameService;
             _connectionManager = connectionManager;
             _matchmakingService = matchmakingService;
+        }
+
+        public void BeforeMoveAction(string playerId)
+        {
+            _connectionManager.RemoveDisconnectPlayerToken(playerId);
         }
 
         //queue actions
@@ -60,6 +67,7 @@ namespace HiveGame.Handlers
         //game actions
         public async Task PutFirstInsectAsync(InsectType type, string playerId, IHubCallerClients clients)
         {
+            BeforeMoveAction(playerId);
             var request = new PutFirstInsectRequest
             {
                 InsectToPut = type,
@@ -73,6 +81,7 @@ namespace HiveGame.Handlers
 
         public async Task PutInsectAsync(InsectType type, Point2D position, string playerId, IHubCallerClients clients)
         {
+            BeforeMoveAction(playerId);
             var request = new PutInsectRequest
             {
                 InsectToPut = type,
@@ -87,6 +96,7 @@ namespace HiveGame.Handlers
 
         public async Task MoveInsectAsync(Point2D moveFrom, Point2D moveTo, string playerId, IHubCallerClients clients)
         {
+            BeforeMoveAction(playerId);
             var request = new MoveInsectRequest
             {
                 MoveFrom = moveFrom,
@@ -98,12 +108,41 @@ namespace HiveGame.Handlers
             foreach (var playerInGame in result.Game.Players)
                 await SendPlayerStateAndViewAsync(clients, playerInGame, additionalMessage: $"Your opponent is {result.Game.GetOtherPlayer(playerInGame.PlayerId)}", playerView: result.Game.GetPlayerView(playerInGame.PlayerId));
         }
+        public async Task OnPlayerDisconnectedFromGameAsync(string playerId, IHubCallerClients clients)
+        {
+            var result = await _gameService.SetDisconnectedFromGamePlayerWarningAsync(playerId);
 
-        private async Task SendPlayerStateAndViewAsync(IHubCallerClients clients, Player player, string additionalMessage = "", PlayerViewDTO playerView = null)
+            //warning
+            await SendPlayerStateAndViewAsync(clients, result.Game.GetOtherPlayer(playerId), additionalMessage: $"Your opponent disconnected. If he doesn't reconnect in 15 seconds, the game will end", withoutState: true);
+
+            //set timer for 15 seconds to disconnect. After it make metod _matchmakingService.EndGame()
+
+            var cts = _connectionManager.AddDisconnectPlayerToken(playerId);
+
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(15), cts.Token);
+                    await _gameService.EndGameAsync(result.Game);
+                }
+                catch (TaskCanceledException)
+                {
+                    // Player is back
+                    await SendPlayerStateAndViewAsync(clients, result.Game.GetOtherPlayer(playerId), additionalMessage: $"Player is back", withoutState: true);
+                }
+                finally
+                {
+                    _connectionManager.RemoveDisconnectPlayerToken(playerId);
+                }
+            });
+        }
+
+        private async Task SendPlayerStateAndViewAsync(IHubCallerClients clients, Player player, bool withoutState = false, string additionalMessage = "", PlayerViewDTO playerView = null)
         {
             var connectionId = _connectionManager.GetConnectionId(player.PlayerId);
             if (connectionId != null)
-                await clients.Client(connectionId).SendAsync("ReceiveMessage", new ReceiveMessageRequest(player.PlayerId, string.Empty, player.PlayerState, playerView));
+                await clients.Client(connectionId).SendAsync("ReceiveMessage", new ReceiveMessageRequest(player.PlayerId, string.Empty, withoutState ? null : player.PlayerState, playerView));
         }
     }
 }
