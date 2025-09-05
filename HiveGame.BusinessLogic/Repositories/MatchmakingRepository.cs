@@ -1,4 +1,5 @@
 ﻿using HiveGame.BusinessLogic.Models;
+using HiveGame.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace HiveGame.BusinessLogic.Repositories
 {
     public interface IMatchmakingRepository
     {
-        long Count { get; }
+        long CountInQueue { get; }
 
         void Add(Player item);
 
@@ -19,7 +20,7 @@ namespace HiveGame.BusinessLogic.Repositories
 
         bool Update(string playerId, Player updatedItem);
 
-        List<Player> GetAndRemoveFirstTwo();
+        List<Player> GetAndRemoveFirstTwoInQueue();
 
         bool Remove(string playerId);
     }
@@ -34,9 +35,9 @@ namespace HiveGame.BusinessLogic.Repositories
             _items = new List<Player>();
         }
 
-        public long Count
+        public long CountInQueue
         {
-            get { return _items.Count; }
+            get { return _items.Where(x=>x.PlayerState == ClientState.WaitingForPlayers).Count(); }
         }
 
         public void Add(Player item)
@@ -67,9 +68,9 @@ namespace HiveGame.BusinessLogic.Repositories
         }
 
 
-        public List<Player> GetAndRemoveFirstTwo()
+        public List<Player> GetAndRemoveFirstTwoInQueue()
         {
-            var firstTwoItems = _items.Take(2).ToList();
+            var firstTwoItems = _items.Where(x=>x.PlayerState == ClientState.WaitingForPlayers).Take(2).ToList();
             foreach (var item in firstTwoItems)
             {
                 _items.Remove(item);

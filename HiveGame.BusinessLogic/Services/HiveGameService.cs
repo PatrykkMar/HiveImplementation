@@ -6,14 +6,18 @@ using HiveGame.BusinessLogic.Models;
 using HiveGame.Core.Models;
 using HiveGame.DataAccess.Repositories;
 using HiveGame.BusinessLogic.Utils;
+using HiveGame.BusinessLogic.Repositories;
+using System.Numerics;
 
 namespace HiveGame.BusinessLogic.Services
 {
     public interface IHiveGameService
     {
-        public HiveActionResult Move(MoveInsectRequest request);
-        public HiveActionResult Put(PutInsectRequest request);
-        public HiveActionResult PutFirstInsect(PutFirstInsectRequest request);
+        Task<HiveActionResult> MoveAsync(MoveInsectRequest request);
+        Task<HiveActionResult> PutAsync(PutInsectRequest request);
+        Task<HiveActionResult> PutFirstInsectAsync(PutFirstInsectRequest request);
+        Task<DisconnectedWarningResult> SetDisconnectedFromGamePlayerWarningAsync(string playerId);
+        Task EndGameAsync(Game game);
     }
 
     public class HiveGameService : IHiveGameService
@@ -23,7 +27,8 @@ namespace HiveGame.BusinessLogic.Services
         private readonly IHiveMoveValidator _moveValidator;
         private readonly IGameConverter _converter;
 
-        public HiveGameService(IInsectFactory insectFactory, IGameRepository gameRepository, IHiveMoveValidator hiveMoveValidator, IGameConverter converter)
+        public HiveGameService(IInsectFactory insectFactory, IGameRepository gameRepository, IHiveMoveValidator hiveMoveValidator,
+            IGameConverter converter, IMatchmakingRepository matchmakingRepository)
         {
             _gameRepository = gameRepository;
             _insectFactory = insectFactory;
@@ -31,9 +36,10 @@ namespace HiveGame.BusinessLogic.Services
             _converter = converter;
         }
 
-        public HiveActionResult Move(MoveInsectRequest request)
+        public async Task<HiveActionResult> MoveAsync(MoveInsectRequest request)
         {
-            Game? game = _converter.FromGameDbModel(_gameRepository.GetByPlayerId(request.PlayerId));
+            var dbModel = await _gameRepository.GetByPlayerIdAsync(request.PlayerId);
+            Game? game = _converter.FromGameDbModel(dbModel);
             _moveValidator.ValidateMove(request, game);
 
             var board = game.Board;
@@ -55,12 +61,13 @@ namespace HiveGame.BusinessLogic.Services
                 board.AddEmptyVerticesAround(moveToVertex);
             }
 
-            return AfterMoveActions(game);
+            return await AfterMoveActionsAsync(game);
         }
 
-        public HiveActionResult Put(PutInsectRequest request)
+        public async Task<HiveActionResult> PutAsync(PutInsectRequest request)
         {
-            Game? game = _converter.FromGameDbModel(_gameRepository.GetByPlayerId(request.PlayerId));
+            var dbModel = await _gameRepository.GetByPlayerIdAsync(request.PlayerId);
+            Game? game = _converter.FromGameDbModel(dbModel);
             _moveValidator.ValidatePut(request, game);
 
             var board = game.Board;
@@ -74,12 +81,13 @@ namespace HiveGame.BusinessLogic.Services
             where.AddInsectToStack(insect);
             board.AddEmptyVerticesAround(where);
 
-            return AfterMoveActions(game);
+            return await AfterMoveActionsAsync(game);
         }
 
-        public HiveActionResult PutFirstInsect(PutFirstInsectRequest request)
+        public async Task<HiveActionResult> PutFirstInsectAsync(PutFirstInsectRequest request)
         {
-            Game? game = _converter.FromGameDbModel(_gameRepository.GetByPlayerId(request.PlayerId));
+            var dbModel = await _gameRepository.GetByPlayerIdAsync(request.PlayerId);
+            Game? game = _converter.FromGameDbModel(dbModel);
 
             _moveValidator.ValidatePutFirstInsect(request, game);
 
@@ -98,25 +106,64 @@ namespace HiveGame.BusinessLogic.Services
             board.AddVertex(vertex);
             board.AddEmptyVerticesAround(vertex);
 
-            return AfterMoveActions(game);
+            return await AfterMoveActionsAsync(game);
         }
 
-        public HiveActionResult AfterMoveActions(Game game)
+        private async Task<HiveActionResult> AfterMoveActionsAsync(Game game)
         {
             game.AfterActionMade();
-            _gameRepository.Update(game.Id, _converter.ToGameDbModel(game));
 
-            var result = new HiveActionResult(game, GetBoardDTOFromBoard(game));
+            var result = new HiveActionResult(game);
+            result.GameOver = game.GameOverConditionMet();
 
-            result.GameOver = game.CheckGameOverCondition();
+            var players = game.Players;
+
+            if (!result.GameOver)
+            {
+                foreach (var player in players)
+                {
+                    if (player.PlayerState == ClientState.InGamePlayerFirstMove || player.PlayerState == ClientState.InGamePlayerMove)
+                    {
+                        player.PlayerState = ClientState.InGameOpponentMove;
+                    }
+                    else if (player.PlayerState == ClientState.InGameOpponentMove)
+                    {
+                        player.PlayerState = game.Board.FirstMoves ? ClientState.InGamePlayerFirstMove : ClientState.InGamePlayerMove;
+                    }
+
+                    await _gameRepository.UpdateAsync(game.Id, _converter.ToGameDbModel(game));
+                }
+            }
+            else //game finished
+            {
+                await EndGameAsync(game);
+            }
+
 
             return result;
         }
 
-        private BoardDTO GetBoardDTOFromBoard(Game game, PlayerColor color = PlayerColor.White)
+        public async Task EndGameAsync(Game game)
         {
-            var verticesDTO = BoardDTOFactory.CreateBoardDTO(game.Board, color, game.Turn);
-            return verticesDTO;
+            foreach (var playerInGame in game.Players)
+            {
+                playerInGame.PlayerState = ClientState.GameOver;
+            }
+            await _gameRepository.RemoveAsync(game.Id);
         }
+
+
+        public async Task<DisconnectedWarningResult> SetDisconnectedFromGamePlayerWarningAsync(string playerId)
+        {
+            var game = _converter.FromGameDbModel(await _gameRepository.GetByPlayerIdAsync(playerId));
+            var result = new DisconnectedWarningResult();
+            if (game != null)
+            {
+                result.DisconnectedPlayer = game.GetPlayerById(playerId);
+                result.Game = game;
+            }
+            return result;
+        }
+
     }
 }

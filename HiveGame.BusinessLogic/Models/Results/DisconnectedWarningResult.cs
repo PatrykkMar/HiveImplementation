@@ -3,13 +3,9 @@ using HiveGame.Core.Models;
 
 namespace HiveGame.BusinessLogic.Models
 {
-    public class HiveActionResult
+    public class DisconnectedWarningResult
     {
-        public bool GameOver { get; set; }
-        public HiveActionResult(Game game) 
-        {
-            Game = game;
-        }
         public Game Game { get; set; }
+        public Player DisconnectedPlayer { get; set; }
     }
 }

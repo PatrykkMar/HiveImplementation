@@ -71,7 +71,7 @@ public class MinorInformationText : MonoBehaviour
             if (unstoppableTime.HasValue)
             {
                 unstoppableTimeTimer = 0f;
-                unstoppableTimeSet = 0f;
+                unstoppableTimeSet = unstoppableTime.Value;
                 isUnstoppableTimerActive = true;
             }
             else

@@ -27,15 +27,15 @@ namespace HiveGameAPI.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Game>> GetAllGames()
         {
-            var games = _gameRepository.GetAll();
+            var games = _gameRepository.GetAllAsync();
             return Ok(games);
         }
 
         // GET: /Game/{gameId}
         [HttpGet("{gameId}")]
-        public ActionResult<Game> GetGameById(string gameId)
+        public async Task<ActionResult> GetGameById(string gameId)
         {
-            var game = _gameRepository.GetByGameId(gameId);
+            var game = await _gameRepository.GetByGameIdAsync(gameId);
 
             if (game == null)
             {
@@ -49,7 +49,7 @@ namespace HiveGameAPI.Controllers
         [HttpGet("player/{playerId}")]
         public ActionResult<Game> GetGameByPlayerId(string playerId)
         {
-            var game = _gameRepository.GetByPlayerId(playerId);
+            var game = _gameRepository.GetByPlayerIdAsync(playerId);
 
             if (game == null)
             {
@@ -61,23 +61,23 @@ namespace HiveGameAPI.Controllers
 
         // POST: /Game
         [HttpPost]
-        public ActionResult AddGame([FromBody] Game game)
+        public async Task<ActionResult> AddGame([FromBody] Game game)
         {
             if (game == null)
             {
                 return BadRequest("Invalid game data.");
             }
 
-            _gameRepository.Add(_converter.ToGameDbModel(game));
+            await _gameRepository.AddAsync(_converter.ToGameDbModel(game));
 
             return CreatedAtAction(nameof(GetGameById), new { gameId = game.Id }, game);
         }
 
         // DELETE: /Game/{gameId}
         [HttpDelete("{gameId}")]
-        public ActionResult DeleteGame(string gameId)
+        public async Task<ActionResult> DeleteGame(string gameId)
         {
-            var success = _gameRepository.Remove(gameId);
+            var success = await _gameRepository.RemoveAsync(gameId);
 
             if (!success)
             {

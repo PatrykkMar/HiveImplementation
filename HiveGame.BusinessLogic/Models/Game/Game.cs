@@ -16,11 +16,13 @@ namespace HiveGame.BusinessLogic.Models
         Player[] Players { get; set; }
         PlayerColor CurrentColorMove { get; }
 
+        Player? GetPlayerById(string playerId);
         Player GetCurrentPlayer();
-        Player GetOtherPlayer();
+        Player GetWaitingPlayer();
+        Player GetOtherPlayer(string playerId);
         PlayerViewDTO GetPlayerView(string playerId);
         void AfterActionMade();
-        bool CheckGameOverCondition();
+        bool GameOverConditionMet();
     }
 
     public class Game : IGame
@@ -56,7 +58,7 @@ namespace HiveGame.BusinessLogic.Models
             return Players.First(x => x.PlayerColor == CurrentColorMove);
         }
 
-        public Player GetOtherPlayer()
+        public Player GetWaitingPlayer()
         {
             return Players.First(x => x.PlayerColor != CurrentColorMove);
         }
@@ -88,12 +90,22 @@ namespace HiveGame.BusinessLogic.Models
             NumberOfMove++;
         }
 
-        public bool CheckGameOverCondition()
+        public bool GameOverConditionMet()
         {
             // Check if any queen is surrounded, indicating game over.
             var queensVertices = Board.Vertices.Where(x => x.InsectStack.Any(x => x.Type == InsectType.Queen));
             var surroundedQueens = queensVertices.Where(x => Board.GetAdjacentVerticesByCoordList(x).Count(v => !v.IsEmpty) == 6);
             return surroundedQueens.Any();
+        }
+
+        public Player GetOtherPlayer(string playerId)
+        {
+            return Players.First(x => x.PlayerId != playerId);
+        }
+
+        public Player? GetPlayerById(string playerId)
+        {
+            return Players.FirstOrDefault(x => x.PlayerId == playerId);
         }
     }
 }

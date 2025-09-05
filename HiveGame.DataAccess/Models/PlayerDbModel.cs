@@ -11,9 +11,13 @@ namespace HiveGame.DataAccess.Models
     {
         [BsonElement("playerId")]
         public string PlayerId { get; set; }
+        [BsonElement("playerState")]
+        public string PlayerState { get; set; }
 
         [BsonElement("playerColor")]
         public string PlayerColor { get; set; }
+        [BsonElement("playerNick")]
+        public string PlayerNick { get; set; }
 
         [BsonElement("playerInsects")]
         public Dictionary<string, int> PlayerInsects { get; set; }

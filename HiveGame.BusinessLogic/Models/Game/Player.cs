@@ -14,6 +14,7 @@ namespace HiveGame.BusinessLogic.Models
         public string PlayerNick { get; set; }
         public string? PlayerId { get; set; }
         public PlayerColor PlayerColor { get; set; }
+        public ClientState PlayerState { get; set; }
         public Dictionary<InsectType, int> PlayerInsects { get; set; }
         public int NumberOfMove { get; set; }
 

@@ -13,9 +13,9 @@ namespace HiveGame.Hubs
     public class GameHub : Hub
     {
         private readonly IConnectionManager _connectionManager;
-        private readonly IGameActionsHandler _gameActionsHandler;
+        private readonly IGameActionsResponseHandler _gameActionsHandler;
 
-        public GameHub(IConnectionManager connectionManager, IGameActionsHandler gameActionsHandler)
+        public GameHub(IConnectionManager connectionManager, IGameActionsResponseHandler gameActionsHandler)
         {
             _connectionManager = connectionManager;
             _gameActionsHandler = gameActionsHandler;
@@ -32,7 +32,12 @@ namespace HiveGame.Hubs
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            _connectionManager.RemovePlayerConnection(Context.ConnectionId);
+            var connectionId = Context.ConnectionId;
+
+            var playerId = _connectionManager.GetPlayerId(connectionId);
+            await _gameActionsHandler.OnPlayerDisconnectedFromGameAsync(playerId, Clients);
+
+            await _connectionManager.RemovePlayerConnectionAsync(Context.ConnectionId);
             await base.OnDisconnectedAsync(exception);
         }
 

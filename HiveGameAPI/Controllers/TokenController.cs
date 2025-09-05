@@ -11,17 +11,19 @@ namespace HiveGameAPI.Controllers
     {
         //TODO: Result classes
         private readonly ITokenUtils _utils;
+        private readonly IMatchmakingService _service;
 
-        public TokenController(ITokenUtils utils)
+        public TokenController(ITokenUtils utils, IMatchmakingService service)
         {
             _utils = utils;
+            _service = service;
         }
 
         [HttpGet("token")]
         public IActionResult GetJwtToken()
         {
-
-            var result = _utils.CreateToken("PlayerId" + Guid.NewGuid().ToString());
+            var player = _service.CreatePlayer();
+            var result = _utils.CreateToken(player.PlayerId);
             return Ok(result);
         }
 
