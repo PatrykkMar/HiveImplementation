@@ -19,8 +19,8 @@ namespace HiveGame.Handlers
         Task PutFirstInsectAsync(InsectType type, string playerId, IHubCallerClients clients);
         Task PutInsectAsync(InsectType type, Point2D position, string playerId, IHubCallerClients clients);
         Task MoveInsectAsync(Point2D moveFrom, Point2D moveTo, string playerId, IHubCallerClients clients);
-        Task JoinQueue(string playerId, string playerNick, IHubCallerClients clients);
-        Task LeaveQueue(string playerId, IHubCallerClients clients);
+        Task JoinQueueAsync(string playerId, string playerNick, IHubCallerClients clients);
+        Task LeaveQueueAsync(string playerId, IHubCallerClients clients);
         Task OnPlayerDisconnectedFromGameAsync(string playerId, IHubCallerClients clients);
     }
     public class GameActionsResponseHandler : IGameActionsResponseHandler
@@ -42,10 +42,10 @@ namespace HiveGame.Handlers
         }
 
         //queue actions
-        public async Task JoinQueue(string playerId, string playerNick, IHubCallerClients clients)
+        public async Task JoinQueueAsync(string playerId, string playerNick, IHubCallerClients clients)
         {
 
-            var result = _matchmakingService.JoinQueue(playerId, playerNick);
+            var result = await _matchmakingService.JoinQueueAsync(playerId, playerNick);
 
             if (result.Game != null)
             {
@@ -58,7 +58,7 @@ namespace HiveGame.Handlers
                 throw new InvalidOperationException("Neither game nor player are returned");
         }
 
-        public async Task LeaveQueue(string playerId, IHubCallerClients clients)
+        public async Task LeaveQueueAsync(string playerId, IHubCallerClients clients)
         {
             var result = _matchmakingService.LeaveQueue(playerId);
             await SendPlayerStateAndViewAsync(clients, result.Player);
