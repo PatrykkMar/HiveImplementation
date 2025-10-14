@@ -10,7 +10,7 @@ namespace HiveGame.BusinessLogic.Services
 
     public interface IMatchmakingService
     {
-        JoinQueueResult JoinQueue(string clientId, string playerNick);
+        Task<JoinQueueResult> JoinQueueAsync(string clientId, string playerNick);
         LeaveQueueResult LeaveQueue(string clientId);
         Player CreatePlayer();
     }
@@ -31,14 +31,13 @@ namespace HiveGame.BusinessLogic.Services
             _converter = converter;
         }
 
-        public JoinQueueResult JoinQueue(string clientId, string playerNick)
+        public async Task<JoinQueueResult> JoinQueueAsync(string clientId, string playerNick)
         {
             var player = _matchmakingRepository.GetByPlayerId(clientId);
             player.PlayerNick = playerNick;
             player.PlayerState = ClientState.WaitingForPlayers;
 
             _matchmakingRepository.Update(clientId, player);
-            //TODO: Can avoid unnecessary update
             var countInQueue = _matchmakingRepository.CountInQueue;
 
             if (countInQueue >= PLAYERS_TO_START_GAME)
@@ -51,7 +50,7 @@ namespace HiveGame.BusinessLogic.Services
                     _matchmakingRepository.Update(playerInGame.PlayerId, playerInGame);
 
                 var result = new JoinQueueResult { Game = game };
-                _gameRepository.AddAsync(_converter.ToGameDbModel(game));
+                await _gameRepository.AddAsync(_converter.ToGameDbModel(game));
                 return result;
             }
 

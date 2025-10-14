@@ -99,7 +99,7 @@ builder.Services.AddScoped<IGameFactory, GameFactory>();
 // Register utilities
 builder.Services.AddScoped<ITokenUtils, TokenUtils>();
 builder.Services.AddScoped<IHiveMoveValidator, HiveMoveValidator>();
-builder.Services.AddScoped<IConnectionManager, ConnectionManager>();
+builder.Services.AddSingleton<IConnectionManager, ConnectionManager>();
 builder.Services.AddScoped<IGameActionsResponseHandler, GameActionsResponseHandler>();
 builder.Services.AddScoped<IGameConverter, GameConverter>();
 
