@@ -12,7 +12,8 @@ public static class StateStrategyFactory
         {
             { ClientState.Disconnected, new DisconnectedStateStrategy() },
             { ClientState.Connected, new ConnectedStateStrategy() },
-            { ClientState.WaitingForPlayers, new WaitingForPlayersStateStrategy() },
+            { ClientState.WaitingInQueue, new WaitingInQueueStateStrategy() },
+            { ClientState.PendingMatchConfirmation, new PendingMatchConfirmationStateStrategy() },
             { ClientState.InGamePlayerMove, new InGamePlayerMoveStateStrategy() },
             { ClientState.InGamePlayerFirstMove, new InGamePlayerFirstMoveStateStrategy() },
             { ClientState.InGameOpponentMove, new InGameOpponentMoveStateStrategy() },

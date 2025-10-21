@@ -50,7 +50,7 @@ namespace HiveGameAPI.Controllers
                 return BadRequest("Invalid player data.");
             }
 
-            _matchmakingRepository.Add(player);
+            _matchmakingRepository.AddPlayer(player);
             return CreatedAtAction(nameof(GetPlayerById), new { playerId = player.PlayerId }, player);
         }
 
@@ -58,7 +58,7 @@ namespace HiveGameAPI.Controllers
         [HttpDelete("{playerId}")]
         public ActionResult DeletePlayer(string playerId)
         {
-            var success = _matchmakingRepository.Remove(playerId);
+            var success = _matchmakingRepository.RemovePlayer(playerId);
 
             if (!success)
             {

@@ -5,7 +5,7 @@ namespace HiveGame.BusinessLogic.Models
 {
     public class JoinQueueResult
     {
-        public Game? Game { get; set; }
+        public Player[]? PendingPlayers { get; set; }
         public Player? Player { get; set; }
     }
 }

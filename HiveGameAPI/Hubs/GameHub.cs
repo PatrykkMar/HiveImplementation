@@ -47,7 +47,14 @@ namespace HiveGame.Hubs
         }
 
         [Authorize(Roles = Roles.Player)]
-        public async Task LeaveQueue()
+        public async Task ConfirmPendingMatch()
+        {
+            var playerId = GetPlayerIdFromToken();
+            await _gameActionsHandler.ConfirmPendingMatch(playerId, Clients);
+        }
+
+        [Authorize(Roles = Roles.Player)]
+        public async Task LeaveQueueAsync()
         {
             var playerId = GetPlayerIdFromToken();
             await _gameActionsHandler.LeaveQueueAsync(playerId);

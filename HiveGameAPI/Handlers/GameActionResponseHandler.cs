@@ -50,15 +50,15 @@ namespace HiveGame.Handlers
 
             var result = await _matchmakingService.JoinQueueAsync(playerId, playerNick);
 
-            if (result.Game != null)
+            if (result.PendingPlayers != null)
             {
-                foreach (var playerInGame in result.Game.Players)
-                    await SendPlayerStateAndViewAsync(playerInGame, additionalMessage: $"Your opponent is {result.Game.GetOtherPlayer(playerInGame.PlayerId)}", playerView: result.Game.GetPlayerView(playerInGame.PlayerId));
+                foreach (var playerInGame in result.PendingPlayers)
+                    await SendPlayerStateAndViewAsync(clients, result.Player);
             }
             else if (result.Player != null)
-                await SendPlayerStateAndViewAsync(result.Player);
-            else
-                throw new InvalidOperationException("Neither game nor player are returned");
+                await SendPlayerStateAndViewAsync(clients, result.Player);
+            else 
+                throw new InvalidOperationException("Neither PendingPlayers nor player are returned");
         }
 
         public async Task LeaveQueueAsync(string playerId)
@@ -146,6 +146,11 @@ namespace HiveGame.Handlers
             var connectionId = _connectionManager.GetConnectionId(player.PlayerId);
             if (connectionId != null)
                 await _hubContext.Clients.Client(connectionId).SendAsync("ReceiveMessage", new ReceiveMessageRequest(player.PlayerId, string.Empty, withoutState ? null : player.PlayerState, playerView));
+        }
+
+        public Task ConfirmPendingMatch(string playerId, IHubCallerClients clients)
+        {
+            throw new NotImplementedException();
         }
     }
 }

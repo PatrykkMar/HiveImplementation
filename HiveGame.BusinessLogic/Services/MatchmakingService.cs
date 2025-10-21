@@ -12,6 +12,8 @@ namespace HiveGame.BusinessLogic.Services
     {
         Task<JoinQueueResult> JoinQueueAsync(string clientId, string playerNick);
         LeaveQueueResult LeaveQueue(string clientId);
+
+        Task ConfirmGame(string clientId);
         Player CreatePlayer();
     }
 
@@ -35,41 +37,78 @@ namespace HiveGame.BusinessLogic.Services
         {
             var player = _matchmakingRepository.GetByPlayerId(clientId);
             player.PlayerNick = playerNick;
-            player.PlayerState = ClientState.WaitingForPlayers;
+            player.PlayerState = ClientState.WaitingInQueue;
 
-            _matchmakingRepository.Update(clientId, player);
+            _matchmakingRepository.UpdatePlayer(clientId, player);
             var countInQueue = _matchmakingRepository.CountInQueue;
 
             if (countInQueue >= PLAYERS_TO_START_GAME)
             {
                 var players = _matchmakingRepository.GetAndRemoveFirstTwoInQueue().ToArray();
-                var game = _gameFactory.CreateGame(players);
-                players[0].PlayerState = ClientState.InGamePlayerFirstMove;
-                players[1].PlayerState = ClientState.InGameOpponentMove;
-                foreach(var playerInGame in players)
-                    _matchmakingRepository.Update(playerInGame.PlayerId, playerInGame);
+                players[0].PlayerState = ClientState.PendingMatchWaitingForConfirmation;
+                players[1].PlayerState = ClientState.PendingMatchWaitingForConfirmation;
+                foreach (var playerInGame in players)
+                    _matchmakingRepository.UpdatePlayer(playerInGame.PlayerId, playerInGame);
 
-                var result = new JoinQueueResult { Game = game };
-                await _gameRepository.AddAsync(_converter.ToGameDbModel(game));
+                var pendingPlayers = players;
+
+                var result = new JoinQueueResult { PendingPlayers = pendingPlayers };
+                await WaitingForPendingPlayerAsync(pendingPlayers);
                 return result;
             }
 
             return new JoinQueueResult { Player = player };
         }
 
+        public async Task WaitingForPendingPlayerAsync(Player[] pendingPlayers)
+        {
+            Player[] players = pendingPlayers;
+            _ = Task.Run(async () =>
+            {
+                var timeout = TimeSpan.FromSeconds(10);
+                var start = DateTime.UtcNow;
+
+                while (DateTime.UtcNow - start < timeout)
+                {
+                    if (pendingPlayers.All(x => x.PlayerState == ClientState.PendingMatchPlayerConfirmed))
+                    {
+                        var game = _converter.ToGameDbModel(_gameFactory.CreateGame(players));
+                        //players to game
+
+                        return;
+                    }
+                    await Task.Delay(500);
+                }
+
+                //await HandlePendingTimeoutAsync(pendingPlayers);
+            });
+
+        }
+
         public LeaveQueueResult LeaveQueue(string clientId)
         {
             var player = _matchmakingRepository.GetByPlayerId(clientId);
             player.PlayerState = ClientState.Connected;
-            _matchmakingRepository.Update(clientId, player);
+            _matchmakingRepository.UpdatePlayer(clientId, player);
             return new LeaveQueueResult { Player = player };
         }
 
         public Player CreatePlayer()
         {
             var player = new Player() { PlayerId = Guid.NewGuid().ToString(), PlayerState = ClientState.Connected };
-            _matchmakingRepository.Add(player);
+            _matchmakingRepository.AddPlayer(player);
             return player;
+        }
+
+        public async Task ConfirmGame(string clientId)
+        {
+            //set player to confirmed
+        }
+
+        public async Task HandlePendingTimeoutAsync(Player[] pendingPlayers)
+        {
+            //player who confirmed - back to join queue
+            //player who not confirmed - back to connected
         }
     }
 }

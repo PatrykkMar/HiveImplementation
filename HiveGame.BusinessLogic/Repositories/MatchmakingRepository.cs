@@ -12,17 +12,17 @@ namespace HiveGame.BusinessLogic.Repositories
     {
         long CountInQueue { get; }
 
-        void Add(Player item);
+        void AddPlayer(Player item);
 
         IEnumerable<Player> GetAll();
 
         Player? GetByPlayerId(string playerId);
 
-        bool Update(string playerId, Player updatedItem);
+        bool UpdatePlayer(string playerId, Player updatedItem);
 
         List<Player> GetAndRemoveFirstTwoInQueue();
 
-        bool Remove(string playerId);
+        bool RemovePlayer(string playerId);
     }
 
     public class MatchmakingRepository : IMatchmakingRepository
@@ -37,10 +37,10 @@ namespace HiveGame.BusinessLogic.Repositories
 
         public long CountInQueue
         {
-            get { return _items.Where(x=>x.PlayerState == ClientState.WaitingForPlayers).Count(); }
+            get { return _items.Where(x=>x.PlayerState == ClientState.WaitingInQueue).Count(); }
         }
 
-        public void Add(Player item)
+        public void AddPlayer(Player item)
         {
             _items.Add(item);
         }
@@ -55,7 +55,7 @@ namespace HiveGame.BusinessLogic.Repositories
             return _items.FirstOrDefault(x => x.PlayerId == playerId);
         }
 
-        public bool Update(string playerId, Player updatedItem)
+        public bool UpdatePlayer(string playerId, Player updatedItem)
         {
             var index = _items.FindIndex(x => x.PlayerId == playerId);
             if (index == -1)
@@ -70,7 +70,7 @@ namespace HiveGame.BusinessLogic.Repositories
 
         public List<Player> GetAndRemoveFirstTwoInQueue()
         {
-            var firstTwoItems = _items.Where(x=>x.PlayerState == ClientState.WaitingForPlayers).Take(2).ToList();
+            var firstTwoItems = _items.Where(x=>x.PlayerState == ClientState.WaitingInQueue).Take(2).ToList();
             foreach (var item in firstTwoItems)
             {
                 _items.Remove(item);
@@ -78,7 +78,7 @@ namespace HiveGame.BusinessLogic.Repositories
             return firstTwoItems;
         }
 
-        public bool Remove(string playerId)
+        public bool RemovePlayer(string playerId)
         {
             var item = _items.FirstOrDefault(x => x.PlayerId == playerId);
             if (item == null)
