@@ -10,30 +10,33 @@ using HiveGame.Core.Models.Requests;
 using MongoDB.Driver.Core.Connections;
 using System.Numerics;
 using Microsoft.AspNetCore.Mvc.Diagnostics;
+using HiveGame.Hubs;
 
 namespace HiveGame.Handlers
 {
 
     public interface IGameActionsResponseHandler
     {
-        Task PutFirstInsectAsync(InsectType type, string playerId, IHubCallerClients clients);
-        Task PutInsectAsync(InsectType type, Point2D position, string playerId, IHubCallerClients clients);
-        Task MoveInsectAsync(Point2D moveFrom, Point2D moveTo, string playerId, IHubCallerClients clients);
-        Task JoinQueueAsync(string playerId, string playerNick, IHubCallerClients clients);
-        Task LeaveQueueAsync(string playerId, IHubCallerClients clients);
-        Task OnPlayerDisconnectedFromGameAsync(string playerId, IHubCallerClients clients);
+        Task PutFirstInsectAsync(InsectType type, string playerId);
+        Task PutInsectAsync(InsectType type, Point2D position, string playerId);
+        Task MoveInsectAsync(Point2D moveFrom, Point2D moveTo, string playerId);
+        Task JoinQueueAsync(string playerId, string playerNick);
+        Task LeaveQueueAsync(string playerId);
+        Task OnPlayerDisconnectedFromGameAsync(string playerId);
     }
     public class GameActionsResponseHandler : IGameActionsResponseHandler
     {
         private readonly IHiveGameService _gameService;
         private readonly IConnectionManager _connectionManager;
         private readonly IMatchmakingService _matchmakingService;
+        private readonly IHubContext<GameHub> _hubContext;
 
-        public GameActionsResponseHandler(IHiveGameService gameService, IConnectionManager connectionManager, IMatchmakingService matchmakingService)
+        public GameActionsResponseHandler(IHiveGameService gameService, IConnectionManager connectionManager, IMatchmakingService matchmakingService, IHubContext<GameHub> hubContext)
         {
             _gameService = gameService;
             _connectionManager = connectionManager;
             _matchmakingService = matchmakingService;
+            _hubContext = hubContext;
         }
 
         public void BeforeMoveAction(string playerId)
@@ -42,7 +45,7 @@ namespace HiveGame.Handlers
         }
 
         //queue actions
-        public async Task JoinQueueAsync(string playerId, string playerNick, IHubCallerClients clients)
+        public async Task JoinQueueAsync(string playerId, string playerNick)
         {
 
             var result = await _matchmakingService.JoinQueueAsync(playerId, playerNick);
@@ -50,22 +53,22 @@ namespace HiveGame.Handlers
             if (result.Game != null)
             {
                 foreach (var playerInGame in result.Game.Players)
-                    await SendPlayerStateAndViewAsync(clients, playerInGame, additionalMessage: $"Your opponent is {result.Game.GetOtherPlayer(playerInGame.PlayerId)}", playerView: result.Game.GetPlayerView(playerInGame.PlayerId));
+                    await SendPlayerStateAndViewAsync(playerInGame, additionalMessage: $"Your opponent is {result.Game.GetOtherPlayer(playerInGame.PlayerId)}", playerView: result.Game.GetPlayerView(playerInGame.PlayerId));
             }
             else if (result.Player != null)
-                await SendPlayerStateAndViewAsync(clients, result.Player);
-            else 
+                await SendPlayerStateAndViewAsync(result.Player);
+            else
                 throw new InvalidOperationException("Neither game nor player are returned");
         }
 
-        public async Task LeaveQueueAsync(string playerId, IHubCallerClients clients)
+        public async Task LeaveQueueAsync(string playerId)
         {
             var result = _matchmakingService.LeaveQueue(playerId);
-            await SendPlayerStateAndViewAsync(clients, result.Player);
+            await SendPlayerStateAndViewAsync(result.Player);
         }
 
         //game actions
-        public async Task PutFirstInsectAsync(InsectType type, string playerId, IHubCallerClients clients)
+        public async Task PutFirstInsectAsync(InsectType type, string playerId)
         {
             BeforeMoveAction(playerId);
             var request = new PutFirstInsectRequest
@@ -76,10 +79,10 @@ namespace HiveGame.Handlers
 
             var result = await _gameService.PutFirstInsectAsync(request);
             foreach (var playerInGame in result.Game.Players)
-                await SendPlayerStateAndViewAsync(clients, playerInGame, playerView: result.Game.GetPlayerView(playerInGame.PlayerId));
+                await SendPlayerStateAndViewAsync(playerInGame, playerView: result.Game.GetPlayerView(playerInGame.PlayerId));
         }
 
-        public async Task PutInsectAsync(InsectType type, Point2D position, string playerId, IHubCallerClients clients)
+        public async Task PutInsectAsync(InsectType type, Point2D position, string playerId)
         {
             BeforeMoveAction(playerId);
             var request = new PutInsectRequest
@@ -91,10 +94,10 @@ namespace HiveGame.Handlers
 
             var result = await _gameService.PutAsync(request);
             foreach (var playerInGame in result.Game.Players)
-                await SendPlayerStateAndViewAsync(clients, playerInGame, additionalMessage: $"Your opponent is {result.Game.GetOtherPlayer(playerInGame.PlayerId)}", playerView: result.Game.GetPlayerView(playerInGame.PlayerId));
+                await SendPlayerStateAndViewAsync(playerInGame, additionalMessage: $"Your opponent is {result.Game.GetOtherPlayer(playerInGame.PlayerId)}", playerView: result.Game.GetPlayerView(playerInGame.PlayerId));
         }
 
-        public async Task MoveInsectAsync(Point2D moveFrom, Point2D moveTo, string playerId, IHubCallerClients clients)
+        public async Task MoveInsectAsync(Point2D moveFrom, Point2D moveTo, string playerId)
         {
             BeforeMoveAction(playerId);
             var request = new MoveInsectRequest
@@ -106,14 +109,14 @@ namespace HiveGame.Handlers
 
             var result = await _gameService.MoveAsync(request);
             foreach (var playerInGame in result.Game.Players)
-                await SendPlayerStateAndViewAsync(clients, playerInGame, additionalMessage: $"Your opponent is {result.Game.GetOtherPlayer(playerInGame.PlayerId)}", playerView: result.Game.GetPlayerView(playerInGame.PlayerId));
+                await SendPlayerStateAndViewAsync(playerInGame, additionalMessage: $"Your opponent is {result.Game.GetOtherPlayer(playerInGame.PlayerId)}", playerView: result.Game.GetPlayerView(playerInGame.PlayerId));
         }
-        public async Task OnPlayerDisconnectedFromGameAsync(string playerId, IHubCallerClients clients)
+        public async Task OnPlayerDisconnectedFromGameAsync(string playerId)
         {
             var result = await _gameService.SetDisconnectedFromGamePlayerWarningAsync(playerId);
 
             //warning
-            await SendPlayerStateAndViewAsync(clients, result.Game.GetOtherPlayer(playerId), additionalMessage: $"Your opponent disconnected. If he doesn't reconnect in 15 seconds, the game will end", withoutState: true);
+            await SendPlayerStateAndViewAsync(result.Game.GetOtherPlayer(playerId), additionalMessage: $"Your opponent disconnected. If he doesn't reconnect in 15 seconds, the game will end", withoutState: true);
 
             //set timer for 15 seconds to disconnect. After it make metod _matchmakingService.EndGame()
 
@@ -129,7 +132,7 @@ namespace HiveGame.Handlers
                 catch (TaskCanceledException)
                 {
                     // Player is back
-                    await SendPlayerStateAndViewAsync(clients, result.Game.GetOtherPlayer(playerId), additionalMessage: $"Player is back", withoutState: true);
+                    await SendPlayerStateAndViewAsync(result.Game.GetOtherPlayer(playerId), additionalMessage: $"Player is back", withoutState: true);
                 }
                 finally
                 {
@@ -138,11 +141,11 @@ namespace HiveGame.Handlers
             });
         }
 
-        private async Task SendPlayerStateAndViewAsync(IHubCallerClients clients, Player player, bool withoutState = false, string additionalMessage = "", PlayerViewDTO playerView = null)
+        private async Task SendPlayerStateAndViewAsync(Player player, bool withoutState = false, string additionalMessage = "", PlayerViewDTO playerView = null)
         {
             var connectionId = _connectionManager.GetConnectionId(player.PlayerId);
             if (connectionId != null)
-                await clients.Client(connectionId).SendAsync("ReceiveMessage", new ReceiveMessageRequest(player.PlayerId, string.Empty, withoutState ? null : player.PlayerState, playerView));
+                await _hubContext.Clients.Client(connectionId).SendAsync("ReceiveMessage", new ReceiveMessageRequest(player.PlayerId, string.Empty, withoutState ? null : player.PlayerState, playerView));
         }
     }
 }
