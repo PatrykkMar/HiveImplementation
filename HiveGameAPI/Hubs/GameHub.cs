@@ -33,48 +33,48 @@ namespace HiveGame.Hubs
             var connectionId = Context.ConnectionId;
 
             var playerId = _connectionManager.GetPlayerId(connectionId);
-            await _gameActionsHandler.OnPlayerDisconnectedFromGameAsync(playerId, Clients);
+            await _gameActionsHandler.OnPlayerDisconnectedFromGameAsync(playerId);
 
             await _connectionManager.RemovePlayerConnectionAsync(Context.ConnectionId);
             await base.OnDisconnectedAsync(exception);
         }
 
         [Authorize(Roles = Roles.Player)]
-        public async Task JoinQueueAsync(string nick)
+        public async Task JoinQueue(string nick)
         {
             var playerId = GetPlayerIdFromToken();
-            await _gameActionsHandler.JoinQueueAsync(playerId, nick, Clients);
+            await _gameActionsHandler.JoinQueueAsync(playerId, nick);
         }
 
         [Authorize(Roles = Roles.Player)]
-        public async Task LeaveQueueAsync()
+        public async Task LeaveQueue()
         {
             var playerId = GetPlayerIdFromToken();
-            await _gameActionsHandler.LeaveQueueAsync(playerId, Clients);
+            await _gameActionsHandler.LeaveQueueAsync(playerId);
         }
 
         [Authorize(Roles = Roles.Player)]
-        public async Task PutFirstInsectAsync(InsectType type)
+        public async Task PutFirstInsect(InsectType type)
         {
             var playerId = GetPlayerIdFromToken();
-            await _gameActionsHandler.PutFirstInsectAsync(type, playerId, Clients);
+            await _gameActionsHandler.PutFirstInsectAsync(type, playerId);
         }
 
         [Authorize(Roles = Roles.Player)]
-        public async Task PutInsectAsync(InsectType type, int[] whereToPut)
+        public async Task PutInsect(InsectType type, int[] whereToPut)
         {
             var playerId = GetPlayerIdFromToken();
             var position = new Point2D(whereToPut[0], whereToPut[1]);
-            await _gameActionsHandler.PutInsectAsync(type, position, playerId, Clients);
+            await _gameActionsHandler.PutInsectAsync(type, position, playerId);
         }
 
         [Authorize(Roles = Roles.Player)]
-        public async Task MoveInsectAsync(int[] moveFrom, int[] moveTo)
+        public async Task MoveInsect(int[] moveFrom, int[] moveTo)
         {
             var playerId = GetPlayerIdFromToken();
             var fromPosition = new Point2D(moveFrom[0], moveFrom[1]);
             var toPosition = new Point2D(moveTo[0], moveTo[1]);
-            await _gameActionsHandler.MoveInsectAsync(fromPosition, toPosition, playerId, Clients);
+            await _gameActionsHandler.MoveInsectAsync(fromPosition, toPosition, playerId);
         }
 
         [Authorize(Roles = Roles.Player)]
