@@ -22,6 +22,8 @@ namespace HiveGame.Handlers
         Task MoveInsectAsync(Point2D moveFrom, Point2D moveTo, string playerId);
         Task JoinQueueAsync(string playerId, string playerNick);
         Task LeaveQueueAsync(string playerId);
+        Task ConfirmMatchAsync(string playerId);
+        Task PendingMatchTimeoutAsync(string playerId);
         Task OnPlayerDisconnectedFromGameAsync(string playerId);
     }
     public class GameActionsResponseHandler : IGameActionsResponseHandler
@@ -52,11 +54,13 @@ namespace HiveGame.Handlers
 
             if (result.PendingPlayers != null)
             {
-                foreach (var playerInGame in result.PendingPlayers)
-                    await SendPlayerStateAndViewAsync(clients, result.Player);
+                foreach (var playerInGame in result.PendingPlayers.Players)
+                    await SendPlayerStateAndViewAsync(result.Player);
+
+                //confirmation process
             }
             else if (result.Player != null)
-                await SendPlayerStateAndViewAsync(clients, result.Player);
+                await SendPlayerStateAndViewAsync(result.Player);
             else 
                 throw new InvalidOperationException("Neither PendingPlayers nor player are returned");
         }
@@ -148,7 +152,12 @@ namespace HiveGame.Handlers
                 await _hubContext.Clients.Client(connectionId).SendAsync("ReceiveMessage", new ReceiveMessageRequest(player.PlayerId, string.Empty, withoutState ? null : player.PlayerState, playerView));
         }
 
-        public Task ConfirmPendingMatch(string playerId, IHubCallerClients clients)
+        public Task ConfirmMatchAsync(string playerId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task PendingMatchTimeoutAsync(string playerId)
         {
             throw new NotImplementedException();
         }

@@ -27,9 +27,9 @@ namespace HiveGame.BusinessLogic.Models
 
     public class Game : IGame
     {
-        public Game(Player[] players, PlayerColor startingColor = PlayerColor.White)
+        public Game(Player[] players, PlayerColor startingColor = PlayerColor.White, string? gameId = null)
         {
-            Id = ObjectId.GenerateNewId().ToString();
+            Id = string.IsNullOrEmpty(gameId) ? ObjectId.GenerateNewId().ToString() : gameId;
             Board = new HiveBoard();
             Players = players;
             CurrentColorMove = startingColor;

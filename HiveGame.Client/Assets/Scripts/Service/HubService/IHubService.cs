@@ -15,4 +15,5 @@ public interface IHubService
     Task PutInsectAsync(InsectType insect, (int, int, int) position);
     Task PutFirstInsectAsync(InsectType insect);
     Task MoveInsectAsync((int, int, int) moveFrom, (int, int, int) moveTo);
+    Task ConfirmGameAsync();
 }

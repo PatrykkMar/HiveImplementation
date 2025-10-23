@@ -124,6 +124,12 @@ public class HubService : IHubService
         await _hubConnection.InvokeAsync("MoveInsect", moveFromPoint, moveToPoint);
     }
 
+
+    public async Task ConfirmGameAsync()
+    {
+        await _hubConnection.InvokeAsync("ConfirmGame");
+    }
+
     private async Task OnConnectionClosed(Exception ex)
     {
         Debug.LogError($"Connection closed: {ex?.Message}");

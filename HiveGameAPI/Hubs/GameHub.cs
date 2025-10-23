@@ -47,17 +47,24 @@ namespace HiveGame.Hubs
         }
 
         [Authorize(Roles = Roles.Player)]
-        public async Task ConfirmPendingMatch()
+        public async Task ConfirmMatch()
         {
             var playerId = GetPlayerIdFromToken();
-            await _gameActionsHandler.ConfirmPendingMatch(playerId, Clients);
+            await _gameActionsHandler.ConfirmMatchAsync(playerId);
         }
 
         [Authorize(Roles = Roles.Player)]
-        public async Task LeaveQueueAsync()
+        public async Task LeaveQueue()
         {
             var playerId = GetPlayerIdFromToken();
             await _gameActionsHandler.LeaveQueueAsync(playerId);
+        }
+
+        [Authorize(Roles = Roles.Player)]
+        public async Task ConfirmGame()
+        {
+            var playerId = GetPlayerIdFromToken();
+            await _gameActionsHandler.ConfirmMatchAsync(playerId);
         }
 
         [Authorize(Roles = Roles.Player)]
@@ -85,7 +92,7 @@ namespace HiveGame.Hubs
         }
 
         [Authorize(Roles = Roles.Player)]
-        public async Task FinishGameAsync()
+        public async Task FinishGame()
         {
             // TODO: Implement finish game logic
         }
