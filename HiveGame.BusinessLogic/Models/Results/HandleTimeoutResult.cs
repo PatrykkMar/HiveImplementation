@@ -3,8 +3,8 @@ using HiveGame.Core.Models;
 
 namespace HiveGame.BusinessLogic.Models
 {
-    public class ConfirmGameResult
+    public class HandleTimeoutResult
     {
-        public Player? Player { get; set; }
+        public PendingPlayers PendingPlayers { get; set; }
     }
 }

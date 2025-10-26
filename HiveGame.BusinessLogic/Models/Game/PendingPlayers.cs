@@ -12,6 +12,8 @@ namespace HiveGame.BusinessLogic.Models
     public class PendingPlayers
     {
         public Player[] Players { get; set; }
+        public DateTime CreatingTime { get; set; }
+        public Guid Guid { get; set; }
 
         public bool IsPlayerThere(string nick)
         {
@@ -21,6 +23,8 @@ namespace HiveGame.BusinessLogic.Models
         public PendingPlayers(Player[] players) 
         {
             this.Players = Players;
+            CreatingTime = DateTime.Now;
+            Guid = Guid.NewGuid();
         }
 
         public int NumberOfConfirmedPlayers()

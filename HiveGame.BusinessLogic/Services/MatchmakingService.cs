@@ -4,6 +4,7 @@ using HiveGame.BusinessLogic.Repositories;
 using HiveGame.BusinessLogic.Utils;
 using HiveGame.DataAccess.Repositories;
 using HiveGame.Core.Models;
+using System.Runtime.CompilerServices;
 
 namespace HiveGame.BusinessLogic.Services
 {
@@ -12,8 +13,8 @@ namespace HiveGame.BusinessLogic.Services
     {
         Task<JoinQueueResult> JoinQueueAsync(string clientId, string playerNick);
         LeaveQueueResult LeaveQueue(string clientId);
-        Task ConfirmGameAsync(string clientId);
-        Task WaitingForPendingPlayerAsync(PendingPlayers pendingPlayers);
+        Task<ConfirmGameResult> ConfirmGameAsync(string clientId);
+        Task<HandleTimeoutResult> HandlePendingTimeoutAsync(PendingPlayers pendingPlayers);
         Player CreatePlayer();
     }
 
@@ -25,6 +26,7 @@ namespace HiveGame.BusinessLogic.Services
         private readonly IGameRepository _gameRepository;
         private readonly IGameConverter _converter;
         private readonly IGameFactory _gameFactory;
+
         public MatchmakingService(IMatchmakingRepository matchmakingRepository, IGameRepository gameRepository, IGameFactory gameFactory, IGameConverter converter)
         {
             _matchmakingRepository = matchmakingRepository;
@@ -53,8 +55,6 @@ namespace HiveGame.BusinessLogic.Services
                 var pendingPlayers = new PendingPlayers(players);
 
                 var result = new JoinQueueResult { PendingPlayers = pendingPlayers};
-                _matchmakingRepository.AddPendingPlayers(pendingPlayers);
-                await WaitingForPendingPlayerAsync(pendingPlayers);
                 return result;
             }
 
@@ -76,64 +76,23 @@ namespace HiveGame.BusinessLogic.Services
             return player;
         }
 
-        public async Task ConfirmGameAsync(string clientId)
+        public async Task<ConfirmGameResult> ConfirmGameAsync(string clientId)
         {
+            var result = new ConfirmGameResult();
             //set player to confirmed
             var player = _matchmakingRepository.GetByPlayerId(clientId);
-            var pendingGame = _matchmakingRepository.FindPendingPlayers(player.PlayerId);
             player.PlayerState = ClientState.PendingMatchPlayerConfirmed;
-
-            if (pendingGame.NumberOfConfirmedPlayers() == 2)
-            {
-                var players = pendingGame.Players;
-                var game = _gameFactory.CreateGame(pendingGame.Players);
-                players[0].PlayerState = ClientState.InGamePlayerFirstMove;
-                players[1].PlayerState = ClientState.InGameOpponentMove;
-                foreach (var playerInGame in players)
-                    _matchmakingRepository.UpdatePlayer(playerInGame.PlayerId, playerInGame);
-
-                var result = new ConfirmGameResult { Game = game };
-                await _gameRepository.AddAsync(_converter.ToGameDbModel(game));
-            }
-            else
-            {
-                //inform about confirming
-            }
-
             if (player == null) throw new Exception($"Player {clientId} not found");
+            return result;
         }
 
-        public async Task WaitingForPendingPlayerAsync(PendingPlayers pendingPlayers)
+        public async Task<HandleTimeoutResult> HandlePendingTimeoutAsync(PendingPlayers pendingPlayers)
         {
-            Player[] players = pendingPlayers.Players;
-            _ = Task.Run(async () =>
-            {
-                var timeout = TimeSpan.FromSeconds(10);
-                var start = DateTime.UtcNow;
+            var result = new HandleTimeoutResult();
 
-                while (DateTime.UtcNow - start < timeout)
-                {
-                    if (players.All(x => x.PlayerState == ClientState.PendingMatchPlayerConfirmed))
-                    {
-                        var game = _converter.ToGameDbModel(_gameFactory.CreateGame(players));
-                        await _gameRepository.AddAsync(game);
-                        //players to game
-
-                        return;
-                    }
-                    await Task.Delay(500);
-                }
-
-                await HandlePendingTimeoutAsync(pendingPlayers);
-            });
-
-        }
-
-        public async Task HandlePendingTimeoutAsync(PendingPlayers pendingPlayers)
-        {
             //player who confirmed - back to join queue
             //player who not confirmed - back to connected
-            foreach(var player in pendingPlayers.Players)
+            foreach (var player in pendingPlayers.Players)
             {
                 if(player.PlayerState == ClientState.PendingMatchPlayerConfirmed)
                 {
@@ -144,6 +103,9 @@ namespace HiveGame.BusinessLogic.Services
                     player.PlayerState = ClientState.Connected;
                 }
             }
+
+            result.PendingPlayers = pendingPlayers;
+            return result;
         }
     }
 }

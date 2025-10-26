@@ -25,19 +25,22 @@ namespace HiveGame.BusinessLogic.Repositories
         bool RemovePlayer(string playerId);
 
         void AddPendingPlayers(PendingPlayers item);
+
         void RemovePendingPlayers(PendingPlayers item);
+
         PendingPlayers? FindPendingPlayers(string playerId);
+        List<PendingPlayers> PendingPlayers { get; }
     }
 
     public class MatchmakingRepository : IMatchmakingRepository
     {
 
-        private readonly List<Player> _players;
-        private readonly List<PendingPlayers> _pendingPlayers;
+        private readonly List<Player> _players = new();
+        private readonly List<PendingPlayers> _pendingPlayers = new();
+        public List<PendingPlayers> PendingPlayers { get { return _pendingPlayers; } }
 
         public MatchmakingRepository()
         {
-            _players = new List<Player>();
         }
 
         public long CountInQueue

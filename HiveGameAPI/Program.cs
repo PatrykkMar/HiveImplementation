@@ -13,6 +13,7 @@ using log4net;
 using Microsoft.AspNetCore.SignalR;
 using HiveGame.DataAccess.Repositories;
 using HiveGame.DataAccess.Context;
+using HiveGame.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -102,6 +103,10 @@ builder.Services.AddScoped<IHiveMoveValidator, HiveMoveValidator>();
 builder.Services.AddSingleton<IConnectionManager, ConnectionManager>();
 builder.Services.AddScoped<IGameActionsResponseHandler, GameActionsResponseHandler>();
 builder.Services.AddScoped<IGameConverter, GameConverter>();
+
+//Other
+builder.Services.AddSingleton<PendingPlayersWatcher>();
+builder.Services.AddHostedService(provider => provider.GetRequiredService<PendingPlayersWatcher>());
 
 // Database context
 builder.Services.Configure<DatabaseSettings>(
