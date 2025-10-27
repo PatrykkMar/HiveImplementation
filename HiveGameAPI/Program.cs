@@ -13,6 +13,7 @@ using log4net;
 using Microsoft.AspNetCore.SignalR;
 using HiveGame.DataAccess.Repositories;
 using HiveGame.DataAccess.Context;
+using HiveGame.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -85,23 +86,27 @@ builder.Services.AddSignalR(options =>
     options.AddFilter<HubFilter>();
 });
 // Register application services
-builder.Services.AddScoped<IHiveGameService, HiveGameService>();
-builder.Services.AddScoped<IMatchmakingService, MatchmakingService>();
+builder.Services.AddTransient<IHiveGameService, HiveGameService>();
+builder.Services.AddTransient<IMatchmakingService, MatchmakingService>();
 
 // Register repositories
 builder.Services.AddSingleton<IMatchmakingRepository, MatchmakingRepository>();
 builder.Services.AddSingleton<IGameRepository, GameRepository>();
 
 // Register factories
-builder.Services.AddScoped<IInsectFactory, InsectFactory>();
-builder.Services.AddScoped<IGameFactory, GameFactory>();
+builder.Services.AddTransient<IInsectFactory, InsectFactory>();
+builder.Services.AddTransient<IGameFactory, GameFactory>();
 
 // Register utilities
-builder.Services.AddScoped<ITokenUtils, TokenUtils>();
-builder.Services.AddScoped<IHiveMoveValidator, HiveMoveValidator>();
+builder.Services.AddTransient<ITokenUtils, TokenUtils>();
+builder.Services.AddTransient<IHiveMoveValidator, HiveMoveValidator>();
 builder.Services.AddSingleton<IConnectionManager, ConnectionManager>();
-builder.Services.AddScoped<IGameActionsResponseHandler, GameActionsResponseHandler>();
-builder.Services.AddScoped<IGameConverter, GameConverter>();
+builder.Services.AddSingleton<IGameActionsResponseHandler, GameActionsResponseHandler>();
+builder.Services.AddTransient<IGameConverter, GameConverter>();
+
+//Other
+builder.Services.AddSingleton<PendingPlayersWatcher>();
+builder.Services.AddHostedService(provider => provider.GetRequiredService<PendingPlayersWatcher>());
 
 // Database context
 builder.Services.Configure<DatabaseSettings>(

@@ -19,7 +19,9 @@ public class Scenes
         {
             case ClientState.Disconnected:
             case ClientState.Connected:
-            case ClientState.WaitingForPlayers:
+            case ClientState.WaitingInQueue:
+            case ClientState.PendingMatchPlayerConfirmed:
+            case ClientState.PendingMatchWaitingForConfirmation:
                 return MenuScene;
             case ClientState.InGamePlayerMove:
             case ClientState.InGamePlayerFirstMove:

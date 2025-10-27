@@ -79,6 +79,7 @@ public class HubService : IHubService
 
                 if(!string.IsNullOrEmpty(request.message))
                 {
+                    Debug.Log($"HubService: Minor information message: " + request.message);
                     _eventAggregator.InvokeMinorInformationTextReceived(request.message, 5);
                 }
 
@@ -122,6 +123,12 @@ public class HubService : IHubService
         int[] moveFromPoint = new int[3] { moveFrom.Item1, moveFrom.Item2, moveFrom.Item3 };
         int[] moveToPoint = new int[3] { moveTo.Item1, moveTo.Item2, moveTo.Item3 };
         await _hubConnection.InvokeAsync("MoveInsect", moveFromPoint, moveToPoint);
+    }
+
+
+    public async Task ConfirmGameAsync()
+    {
+        await _hubConnection.InvokeAsync("ConfirmGame");
     }
 
     private async Task OnConnectionClosed(Exception ex)

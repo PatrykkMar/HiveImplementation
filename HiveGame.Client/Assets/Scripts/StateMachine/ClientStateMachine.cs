@@ -50,7 +50,6 @@ public class ClientStateMachine
         stateLifecycle.OnStateExit();
         stateLifecycle.OnStateEntry();
 
-        GameManager.GameState = newState;
         GameManager.GameScene = StateStrategyFactory.GetStrategy(newState).Scene;
 
         OnStateChanged?.Invoke(newState);

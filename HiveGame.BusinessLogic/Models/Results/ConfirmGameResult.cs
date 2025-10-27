@@ -3,9 +3,9 @@ using HiveGame.Core.Models;
 
 namespace HiveGame.BusinessLogic.Models
 {
-    public class JoinQueueResult
+    public class ConfirmGameResult
     {
-        public PendingPlayers? PendingPlayers { get; set; }
         public Player? Player { get; set; }
+        public Game? Game { get; set; }
     }
 }

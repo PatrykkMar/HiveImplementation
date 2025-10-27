@@ -37,4 +37,8 @@ mergeInto(LibraryManager.library, {
     MoveInsect: function (fromX, fromY, fromZ, toX, toY, toZ) {
         window.hubConnection.invoke("MoveInsect", [fromX, fromY, fromZ], [toX, toY, toZ]).catch(err => console.error(err));
     }
+
+    ConfirmGame: function () {
+        window.hubConnection.invoke("ConfirmGame").catch(err => console.error(err));
+    }
 });

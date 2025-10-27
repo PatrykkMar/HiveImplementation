@@ -4,7 +4,9 @@
     {
         Disconnected,
         Connected,
-        WaitingForPlayers,
+        WaitingInQueue,
+        PendingMatchWaitingForConfirmation,
+        PendingMatchPlayerConfirmed,
         InGamePlayerFirstMove,
         InGamePlayerMove,
         InGameOpponentMove,

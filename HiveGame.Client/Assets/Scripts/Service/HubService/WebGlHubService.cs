@@ -37,7 +37,6 @@ public class WebGlHubService : MonoBehaviour, IHubService
     private void Awake()
     {
         Debug.Log("WebGlHubService added to scene: " + gameObject.name);
-        DontDestroyOnLoad(gameObject);
     }
 
     [DllImport("__Internal")]
@@ -57,6 +56,8 @@ public class WebGlHubService : MonoBehaviour, IHubService
 
     [DllImport("__Internal")]
     private static extern void MoveInsect(int fromX, int fromY, int fromZ, int toX, int toY, int toZ);
+    [DllImport("__Internal")]
+    private static extern void ConfirmGame();
 
     public async Task InitializeMatchmakingServiceAsync(string token)
     {
@@ -87,6 +88,11 @@ public class WebGlHubService : MonoBehaviour, IHubService
     public async Task MoveInsectAsync((int, int, int) moveFrom, (int, int, int) moveTo)
     {
         MoveInsect(moveFrom.Item1, moveFrom.Item2, moveFrom.Item3, moveTo.Item1, moveTo.Item2, moveTo.Item3);
+    }
+
+    public async Task ConfirmGameAsync()
+    {
+        ConfirmGame();
     }
 
     public void ReceiveMessage(string json)
@@ -137,7 +143,8 @@ public class WebGlHubService : MonoBehaviour, IHubService
 
             if (!string.IsNullOrEmpty(request.message))
             {
-                _eventAggregator.InvokeMinorInformationTextReceived(request.message, 5);
+                Debug.Log($"HubService: Minor information message: " + request.message); 
+                _eventAggregator.InvokeMinorInformationTextReceived(request.message, unstoppableTime: 5);
             }
         }, null);
     }

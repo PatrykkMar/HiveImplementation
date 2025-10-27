@@ -12,82 +12,121 @@ namespace HiveGame.BusinessLogic.Repositories
     {
         long CountInQueue { get; }
 
-        void Add(Player item);
+        void AddPlayer(Player item);
 
         IEnumerable<Player> GetAll();
 
         Player? GetByPlayerId(string playerId);
 
-        bool Update(string playerId, Player updatedItem);
+        bool UpdatePlayer(string playerId, Player updatedItem);
 
-        List<Player> GetAndRemoveFirstTwoInQueue();
+        List<Player> GetFirstTwoInQueue();
 
-        bool Remove(string playerId);
+        bool RemovePlayer(string playerId);
+
+        void AddPendingPlayers(PendingPlayers item);
+
+        void RemovePendingPlayers(PendingPlayers item);
+
+        PendingPlayers? FindPendingPlayers(string playerId);
+        List<PendingPlayers> PendingPlayers { get; }
     }
 
     public class MatchmakingRepository : IMatchmakingRepository
     {
 
-        private readonly List<Player> _items;
+        private readonly List<Player> _players = new();
+        private readonly List<PendingPlayers> _pendingPlayers = new();
+        private readonly object _pendingPlayersLock = new(); // 🔒 obiekt do blokowania
+
+        public List<PendingPlayers> PendingPlayers
+        {
+            get
+            {
+                lock (_pendingPlayersLock)
+                {
+                    return new List<PendingPlayers>(_pendingPlayers);
+                }
+            }
+        }
 
         public MatchmakingRepository()
         {
-            _items = new List<Player>();
         }
 
         public long CountInQueue
         {
-            get { return _items.Where(x=>x.PlayerState == ClientState.WaitingForPlayers).Count(); }
+            get { return _players.Where(x=>x.PlayerState == ClientState.WaitingInQueue).Count(); }
         }
 
-        public void Add(Player item)
+        public void AddPlayer(Player item)
         {
-            _items.Add(item);
+            _players.Add(item);
         }
 
         public IEnumerable<Player> GetAll()
         {
-            return _items;
+            return _players;
         }
 
         public Player? GetByPlayerId(string playerId)
         {
-            return _items.FirstOrDefault(x => x.PlayerId == playerId);
+            return _players.FirstOrDefault(x => x.PlayerId == playerId);
         }
 
-        public bool Update(string playerId, Player updatedItem)
+        public bool UpdatePlayer(string playerId, Player updatedItem)
         {
-            var index = _items.FindIndex(x => x.PlayerId == playerId);
+            var index = _players.FindIndex(x => x.PlayerId == playerId);
             if (index == -1)
             {
                 return false;
             }
 
-            _items[index] = updatedItem;
+            _players[index] = updatedItem;
             return true;
         }
 
 
-        public List<Player> GetAndRemoveFirstTwoInQueue()
+        public List<Player> GetFirstTwoInQueue()
         {
-            var firstTwoItems = _items.Where(x=>x.PlayerState == ClientState.WaitingForPlayers).Take(2).ToList();
-            foreach (var item in firstTwoItems)
-            {
-                _items.Remove(item);
-            }
+            var firstTwoItems = _players.Where(x=>x.PlayerState == ClientState.WaitingInQueue).Take(2).ToList();
             return firstTwoItems;
         }
 
-        public bool Remove(string playerId)
+        public bool RemovePlayer(string playerId)
         {
-            var item = _items.FirstOrDefault(x => x.PlayerId == playerId);
+            var item = _players.FirstOrDefault(x => x.PlayerId == playerId);
             if (item == null)
             {
                 return false;
             }
 
-            _items.Remove(item);
+            _players.Remove(item);
             return true;
+        }
+
+        public void AddPendingPlayers(PendingPlayers item)
+        {
+            lock (_pendingPlayersLock)
+            {
+                _pendingPlayers.Add(item);
+            }
+        }
+
+        public void RemovePendingPlayers(PendingPlayers item)
+        {
+            lock (_pendingPlayersLock)
+            {
+                _pendingPlayers.Remove(item);
+            }
+        }
+
+        public PendingPlayers? FindPendingPlayers(string playerId)
+        {
+            lock (_pendingPlayersLock)
+            {
+                return _pendingPlayers.FirstOrDefault(x => x.IsPlayerThere(playerId));
+            }
         }
     }
 }

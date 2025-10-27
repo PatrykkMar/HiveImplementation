@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-public class WaitingForPlayersStateStrategy : IStateStrategy
+public class WaitingInQueueStateStrategy : IStateStrategy
 {
     public List<ButtonHelper> GetAvailableButtonsList()
     {
