@@ -23,7 +23,7 @@ namespace HiveGame.Handlers
         Task MoveInsectAsync(Point2D moveFrom, Point2D moveTo, string playerId);
         Task JoinQueueAsync(string playerId, string playerNick);
         Task LeaveQueueAsync(string playerId);
-        Task ConfirmMatchAsync(string playerId);
+        Task ConfirmGameAsync(string playerId);
         Task HandlePendingMatchTimeoutAsync(PendingPlayers players);
         Task OnPlayerDisconnectedFromGameAsync(string playerId);
     }
@@ -80,7 +80,7 @@ namespace HiveGame.Handlers
         {
             var connectionId = _connectionManager.GetConnectionId(player.PlayerId);
             if (connectionId != null)
-                await _hubContext.Clients.Client(connectionId).SendAsync("ReceiveMessage", new ReceiveMessageRequest(player.PlayerId, string.Empty, withoutState ? null : player.PlayerState, playerView));
+                await _hubContext.Clients.Client(connectionId).SendAsync("ReceiveMessage", new ReceiveMessageRequest(player.PlayerId, string.IsNullOrEmpty(additionalMessage) ? string.Empty : additionalMessage, withoutState ? null : player.PlayerState, playerView));
         }
 
         public async Task HandlePendingMatchTimeoutAsync(PendingPlayers players)
@@ -110,7 +110,7 @@ namespace HiveGame.Handlers
             if (result.PendingPlayers != null)
             {
                 foreach (var playerInGame in result.PendingPlayers.Players)
-                    await SendPlayerStateAndViewAsync(result.Player);
+                    await SendPlayerStateAndViewAsync(playerInGame);
 
                 _pendingPlayersWatcher.AddPendingPlayers(result.PendingPlayers);
                 //setting 10 seconds for pending players to confirm
@@ -127,9 +127,16 @@ namespace HiveGame.Handlers
             await SendPlayerStateAndViewAsync(result.Player);
         }
 
-        public Task ConfirmMatchAsync(string playerId)
+        public async Task ConfirmGameAsync(string playerId)
         {
-            throw new NotImplementedException();
+            var result = await _matchmakingService.ConfirmGameAsync(playerId);
+            if (result.Game != null)
+            {
+                foreach (var playerInGame in result.Game.Players)
+                    await SendPlayerStateAndViewAsync(playerInGame, additionalMessage: $"Your opponent is {result.Game.GetOtherPlayer(playerInGame.PlayerId)}", playerView: result.Game.GetPlayerView(playerInGame.PlayerId));
+            }
+            else if (result.Player != null)
+                await SendPlayerStateAndViewAsync(result.Player);
         }
 
         #endregion

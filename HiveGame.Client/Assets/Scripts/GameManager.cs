@@ -4,13 +4,19 @@ using HiveGame.Core.Models;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance;
 
-    public static ClientState GameState = ClientState.Disconnected;
     public static string GameScene = null;
-
 
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject); // usuñ duplikat
+            return;
+        }
+
+        Instance = this;
         DontDestroyOnLoad(gameObject);
 
         InitializeServiceLocator();

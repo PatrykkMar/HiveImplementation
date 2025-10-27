@@ -46,7 +46,7 @@ namespace HiveGame.BusinessLogic.Services
 
             if (countInQueue >= PLAYERS_TO_START_GAME)
             {
-                var players = _matchmakingRepository.GetAndRemoveFirstTwoInQueue().ToArray();
+                var players = _matchmakingRepository.GetFirstTwoInQueue().ToArray();
                 players[0].PlayerState = ClientState.PendingMatchWaitingForConfirmation;
                 players[1].PlayerState = ClientState.PendingMatchWaitingForConfirmation;
                 foreach (var playerInGame in players)
@@ -71,7 +71,7 @@ namespace HiveGame.BusinessLogic.Services
 
         public Player CreatePlayer()
         {
-            var player = new Player() { PlayerId = Guid.NewGuid().ToString(), PlayerState = ClientState.Connected };
+            var player = new Player() { PlayerId = "PlayerId" + Guid.NewGuid().ToString(), PlayerState = ClientState.Connected };
             _matchmakingRepository.AddPlayer(player);
             return player;
         }
@@ -82,7 +82,30 @@ namespace HiveGame.BusinessLogic.Services
             //set player to confirmed
             var player = _matchmakingRepository.GetByPlayerId(clientId);
             player.PlayerState = ClientState.PendingMatchPlayerConfirmed;
+
             if (player == null) throw new Exception($"Player {clientId} not found");
+
+            var pendingPlayers = _matchmakingRepository.FindPendingPlayers(clientId);
+
+            if (pendingPlayers == null) throw new Exception($"PendingPlayer entity searched by playerId: {clientId} not found");
+
+            //two players confirmed
+            if (pendingPlayers.Players.All(x=>x.PlayerState == ClientState.PendingMatchPlayerConfirmed))
+            {
+                _matchmakingRepository.RemovePendingPlayers(pendingPlayers);
+                var players = pendingPlayers.Players;
+                foreach (var pl in players) 
+                    _matchmakingRepository.RemovePlayer(pl.PlayerId);
+                var game = _gameFactory.CreateGame(players);
+                players[0].PlayerState = ClientState.InGamePlayerFirstMove;
+                players[1].PlayerState = ClientState.InGameOpponentMove;
+                result.Game = game;
+                await _gameRepository.AddAsync(_converter.ToGameDbModel(game));
+                return result;
+            }
+
+            //one player confirmed
+            result.Player = player;
             return result;
         }
 

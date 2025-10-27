@@ -15,14 +15,14 @@ namespace HiveGame.BusinessLogic.Models
         public DateTime CreatingTime { get; set; }
         public Guid Guid { get; set; }
 
-        public bool IsPlayerThere(string nick)
+        public bool IsPlayerThere(string id)
         {
-            return Players.Any(x => x.PlayerNick == nick);
+            return Players.Any(x => x.PlayerId == id);
         }
 
         public PendingPlayers(Player[] players) 
         {
-            this.Players = Players;
+            this.Players = players;
             CreatingTime = DateTime.Now;
             Guid = Guid.NewGuid();
         }

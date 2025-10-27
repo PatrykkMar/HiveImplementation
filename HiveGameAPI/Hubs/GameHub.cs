@@ -50,7 +50,7 @@ namespace HiveGame.Hubs
         public async Task ConfirmMatch()
         {
             var playerId = GetPlayerIdFromToken();
-            await _gameActionsHandler.ConfirmMatchAsync(playerId);
+            await _gameActionsHandler.ConfirmGameAsync(playerId);
         }
 
         [Authorize(Roles = Roles.Player)]
@@ -64,7 +64,7 @@ namespace HiveGame.Hubs
         public async Task ConfirmGame()
         {
             var playerId = GetPlayerIdFromToken();
-            await _gameActionsHandler.ConfirmMatchAsync(playerId);
+            await _gameActionsHandler.ConfirmGameAsync(playerId);
         }
 
         [Authorize(Roles = Roles.Player)]

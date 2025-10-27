@@ -6,5 +6,6 @@ namespace HiveGame.BusinessLogic.Models
     public class ConfirmGameResult
     {
         public Player? Player { get; set; }
+        public Game? Game { get; set; }
     }
 }

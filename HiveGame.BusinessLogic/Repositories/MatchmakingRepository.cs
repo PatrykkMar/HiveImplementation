@@ -20,7 +20,7 @@ namespace HiveGame.BusinessLogic.Repositories
 
         bool UpdatePlayer(string playerId, Player updatedItem);
 
-        List<Player> GetAndRemoveFirstTwoInQueue();
+        List<Player> GetFirstTwoInQueue();
 
         bool RemovePlayer(string playerId);
 
@@ -37,7 +37,18 @@ namespace HiveGame.BusinessLogic.Repositories
 
         private readonly List<Player> _players = new();
         private readonly List<PendingPlayers> _pendingPlayers = new();
-        public List<PendingPlayers> PendingPlayers { get { return _pendingPlayers; } }
+        private readonly object _pendingPlayersLock = new(); // 🔒 obiekt do blokowania
+
+        public List<PendingPlayers> PendingPlayers
+        {
+            get
+            {
+                lock (_pendingPlayersLock)
+                {
+                    return new List<PendingPlayers>(_pendingPlayers);
+                }
+            }
+        }
 
         public MatchmakingRepository()
         {
@@ -76,13 +87,9 @@ namespace HiveGame.BusinessLogic.Repositories
         }
 
 
-        public List<Player> GetAndRemoveFirstTwoInQueue()
+        public List<Player> GetFirstTwoInQueue()
         {
             var firstTwoItems = _players.Where(x=>x.PlayerState == ClientState.WaitingInQueue).Take(2).ToList();
-            foreach (var item in firstTwoItems)
-            {
-                _players.Remove(item);
-            }
             return firstTwoItems;
         }
 
@@ -100,17 +107,26 @@ namespace HiveGame.BusinessLogic.Repositories
 
         public void AddPendingPlayers(PendingPlayers item)
         {
-            _pendingPlayers.Add(item);
+            lock (_pendingPlayersLock)
+            {
+                _pendingPlayers.Add(item);
+            }
         }
 
         public void RemovePendingPlayers(PendingPlayers item)
         {
-            _pendingPlayers.Remove(item);
+            lock (_pendingPlayersLock)
+            {
+                _pendingPlayers.Remove(item);
+            }
         }
 
         public PendingPlayers? FindPendingPlayers(string playerId)
         {
-            return _pendingPlayers.FirstOrDefault(x => x.IsPlayerThere(playerId));
+            lock (_pendingPlayersLock)
+            {
+                return _pendingPlayers.FirstOrDefault(x => x.IsPlayerThere(playerId));
+            }
         }
     }
 }

@@ -37,7 +37,6 @@ public class WebGlHubService : MonoBehaviour, IHubService
     private void Awake()
     {
         Debug.Log("WebGlHubService added to scene: " + gameObject.name);
-        DontDestroyOnLoad(gameObject);
     }
 
     [DllImport("__Internal")]
@@ -144,7 +143,8 @@ public class WebGlHubService : MonoBehaviour, IHubService
 
             if (!string.IsNullOrEmpty(request.message))
             {
-                _eventAggregator.InvokeMinorInformationTextReceived(request.message, 5);
+                Debug.Log($"HubService: Minor information message: " + request.message); 
+                _eventAggregator.InvokeMinorInformationTextReceived(request.message, unstoppableTime: 5);
             }
         }, null);
     }

@@ -53,13 +53,13 @@ namespace HiveGame.Utils
 
         public void RemovePendingPlayers(PendingPlayers players)
         {
-            _matchmakingRepository.PendingPlayers.Remove(players);
+            _matchmakingRepository.RemovePendingPlayers(players);
         }
 
         public void AddPendingPlayers(PendingPlayers players)
         {
             players.CreatingTime = DateTime.Now;
-            _matchmakingRepository.PendingPlayers.Add(players);
+            _matchmakingRepository.AddPendingPlayers(players);
         }
     }
 }

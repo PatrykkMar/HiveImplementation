@@ -79,6 +79,7 @@ public class HubService : IHubService
 
                 if(!string.IsNullOrEmpty(request.message))
                 {
+                    Debug.Log($"HubService: Minor information message: " + request.message);
                     _eventAggregator.InvokeMinorInformationTextReceived(request.message, 5);
                 }
 
