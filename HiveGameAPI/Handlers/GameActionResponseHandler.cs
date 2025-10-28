@@ -111,7 +111,7 @@ namespace HiveGame.Handlers
             if (result.PendingPlayers != null)
             {
                 foreach (var playerInGame in result.PendingPlayers.Players)
-                    await SendPlayerStateAndViewAsync(playerInGame);
+                    await SendPlayerStateAndViewAsync(playerInGame, additionalMessage: $"Your opponent is {result.PendingPlayers.GetOtherPlayer(playerInGame.PlayerId).PlayerNick}");
 
                 _pendingPlayersWatcher.AddPendingPlayers(result.PendingPlayers);
                 //setting 10 seconds for pending players to confirm

@@ -31,5 +31,10 @@ namespace HiveGame.BusinessLogic.Models
         {
             return Players.Count(x => x.PlayerState == ClientState.PendingMatchPlayerConfirmed);
         }
+
+        public Player? GetOtherPlayer(string playerId)
+        {
+            return Players.FirstOrDefault(x=>x.PlayerId != playerId);
+        }
     }
 }

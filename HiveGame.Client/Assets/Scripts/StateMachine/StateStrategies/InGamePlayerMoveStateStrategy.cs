@@ -38,10 +38,11 @@ public class InGamePlayerMoveStateStrategy : IStateStrategy
             case PlayerMoveStateAction.None:
             case PlayerMoveStateAction.MoveInsect:
             case PlayerMoveStateAction.PutInsect:
-                if (CurrentAction!= PlayerMoveStateAction.PutInsect && insect != InsectType.Queen && Board.Instance.QueenHasToBePutBecauseOf4thTurn)
+                if (!(CurrentAction == PlayerMoveStateAction.PutInsect && insect == InsectType.Queen) && Board.Instance.QueenHasToBePutBecauseOf4thTurn)
                 {
                     ServiceLocator.Services.EventAggregator.InvokeMinorInformationTextReceived("It's 4th turn, you have to put the queen now", 5, 3);
                     Board.Instance.CancelHighlighing();
+                    SetPlayerAction(PlayerMoveStateAction.PutInsect, insectToPut: InsectType.Queen);
                     return;
                 }
                 Board.Instance.CancelHighlighing();

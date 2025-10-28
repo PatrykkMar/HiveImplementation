@@ -90,7 +90,7 @@ namespace HiveGame.BusinessLogic.Services
             if (!game.GetCurrentPlayer().RemoveInsectFromPlayerBoard(request.InsectToPut))
                 throw new Exception("Player can't put this insect");
 
-            if (game.Turn/2 == 3 && board.AllInsects.FirstOrDefault(x => x.Type == InsectType.Queen && x.PlayerColor == game.GetCurrentPlayer().PlayerColor) == null && request.InsectToPut != InsectType.Queen)
+            if ((game.Turn+2)/2 == 3 && board.AllInsects.FirstOrDefault(x => x.Type == InsectType.Queen && x.PlayerColor == game.GetCurrentPlayer().PlayerColor) == null && request.InsectToPut != InsectType.Queen)
                 throw new Exception("It's 4 turn and you still didn't put a queen");
         }
 
