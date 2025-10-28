@@ -15,7 +15,7 @@ public class BoardDTOForUnitySerialization
     public PlayerColor playercolor;
     public List<VertexDTOForUnitySerialization> hexes;
     public List<long> vertexidtoput;
-    public bool queenrulemet;
+    public bool queenhastobeputbecauseof4thturn;
 }
 
 [Serializable]
@@ -75,7 +75,7 @@ public class ReceiveMessageRequestForUnitySerialization
                         reasonwhymoveimpossible = v.reasonwhymoveimpossible
                     }),
                     vertexidtoput = serialized.playerView.board.vertexidtoput,
-                    queenrulemet = serialized.playerView.board.queenrulemet
+                    queenhastobeputbecauseof4thturn = serialized.playerView.board.queenhastobeputbecauseof4thturn
                 },
                 PlayerInsectTypePairs = serialized.playerView.playerInsectTypePairs.Select(x=>new PlayerInsectTypePairDTO { amount=x.amount, type=x.type }).ToList()
             }

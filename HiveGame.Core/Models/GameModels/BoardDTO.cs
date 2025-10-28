@@ -12,6 +12,6 @@ namespace HiveGame.Core.Models
         public PlayerColor playercolor { get; set; }
         public List<VertexDTO> hexes { get; set; }
         public List<long> vertexidtoput { get; set; }
-        public bool queenrulemet { get; set; }
+        public bool queenhastobeputbecauseof4thturn { get; set; }
     }
 }

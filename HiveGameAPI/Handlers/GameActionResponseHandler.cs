@@ -23,6 +23,7 @@ namespace HiveGame.Handlers
         Task MoveInsectAsync(Point2D moveFrom, Point2D moveTo, string playerId);
         Task JoinQueueAsync(string playerId, string playerNick);
         Task LeaveQueueAsync(string playerId);
+        Task FinishGameAsync(string playerId);
         Task ConfirmGameAsync(string playerId);
         Task HandlePendingMatchTimeoutAsync(PendingPlayers players);
         Task OnPlayerDisconnectedFromGameAsync(string playerId);
@@ -190,6 +191,12 @@ namespace HiveGame.Handlers
             var result = await _gameService.MoveAsync(request);
             foreach (var playerInGame in result.Game.Players)
                 await SendPlayerStateAndViewAsync(playerInGame, playerView: result.Game.GetPlayerView(playerInGame.PlayerId));
+        }
+
+        public async Task FinishGameAsync(string playerId)
+        {
+            var result = await _matchmakingService.FinishGameAsync(playerId);
+            await SendPlayerStateAndViewAsync(result.Player);
         }
 
         #endregion

@@ -94,7 +94,8 @@ namespace HiveGame.Hubs
         [Authorize(Roles = Roles.Player)]
         public async Task FinishGame()
         {
-            // TODO: Implement finish game logic
+            var playerId = GetPlayerIdFromToken();
+            await _gameActionsHandler.FinishGameAsync(playerId);
         }
 
         private string GetPlayerIdFromToken()

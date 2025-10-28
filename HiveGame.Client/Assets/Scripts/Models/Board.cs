@@ -23,7 +23,7 @@ public class Board
 
     public List<VertexDTO> Hexes { get; private set; }
     public Dictionary<InsectType, int> PlayerInsects { get; private set; }
-    public bool QueenRuleMet {get;set;}
+    public bool QueenHasToBePutBecauseOf4thTurn {get;set;}
 
     public List<long> HexesToPutInsectIds { get; set; }
 
@@ -35,7 +35,7 @@ public class Board
     public void SetBoardFromDTO(BoardDTO board, bool invokeEvent = true, long[] highlighted = null)
     {
         HexesToPutInsectIds = board.vertexidtoput;
-        QueenRuleMet = board.queenrulemet;
+        QueenHasToBePutBecauseOf4thTurn = board.queenhastobeputbecauseof4thturn;
         PlayerColor = board.playercolor;
         SetBoard(board.hexes, invokeEvent, highlighted);
     }

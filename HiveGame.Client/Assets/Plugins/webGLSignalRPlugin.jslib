@@ -41,4 +41,8 @@ mergeInto(LibraryManager.library, {
     ConfirmGame: function () {
         window.hubConnection.invoke("ConfirmGame").catch(err => console.error(err));
     }
+
+    FinishGame: function () {
+        window.hubConnection.invoke("FinishGame").catch(err => console.error(err));
+    }
 });

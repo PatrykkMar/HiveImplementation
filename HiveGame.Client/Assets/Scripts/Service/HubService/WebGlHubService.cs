@@ -58,6 +58,8 @@ public class WebGlHubService : MonoBehaviour, IHubService
     private static extern void MoveInsect(int fromX, int fromY, int fromZ, int toX, int toY, int toZ);
     [DllImport("__Internal")]
     private static extern void ConfirmGame();
+    [DllImport("__Internal")]
+    private static extern void FinishGame();
 
     public async Task InitializeMatchmakingServiceAsync(string token)
     {
@@ -93,6 +95,11 @@ public class WebGlHubService : MonoBehaviour, IHubService
     public async Task ConfirmGameAsync()
     {
         ConfirmGame();
+    }
+
+    public async Task FinishGameAsync()
+    {
+        FinishGame();
     }
 
     public void ReceiveMessage(string json)

@@ -46,7 +46,7 @@ namespace HiveGame.BusinessLogic.Models.Insects
             //cannot move insects until queen is not in the game
             if (QueenNotSet(board))
             {
-                whyMoveImpossible = "It's 4th turn, you have to put the queen now";
+                whyMoveImpossible = "To move insects you have to put the queen first";
                 return new List<IVertex>();
             }
 

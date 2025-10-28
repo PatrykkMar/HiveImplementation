@@ -50,7 +50,7 @@ namespace HiveGame.BusinessLogic.Models.Board
             boardDto.playercolor = playerColor;
             boardDto.hexes = verticesDTO;
             boardDto.vertexidtoput = toPut.Select(x => x.Id).ToList();
-            boardDto.queenrulemet = turn != 4 || board.AllInsects.Where(x => x.Type == InsectType.Queen).Any(x => x.PlayerColor == playerColor);
+            boardDto.queenhastobeputbecauseof4thturn = turn == 4 && !board.AllInsects.Where(x => x.Type == InsectType.Queen).Any(x => x.PlayerColor == playerColor);
 
             return boardDto;
         }

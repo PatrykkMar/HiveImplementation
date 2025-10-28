@@ -14,6 +14,7 @@ namespace HiveGame.BusinessLogic.Services
         Task<JoinQueueResult> JoinQueueAsync(string clientId, string playerNick);
         LeaveQueueResult LeaveQueue(string clientId);
         Task<ConfirmGameResult> ConfirmGameAsync(string clientId);
+        Task<FinishGameResult> FinishGameAsync(string clientId);
         Task<HandleTimeoutResult> HandlePendingTimeoutAsync(PendingPlayers pendingPlayers);
         Player CreatePlayer();
     }
@@ -128,6 +129,17 @@ namespace HiveGame.BusinessLogic.Services
             }
 
             result.PendingPlayers = pendingPlayers;
+            return result;
+        }
+
+        public async Task<FinishGameResult> FinishGameAsync(string clientId)
+        {
+            var result = new FinishGameResult();
+            var game = await _gameRepository.GetByPlayerIdAsync(clientId);
+            await _gameRepository.RemoveAsync(game.Id);
+            var player = _matchmakingRepository.GetByPlayerId(clientId);
+            player.PlayerState = ClientState.Connected;
+            result.Player = player;
             return result;
         }
     }

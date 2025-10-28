@@ -131,6 +131,11 @@ public class HubService : IHubService
         await _hubConnection.InvokeAsync("ConfirmGame");
     }
 
+    public async Task FinishGameAsync()
+    {
+        await _hubConnection.InvokeAsync("FinishGame");
+    }
+
     private async Task OnConnectionClosed(Exception ex)
     {
         Debug.LogError($"Connection closed: {ex?.Message}");
