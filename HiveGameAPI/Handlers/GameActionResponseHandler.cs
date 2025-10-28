@@ -49,32 +49,12 @@ namespace HiveGame.Handlers
 
         public async Task OnPlayerDisconnectedFromGameAsync(string playerId)
         {
-            var result = await _gameService.SetDisconnectedFromGamePlayerWarningAsync(playerId);
-
-            //warning
-            await SendPlayerStateAndViewAsync(result.Game.GetOtherPlayer(playerId), additionalMessage: $"Your opponent disconnected. If he doesn't reconnect in 15 seconds, the game will end", withoutState: true);
-
-            //set timer for 15 seconds to disconnect. After it make metod _matchmakingService.EndGame()
-
-            var cts = _connectionManager.AddDisconnectPlayerToken(playerId);
-
-            _ = Task.Run(async () =>
+            var result = await _matchmakingService.HandleDisconnectedPlayer(playerId);
+            await _connectionManager.RemovePlayerConnectionAsync(playerId);
+            if(result.OtherPlayer != null)
             {
-                try
-                {
-                    await Task.Delay(TimeSpan.FromSeconds(15), cts.Token);
-                    await _gameService.EndGameAsync(result.Game);
-                }
-                catch (TaskCanceledException)
-                {
-                    // Player is back
-                    await SendPlayerStateAndViewAsync(result.Game.GetOtherPlayer(playerId), additionalMessage: $"Player is back", withoutState: true);
-                }
-                finally
-                {
-                    _connectionManager.RemoveDisconnectPlayerToken(playerId);
-                }
-            });
+                await SendPlayerStateAndViewAsync(result.OtherPlayer, additionalMessage: $"Your opponent disconnected");
+            }
         }
 
         private async Task SendPlayerStateAndViewAsync(Player player, bool withoutState = false, string additionalMessage = "", PlayerViewDTO playerView = null)
