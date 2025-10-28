@@ -174,7 +174,7 @@ namespace HiveGame.Handlers
 
             var result = await _gameService.PutAsync(request);
             foreach (var playerInGame in result.Game.Players)
-                await SendPlayerStateAndViewAsync(playerInGame, additionalMessage: $"Your opponent is {result.Game.GetOtherPlayer(playerInGame.PlayerId)}", playerView: result.Game.GetPlayerView(playerInGame.PlayerId));
+                await SendPlayerStateAndViewAsync(playerInGame, playerView: result.Game.GetPlayerView(playerInGame.PlayerId));
         }
 
         public async Task MoveInsectAsync(Point2D moveFrom, Point2D moveTo, string playerId)
@@ -189,7 +189,7 @@ namespace HiveGame.Handlers
 
             var result = await _gameService.MoveAsync(request);
             foreach (var playerInGame in result.Game.Players)
-                await SendPlayerStateAndViewAsync(playerInGame, additionalMessage: $"Your opponent is {result.Game.GetOtherPlayer(playerInGame.PlayerId)}", playerView: result.Game.GetPlayerView(playerInGame.PlayerId));
+                await SendPlayerStateAndViewAsync(playerInGame, playerView: result.Game.GetPlayerView(playerInGame.PlayerId));
         }
 
         #endregion
