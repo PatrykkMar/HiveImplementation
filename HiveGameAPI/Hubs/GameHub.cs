@@ -33,9 +33,8 @@ namespace HiveGame.Hubs
             var connectionId = Context.ConnectionId;
 
             var playerId = _connectionManager.GetPlayerId(connectionId);
+            await _connectionManager.RemovePlayerConnectionAsync(connectionId);
             await _gameActionsHandler.OnPlayerDisconnectedFromGameAsync(playerId);
-
-            await _connectionManager.RemovePlayerConnectionAsync(Context.ConnectionId);
             await base.OnDisconnectedAsync(exception);
         }
 

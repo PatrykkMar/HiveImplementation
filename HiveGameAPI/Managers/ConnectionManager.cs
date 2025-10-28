@@ -51,17 +51,10 @@ namespace HiveGame.Managers
             var playerId = GetPlayerFromConnection(connectionId);
             var keyToRemove = PlayerConnectionDict.Where(kvp => kvp.Value.Equals(connectionId)).Select(kvp => kvp.Key).FirstOrDefault();
 
-
-            //quick solution when player exits the game
-            var game = await _gameRepository.GetByPlayerIdAsync(keyToRemove);
-            if(game != null) 
-                await _gameRepository.RemoveAsync(game.Id);
-
             if(keyToRemove != null)
             {
                 PlayerConnectionDict.TryRemove(keyToRemove, out _);
             }
-
             return playerId;
         }
 

@@ -17,6 +17,7 @@ namespace HiveGame.BusinessLogic.Services
         Task<FinishGameResult> FinishGameAsync(string clientId);
         Task<HandleTimeoutResult> HandlePendingTimeoutAsync(PendingPlayers pendingPlayers);
         Player CreatePlayer();
+        Task<HandleDisconnectedPlayerResult> HandleDisconnectedPlayer(string playerId);
     }
 
     public class MatchmakingService : IMatchmakingService
@@ -142,5 +143,42 @@ namespace HiveGame.BusinessLogic.Services
             result.Player = player;
             return result;
         }
+
+
+
+        public async Task<HandleDisconnectedPlayerResult> HandleDisconnectedPlayer(string playerId)
+        {
+            var result = new HandleDisconnectedPlayerResult();
+
+            var disconnectedPlayerFromMatchmakingQueue = _matchmakingRepository.GetByPlayerId(playerId);
+
+            if(disconnectedPlayerFromMatchmakingQueue != null)
+            {
+                result.DisconnectedPlayer = disconnectedPlayerFromMatchmakingQueue;
+                _matchmakingRepository.RemovePlayer(playerId);
+                var pendingPlayers = _matchmakingRepository.FindPendingPlayers(playerId);
+                if (pendingPlayers != null)
+                {
+                    var otherPlayer = pendingPlayers.GetOtherPlayer(playerId);
+                    otherPlayer.PlayerState = ClientState.Connected;
+                    result.OtherPlayer = otherPlayer;
+                }
+            }
+
+            var gameDb = await _gameRepository.GetByPlayerIdAsync(playerId);
+
+            if (gameDb != null)
+            {
+                var game = _converter.FromGameDbModel(await _gameRepository.GetByPlayerIdAsync(playerId));
+                await _gameRepository.RemoveAsync(game.Id);
+                result.DisconnectedPlayer = game.GetPlayerById(playerId) ?? throw new Exception($"Player {playerId} not found");
+                result.Game = game;
+                var otherPlayer = game.GetOtherPlayer(playerId);
+                otherPlayer.PlayerState = ClientState.Connected;
+                result.OtherPlayer = otherPlayer;
+            }
+            return result;
+        }
+
     }
 }

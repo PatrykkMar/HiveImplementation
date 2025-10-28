@@ -16,7 +16,6 @@ namespace HiveGame.BusinessLogic.Services
         Task<HiveActionResult> MoveAsync(MoveInsectRequest request);
         Task<HiveActionResult> PutAsync(PutInsectRequest request);
         Task<HiveActionResult> PutFirstInsectAsync(PutFirstInsectRequest request);
-        Task<DisconnectedWarningResult> SetDisconnectedFromGamePlayerWarningAsync(string playerId);
         Task EndGameAsync(Game game);
     }
 
@@ -151,19 +150,5 @@ namespace HiveGame.BusinessLogic.Services
             }
             await _gameRepository.RemoveAsync(game.Id);
         }
-
-
-        public async Task<DisconnectedWarningResult> SetDisconnectedFromGamePlayerWarningAsync(string playerId)
-        {
-            var game = _converter.FromGameDbModel(await _gameRepository.GetByPlayerIdAsync(playerId));
-            var result = new DisconnectedWarningResult();
-            if (game != null)
-            {
-                result.DisconnectedPlayer = game.GetPlayerById(playerId);
-                result.Game = game;
-            }
-            return result;
-        }
-
     }
 }
