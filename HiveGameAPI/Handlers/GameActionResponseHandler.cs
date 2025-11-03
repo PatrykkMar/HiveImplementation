@@ -73,7 +73,10 @@ namespace HiveGame.Handlers
             foreach(var player in result.PendingPlayers.Players)
             {
                 if(player.PlayerState == ClientState.WaitingInQueue)
-                    await SendPlayerStateAndViewAsync(player, additionalMessage: $"Your opponent is didn't confirmed a game. You will go back to queue");
+                {
+                    //join queue operation again
+                    await JoinQueueAsync(player.PlayerId, player.PlayerNick);
+                }
                 else if (player.PlayerState == ClientState.Connected)
                     await SendPlayerStateAndViewAsync(player);
                 else
@@ -118,6 +121,8 @@ namespace HiveGame.Handlers
             }
             else if (result.Player != null)
                 await SendPlayerStateAndViewAsync(result.Player);
+            else
+                throw new InvalidOperationException("Neither Game nor Player are returned");
         }
 
         #endregion

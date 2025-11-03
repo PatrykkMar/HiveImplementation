@@ -37,6 +37,7 @@ public class WebGlHubService : MonoBehaviour, IHubService
     private void Awake()
     {
         Debug.Log("WebGlHubService added to scene: " + gameObject.name);
+        DontDestroyOnLoad(gameObject);
     }
 
     [DllImport("__Internal")]

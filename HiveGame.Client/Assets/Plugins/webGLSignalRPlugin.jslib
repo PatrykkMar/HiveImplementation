@@ -18,7 +18,8 @@ mergeInto(LibraryManager.library, {
         window.hubConnection.start().catch(err => console.error(err));
     },
 
-    JoinQueue: function (nick) {
+    JoinQueue: function (nickPtr) {
+        const nick = UTF8ToString(nickPtr);
         window.hubConnection.invoke("JoinQueue", nick).catch(err => console.error(err));
     },
 
@@ -36,11 +37,11 @@ mergeInto(LibraryManager.library, {
 
     MoveInsect: function (fromX, fromY, fromZ, toX, toY, toZ) {
         window.hubConnection.invoke("MoveInsect", [fromX, fromY, fromZ], [toX, toY, toZ]).catch(err => console.error(err));
-    }
+    },
 
     ConfirmGame: function () {
         window.hubConnection.invoke("ConfirmGame").catch(err => console.error(err));
-    }
+    },
 
     FinishGame: function () {
         window.hubConnection.invoke("FinishGame").catch(err => console.error(err));
