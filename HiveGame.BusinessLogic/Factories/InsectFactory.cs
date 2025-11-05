@@ -29,6 +29,10 @@ namespace HiveGame.BusinessLogic.Factories
                     return new Grasshopper(playerColor);
                 case InsectType.Beetle:
                     return new Beetle(playerColor);
+                case InsectType.Ladybug:
+                    return new Ladybug(playerColor);
+                case InsectType.Mosquito:
+                    return new Mosquito(playerColor);
                 default:
                     throw new ArgumentException("Unknown insect type.");
             }

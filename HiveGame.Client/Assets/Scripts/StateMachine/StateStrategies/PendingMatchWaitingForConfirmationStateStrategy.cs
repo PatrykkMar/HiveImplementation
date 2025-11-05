@@ -10,7 +10,7 @@ public class PendingMatchWaitingForConfirmationStateStrategy : IStateStrategy
         };
     }
 
-    public string InformationText => "Found a player. Confirm your participation in the game";// Todo:You can click a button to leave a queue";
+    public string InformationText => "Found a player. Confirm your participation in the game in 10 seconds";
 
     public string Scene => Scenes.MenuScene;
 }
