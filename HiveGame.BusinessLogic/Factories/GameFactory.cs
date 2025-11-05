@@ -33,7 +33,7 @@ namespace HiveGame.BusinessLogic.Factories
             {
                 foreach(var player in game.Players)
                 {
-                    if(insect == InsectType.Queen)
+                    if (new InsectType[] { InsectType.Queen, InsectType.Ladybug, InsectType.Mosquito }.Contains(insect))
                         player.PlayerInsects.Add(insect, 1);
                     else if(new InsectType[] { InsectType.Spider, InsectType.Beetle }.Contains(insect))
                         player.PlayerInsects.Add(insect, 2);
