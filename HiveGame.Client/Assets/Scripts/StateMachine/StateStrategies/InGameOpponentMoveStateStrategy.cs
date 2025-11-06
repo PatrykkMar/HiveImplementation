@@ -10,4 +10,9 @@ public class InGameOpponentMoveStateStrategy : IStateStrategy
     public string InformationText => "Opponent's move\nWait for your turn";
 
     public string Scene => Scenes.GameScene;
+
+    public void OnStateEntry()
+    {
+        ServiceLocator.Services.EventAggregator.InvokePlaySound();
+    }
 }

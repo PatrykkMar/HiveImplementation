@@ -12,6 +12,7 @@ public class EventAggregator
     public event Action<string, float?, float?> MinorInformationTextReceived;
     public event Action<List<VertexDTO>> BoardUpdate;
     public event Action<Dictionary<InsectType, int>> PlayerInsectsUpdate;
+    public event Action PlaySound;
 
     public void InvokeInformationTextReceived(string text)
     {
@@ -34,5 +35,10 @@ public class EventAggregator
     {
         Debug.Log("InvokePlayerInsectsUpdate");
         PlayerInsectsUpdate?.Invoke(insects);
+    }
+
+    public void InvokePlaySound()
+    {
+        PlaySound?.Invoke();
     }
 }
