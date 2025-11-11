@@ -13,23 +13,16 @@ public class Scenes
     public const string MenuScene = "MenuScene";
     public const string GameScene = "GameScene";
 
-    public static string GetSceneByState(ClientState state)
+    public static bool IsSceneChanging(ClientState? newState)
     {
-        switch(state)
-        {
-            case ClientState.Disconnected:
-            case ClientState.Connected:
-            case ClientState.WaitingInQueue:
-            case ClientState.PendingMatchPlayerConfirmed:
-            case ClientState.PendingMatchWaitingForConfirmation:
-                return MenuScene;
-            case ClientState.InGamePlayerMove:
-            case ClientState.InGamePlayerFirstMove:
-            case ClientState.InGameOpponentMove:
-            case ClientState.GameOver:
-                return GameScene;
-            default:
-                throw new NotImplementedException("Scene for this state not found");
-        }
+        if (newState == null)
+            return false;
+        var strategyCurrentState = StateStrategyFactory.GetCurrentStateStrategy();
+        var strategyNewState = StateStrategyFactory.GetStrategy(newState.Value);
+
+        if(strategyCurrentState.Scene != strategyNewState.Scene)
+            return true;
+
+        return false;
     }
 }

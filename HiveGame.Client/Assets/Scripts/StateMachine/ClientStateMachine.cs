@@ -57,7 +57,7 @@ public class ClientStateMachine
 
     private async Task ChangeSceneAsync(ClientState state)
     {
-        var nextStateScene = Scenes.GetSceneByState(state);
+        var nextStateScene = StateStrategyFactory.GetStrategy(state).Scene;
         if (nextStateScene != GameManager.GameScene)
         {
             AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(nextStateScene);

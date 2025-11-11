@@ -5,7 +5,6 @@ using HiveGame.Core.Models;
 using HiveGame.Core.Models.Requests;
 using Microsoft.AspNetCore.SignalR.Client;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class HubService : IHubService
 {

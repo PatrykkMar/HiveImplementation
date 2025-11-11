@@ -117,22 +117,6 @@ public class WebGlHubService : MonoBehaviour, IHubService
 
             if (request.state.HasValue)
             {
-                Debug.Log($"HubService: Got state");
-
-                if (request.state.HasValue)
-                {
-                    var nextStateScene = Scenes.GetSceneByState(request.state.Value);
-                    if (nextStateScene != GameManager.GameScene)
-                    {
-                        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(nextStateScene);
-
-                        while (!asyncLoad.isDone)
-                        {
-                            await Task.Yield();
-                        }
-                    }
-                }
-
                 OnStateFromServerReceived?.Invoke(request.state.Value);
             }
 
