@@ -140,5 +140,6 @@ public class InGamePlayerMoveStateStrategy : IStateStrategy
     public void OnStateEntry()
     {
         SetPlayerAction(PlayerMoveStateAction.None);
+        ServiceLocator.Services.EventAggregator.InvokePlaySound();
     }
 }
