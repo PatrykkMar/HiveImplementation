@@ -10,9 +10,9 @@ public class GameSceneUIManager : UIManager
         }
     }
 
-    public override void UpdateUI(ClientState state)
+    public override void SetUIAfterStateChange(ClientState state)
     {
-        base.UpdateUI(state);
+        base.SetUIAfterStateChange(state);
         Board.Instance.UpdateBoardUI();
         Board.Instance.UpdatePlayerInsectsUI();
     }

@@ -8,11 +8,21 @@ using UnityEngine.SceneManagement;
 //TODO: Add every event here
 public class EventAggregator
 {
+    //information boxes
     public event Action<string> InformationTextReceived;
     public event Action<string, float?, float?> MinorInformationTextReceived;
+
+    //board and insects
     public event Action<List<VertexDTO>> BoardUpdate;
     public event Action<Dictionary<InsectType, int>> PlayerInsectsUpdate;
+    public event Action ClearSetInsect;
+
+    //music
     public event Action PlaySound;
+
+    //buttons
+    public event Action<ButtonHelper> AddButton;
+    public event Action<string> RemoveButton;
 
     public void InvokeInformationTextReceived(string text)
     {
@@ -41,4 +51,17 @@ public class EventAggregator
     {
         PlaySound?.Invoke();
     }
+    public void InvokeAddButton(ButtonHelper button)
+    {
+        AddButton?.Invoke(button);
+    }
+    public void InvokeRemoveButton(string buttonText)
+    {
+        RemoveButton?.Invoke(buttonText);
+    }
+    public void InvokeClearSetInsect()
+    {
+        ClearSetInsect?.Invoke();
+    }
+
 }

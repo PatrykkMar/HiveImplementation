@@ -23,25 +23,15 @@ public class PlayerInsectView : MonoBehaviour
     private void OnEnable()
     {
         ServiceLocator.Services.EventAggregator.PlayerInsectsUpdate += UpdatePlayerInsectView;
+        ServiceLocator.Services.EventAggregator.ClearSetInsect += ClearSetInsect;
         ServiceLocator.Services.HubService.OnStateFromServerReceived += ClearSetInsect;
-
-		//TODO: Some information for player about his color
-        //var image = GetComponent<Image>();
-
-        //if (Board.Instance.PlayerColor == PlayerColor.White)
-        //{
-        //    image.color = Color.white;
-        //}
-        //else
-        //{
-        //    image.color = Color.black;
-        //}
     }
 
     private void OnDisable()
     {
         ServiceLocator.Services.EventAggregator.PlayerInsectsUpdate -= UpdatePlayerInsectView;
         ServiceLocator.Services.HubService.OnStateFromServerReceived -= ClearSetInsect;
+        ServiceLocator.Services.EventAggregator.ClearSetInsect += ClearSetInsect;
     }
 
     public void UpdatePlayerInsectView(Dictionary<InsectType, int> dict)
@@ -53,12 +43,20 @@ public class PlayerInsectView : MonoBehaviour
 
     public void ClearSetInsect(ClientState trigger)
     {
-        if (InsectButtonDict != null) 
-            foreach (var ins in InsectButtonDict.Keys)
-            {
-                if (ins == InsectType.Nothing)
-                    continue;
-            }
+        ClearSetInsect();
+    }
+
+    public void ClearSetInsect()
+    {
+        foreach (var ins in InsectButtonDict.Keys)
+        {
+            if (ins == InsectType.Nothing)
+                continue;
+
+            var button = InsectButtonDict[ins];
+            var buttonImage = button.GetComponent<Image>();
+            buttonImage.color = Color.white;
+        }
     }
 
     public void SetInsects(Dictionary<InsectType, int> insectDict)

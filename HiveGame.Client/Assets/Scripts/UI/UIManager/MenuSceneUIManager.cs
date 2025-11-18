@@ -21,7 +21,7 @@ public class MenuSceneUIManager : UIManager
 
     private void OnNickChanged(string newNick)
     {
-        Board.Instance.PlayerNick = newNick;
+        Board.Instance.PlayerNick  = newNick;
     }
     public override string Name
     {
@@ -30,10 +30,4 @@ public class MenuSceneUIManager : UIManager
             return "Menu";
         }
     }
-
-    public override void UpdateUI(ClientState state)
-    {
-        base.UpdateUI(state);
-    }
-
 }
