@@ -10,6 +10,5 @@ namespace HiveGame.BusinessLogic.Models.Requests
     public class GameMoveRequest
     {
         public string PlayerId { get; set; }
-        public long? GameId { get; set; }
     }
 }

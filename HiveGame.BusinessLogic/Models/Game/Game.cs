@@ -12,8 +12,10 @@ namespace HiveGame.BusinessLogic.Models
         string Id { get; set; }
         int NumberOfMove { get; set; }
         int Turn { get; }
+        bool OnOneComputer { get; set; }
         IHiveBoard Board { get; set; }
         Player[] Players { get; set; }
+        Player[] GetPlayersToSendState { get;}
         PlayerColor CurrentColorMove { get; }
 
         Player? GetPlayerById(string playerId);
@@ -27,7 +29,7 @@ namespace HiveGame.BusinessLogic.Models
 
     public class Game : IGame
     {
-        public Game(Player[] players, PlayerColor startingColor = PlayerColor.White, string? gameId = null)
+        public Game(Player[] players, PlayerColor startingColor = PlayerColor.White, string? gameId = null, bool onOneComputer = false)
         {
             Id = string.IsNullOrEmpty(gameId) ? ObjectId.GenerateNewId().ToString() : gameId;
             Board = new HiveBoard();
@@ -38,6 +40,7 @@ namespace HiveGame.BusinessLogic.Models
             players[0].PlayerColor = PlayerColor.White;
             players[1].PlayerColor = PlayerColor.Black;
             NumberOfMove = 0;
+            OnOneComputer = onOneComputer;
         }
 
 
@@ -51,7 +54,13 @@ namespace HiveGame.BusinessLogic.Models
 
         public Player[] Players { get; set; }
 
+        public Player[] GetPlayersToSendState { get
+            {
+                return !OnOneComputer ? Players : Players.Where(x=>x.PlayerState!=ClientState.InGameOpponentMove).ToArray();
+            } }
+
         public PlayerColor CurrentColorMove { get; private set; }
+        public bool OnOneComputer { get; set; }
 
         public Player GetCurrentPlayer()
         {

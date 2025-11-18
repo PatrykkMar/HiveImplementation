@@ -8,10 +8,9 @@ using System.Threading.Tasks;
 
 namespace HiveGame.BusinessLogic.Models.Requests
 {
-    public class PutInsectRequest
+    public class PutInsectRequest : GameMoveRequest
     {
         public InsectType InsectToPut { get; set; }
         public Point2D? WhereToPut { get; set; }
-        public string PlayerId { get; set; }
     }
 }

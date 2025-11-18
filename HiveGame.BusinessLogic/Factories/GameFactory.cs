@@ -12,7 +12,7 @@ namespace HiveGame.BusinessLogic.Factories
 {
     public interface IGameFactory
     {
-        Game CreateGame(Player[] players, string? gameId = null);
+        Game CreateGame(Player[] players, string? gameId = null, bool onOneComputer = false);
     }
     public class GameFactory : IGameFactory
     {
@@ -20,9 +20,9 @@ namespace HiveGame.BusinessLogic.Factories
         {
         }
 
-        public Game CreateGame(Player[] players, string? gameId = null)
+        public Game CreateGame(Player[] players, string? gameId = null, bool onOneComputer = false)
         {
-            var game = new Game(players, gameId: gameId);
+            var game = new Game(players, gameId: gameId, onOneComputer: onOneComputer);
 
             foreach( var player in game.Players) 
             {

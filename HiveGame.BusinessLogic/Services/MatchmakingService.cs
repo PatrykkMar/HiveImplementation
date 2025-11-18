@@ -18,6 +18,7 @@ namespace HiveGame.BusinessLogic.Services
         Task<HandleTimeoutResult> HandlePendingTimeoutAsync(PendingPlayers pendingPlayers);
         Player CreatePlayer();
         Task<HandleDisconnectedPlayerResult> HandleDisconnectedPlayer(string playerId);
+        Task<CreateHotseatGameResult> CreateHotseatGameAsync(string playerId);
     }
 
     public class MatchmakingService : IMatchmakingService
@@ -145,6 +146,26 @@ namespace HiveGame.BusinessLogic.Services
         }
 
 
+        public async Task<CreateHotseatGameResult> CreateHotseatGameAsync(string playerId)
+        {
+            var result = new CreateHotseatGameResult();
+
+            var players = new Player[] { _matchmakingRepository.GetByPlayerId(playerId) ?? throw new Exception("Player not found"), CreatePlayer() };
+
+            result.ExistingPlayer = players[0];
+            result.AddedNewPlayer = players[1];
+            players[0].PlayerState = ClientState.InGamePlayerFirstMove;
+            players[1].PlayerState = ClientState.InGameOpponentMove;
+
+            var game = _gameFactory.CreateGame(players, onOneComputer: true);
+
+            result.Game = game;
+            await _gameRepository.AddAsync(_converter.ToGameDbModel(game));
+
+            return result;
+        }
+
+
 
         public async Task<HandleDisconnectedPlayerResult> HandleDisconnectedPlayer(string playerId)
         {
@@ -179,6 +200,5 @@ namespace HiveGame.BusinessLogic.Services
             }
             return result;
         }
-
     }
 }

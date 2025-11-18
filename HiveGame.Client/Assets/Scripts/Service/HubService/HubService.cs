@@ -135,6 +135,12 @@ public class HubService : IHubService
         await _hubConnection.InvokeAsync("FinishGame");
     }
 
+
+    public async Task CreateHotseatGameAsync()
+    {
+        await _hubConnection.InvokeAsync("CreateHotseatGame");
+    }
+
     private async Task OnConnectionClosed(Exception ex)
     {
         Debug.LogError($"Connection closed: {ex?.Message}");
