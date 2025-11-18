@@ -12,7 +12,7 @@ namespace HiveGame.Managers
         public Task<string?> RemovePlayerConnectionAsync(string connectionId);
         public void UpdatePlayerConnection(string playerId, string connectionId);
         public string? GetConnectionId(string playerId);
-        public string? GetPlayerId(string connectionId);
+        public string[]? GetPlayersId(string connectionId);
         CancellationTokenSource AddDisconnectPlayerToken(string playerId);
         void RemoveDisconnectPlayerToken(string playerId, bool activateToken = true);
     }
@@ -49,9 +49,9 @@ namespace HiveGame.Managers
         public async Task<string?> RemovePlayerConnectionAsync(string connectionId)
         {
             var playerId = GetPlayerFromConnection(connectionId);
-            var keyToRemove = PlayerConnectionDict.Where(kvp => kvp.Value.Equals(connectionId)).Select(kvp => kvp.Key).FirstOrDefault();
+            var keysToRemove = PlayerConnectionDict.Where(kvp => kvp.Value.Equals(connectionId)).Select(kvp => kvp.Key).ToList();
 
-            if(keyToRemove != null)
+            foreach(var keyToRemove in keysToRemove)
             {
                 PlayerConnectionDict.TryRemove(keyToRemove, out _);
             }
@@ -59,7 +59,7 @@ namespace HiveGame.Managers
         }
 
         public string? GetConnectionId(string playerId) => PlayerConnectionDict.TryGetValue(playerId, out var connectionId) ? connectionId : null;
-        public string? GetPlayerId(string connectionId) =>  PlayerConnectionDict.FirstOrDefault(kvp => kvp.Value == connectionId).Key;
+        public string[]? GetPlayersId(string connectionId) =>  PlayerConnectionDict.Where(kvp => kvp.Value == connectionId).Select(x=>x.Key).ToArray();
 
         public void UpdatePlayerConnection(string playerId, string connectionId)
         {

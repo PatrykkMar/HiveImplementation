@@ -27,6 +27,7 @@ namespace HiveGame.Handlers
         Task ConfirmGameAsync(string playerId);
         Task HandlePendingMatchTimeoutAsync(PendingPlayers players);
         Task OnPlayerDisconnectedFromGameAsync(string playerId);
+        Task CreateHotseatGameAsync(string playerId);
     }
     public class GameActionsResponseHandler : IGameActionsResponseHandler
     {
@@ -84,8 +85,19 @@ namespace HiveGame.Handlers
             }
         }
 
+        public async Task CreateHotseatGameAsync(string playerId)
+        {
+
+            var result = await _matchmakingService.CreateHotseatGameAsync(playerId);
+            var connectionId = _connectionManager.GetConnectionId(playerId);
+            _connectionManager.AddPlayerConnection(result.AddedNewPlayer.PlayerId, connectionId);
+            await SendPlayerStateAndViewAsync(result.ExistingPlayer, playerView: result.Game.GetPlayerView(result.ExistingPlayer.PlayerId));
+        }
+
+
 
         #region Queue actions
+
         public async Task JoinQueueAsync(string playerId, string playerNick)
         {
 
@@ -144,7 +156,7 @@ namespace HiveGame.Handlers
             };
 
             var result = await _gameService.PutFirstInsectAsync(request);
-            foreach (var playerInGame in result.Game.Players)
+            foreach (var playerInGame in result.Game.GetPlayersToSendState)
                 await SendPlayerStateAndViewAsync(playerInGame, playerView: result.Game.GetPlayerView(playerInGame.PlayerId));
         }
 
@@ -159,7 +171,7 @@ namespace HiveGame.Handlers
             };
 
             var result = await _gameService.PutAsync(request);
-            foreach (var playerInGame in result.Game.Players)
+            foreach (var playerInGame in result.Game.GetPlayersToSendState)
                 await SendPlayerStateAndViewAsync(playerInGame, playerView: result.Game.GetPlayerView(playerInGame.PlayerId));
         }
 
@@ -174,7 +186,7 @@ namespace HiveGame.Handlers
             };
 
             var result = await _gameService.MoveAsync(request);
-            foreach (var playerInGame in result.Game.Players)
+            foreach (var playerInGame in result.Game.GetPlayersToSendState)
                 await SendPlayerStateAndViewAsync(playerInGame, playerView: result.Game.GetPlayerView(playerInGame.PlayerId));
         }
 

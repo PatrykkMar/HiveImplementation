@@ -32,10 +32,20 @@ namespace HiveGame.Hubs
         {
             var connectionId = Context.ConnectionId;
 
-            var playerId = _connectionManager.GetPlayerId(connectionId);
+            var playersId = _connectionManager.GetPlayersId(connectionId);
             await _connectionManager.RemovePlayerConnectionAsync(connectionId);
-            await _gameActionsHandler.OnPlayerDisconnectedFromGameAsync(playerId);
+            foreach (var playerId in playersId ?? new string[0])
+            {
+                await _gameActionsHandler.OnPlayerDisconnectedFromGameAsync(playerId);
+            }
             await base.OnDisconnectedAsync(exception);
+        }
+
+        [Authorize(Roles = Roles.Player)]
+        public async Task CreateHotseatGame()
+        {
+            var playerId = GetPlayerIdFromToken();
+            await _gameActionsHandler.CreateHotseatGameAsync(playerId);
         }
 
         [Authorize(Roles = Roles.Player)]

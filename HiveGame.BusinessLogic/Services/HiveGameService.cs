@@ -39,6 +39,7 @@ namespace HiveGame.BusinessLogic.Services
         {
             var dbModel = await _gameRepository.GetByPlayerIdAsync(request.PlayerId);
             Game? game = _converter.FromGameDbModel(dbModel);
+            BeforeMoveAndAfterFindingGameAction(game, request);
             _moveValidator.ValidateMove(request, game);
 
             var board = game.Board;
@@ -67,6 +68,7 @@ namespace HiveGame.BusinessLogic.Services
         {
             var dbModel = await _gameRepository.GetByPlayerIdAsync(request.PlayerId);
             Game? game = _converter.FromGameDbModel(dbModel);
+            BeforeMoveAndAfterFindingGameAction(game, request);
             _moveValidator.ValidatePut(request, game);
 
             var board = game.Board;
@@ -87,7 +89,7 @@ namespace HiveGame.BusinessLogic.Services
         {
             var dbModel = await _gameRepository.GetByPlayerIdAsync(request.PlayerId);
             Game? game = _converter.FromGameDbModel(dbModel);
-
+            BeforeMoveAndAfterFindingGameAction(game, request);
             _moveValidator.ValidatePutFirstInsect(request, game);
 
             var board = game.Board;
@@ -140,6 +142,12 @@ namespace HiveGame.BusinessLogic.Services
 
 
             return result;
+        }
+
+        private void BeforeMoveAndAfterFindingGameAction(Game game, GameMoveRequest request)
+        {
+            if (game.OnOneComputer)
+                request.PlayerId = game.GetCurrentPlayer().PlayerId;
         }
 
         public async Task EndGameAsync(Game game)

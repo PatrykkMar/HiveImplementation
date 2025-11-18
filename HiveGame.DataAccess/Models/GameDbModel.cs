@@ -24,6 +24,8 @@ namespace HiveGame.DataAccess.Models
 
         [BsonElement("players")]
         public List<PlayerDbModel> Players { get; set; }
+        [BsonElement("onOneComputer")]
+        public bool OnOneComputer { get; set; }
     }
 
 }

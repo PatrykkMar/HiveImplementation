@@ -140,4 +140,9 @@ public class WebGlHubService : MonoBehaviour, IHubService
             }
         }, null);
     }
+
+    public Task CreateHotseatGameAsync()
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -35,6 +35,7 @@ namespace HiveGame.BusinessLogic.Utils
                 Id = game.Id,
                 NumberOfMove = game.NumberOfMove,
                 CurrentColorMove = game.CurrentColorMove.ToString(),
+                OnOneComputer = game.OnOneComputer,
                 Board = game.Board.Vertices.Select(vertex => new VertexDbModel
                 {
                     Id = vertex.Id,
@@ -78,6 +79,7 @@ namespace HiveGame.BusinessLogic.Utils
             {
                 Id = gameDbModel.Id.ToString(),
                 NumberOfMove = gameDbModel.NumberOfMove,
+                OnOneComputer = gameDbModel.OnOneComputer,
                 Board = new HiveBoard()
             };
 
