@@ -20,7 +20,7 @@ namespace HiveGame.BusinessLogic.Repositories
 
         bool UpdatePlayer(string playerId, Player updatedItem);
 
-        List<Player> GetFirstTwoInQueue();
+        List<Player> GetFirstTwoWaitingInQueue();
 
         bool RemovePlayer(string playerId);
 
@@ -87,7 +87,7 @@ namespace HiveGame.BusinessLogic.Repositories
         }
 
 
-        public List<Player> GetFirstTwoInQueue()
+        public List<Player> GetFirstTwoWaitingInQueue()
         {
             var firstTwoItems = _players.Where(x=>x.PlayerState == ClientState.WaitingInQueue).Take(2).ToList();
             return firstTwoItems;
