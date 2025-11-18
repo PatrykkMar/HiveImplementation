@@ -45,5 +45,9 @@ mergeInto(LibraryManager.library, {
 
     FinishGame: function () {
         window.hubConnection.invoke("FinishGame").catch(err => console.error(err));
+    },
+
+    CreateHotseatGame: function () {
+        window.hubConnection.invoke("CreateHotseatGame").catch(err => console.error(err));
     }
 });

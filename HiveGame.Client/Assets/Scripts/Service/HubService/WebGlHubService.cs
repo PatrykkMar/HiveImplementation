@@ -61,6 +61,8 @@ public class WebGlHubService : MonoBehaviour, IHubService
     private static extern void ConfirmGame();
     [DllImport("__Internal")]
     private static extern void FinishGame();
+    [DllImport("__Internal")]
+    private static extern void CreateHotseatGame();
 
     public async Task InitializeMatchmakingServiceAsync(string token)
     {
@@ -141,8 +143,8 @@ public class WebGlHubService : MonoBehaviour, IHubService
         }, null);
     }
 
-    public Task CreateHotseatGameAsync()
+    public async Task CreateHotseatGameAsync()
     {
-        throw new NotImplementedException();
+        CreateHotseatGame();
     }
 }
