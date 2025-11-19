@@ -10,10 +10,12 @@ using System.Runtime.CompilerServices;
 using UnityEngine.SceneManagement;
 using System.Collections;
 using HiveGame.Core.Models;
+using System.Linq;
 
 public class UIManager : MonoBehaviour
 {
-    public Button[] buttons;
+    public Button[] buttonsToFill;
+    public List<ButtonHelper> btnHelperList;
     protected string textToChange;
 
     public virtual string Name
@@ -26,12 +28,16 @@ public class UIManager : MonoBehaviour
 
     private void OnEnable()
     {
-        ServiceLocator.Services.ClientStateMachine.OnStateChanged += UpdateUI;
+        ServiceLocator.Services.ClientStateMachine.OnStateChanged += SetUIAfterStateChange;
+        ServiceLocator.Services.EventAggregator.AddButton += OnAddButton;
+        ServiceLocator.Services.EventAggregator.RemoveButton += OnRemoveButton;
     }
 
     private void OnDisable()
     {
-        ServiceLocator.Services.ClientStateMachine.OnStateChanged -= UpdateUI;
+        ServiceLocator.Services.ClientStateMachine.OnStateChanged -= SetUIAfterStateChange;
+        ServiceLocator.Services.EventAggregator.AddButton -= OnAddButton;
+        ServiceLocator.Services.EventAggregator.RemoveButton -= OnRemoveButton;
     }
 
     public List<ButtonHelper> GetAvailableButtonsList(ClientState state)
@@ -49,22 +55,46 @@ public class UIManager : MonoBehaviour
         ServiceLocator.Services.EventAggregator.InvokeInformationTextReceived(text);
     }
 
-    public virtual void UpdateUI(ClientState state)
+    public virtual void SetUIAfterStateChange(ClientState state)
     {
         SetInformationText(state);
-        List<ButtonHelper> btnHelperList = GetAvailableButtonsList(state);
-        for(int i = 0; i<buttons.Length; i++)
+        btnHelperList = GetAvailableButtonsList(state);
+        UpdateUIButtons();
+    }
+
+    public void OnAddButton(ButtonHelper button)
+    {
+        if(btnHelperList.FirstOrDefault(x=>x.Name == button.Name) == null)
+        { 
+            btnHelperList.Add(button);
+            UpdateUIButtons();
+        }
+    }
+
+    public void OnRemoveButton(string buttonText)
+    {
+        var button = btnHelperList.FirstOrDefault(x=>x.Name == buttonText);
+        if (button != null)
+        {
+            btnHelperList.Remove(button);
+            UpdateUIButtons();
+        }
+    }
+
+    public virtual void UpdateUIButtons()
+    {
+        for(int i = 0; i<buttonsToFill.Length; i++)
         {
             if(i<btnHelperList.Count)
             {
-                buttons[i].gameObject.transform.GetChild(0).GetComponent<Text>().text = btnHelperList[i].Name;
-                buttons[i].onClick.RemoveAllListeners();
-                buttons[i].onClick.AddListener(btnHelperList[i].Action);
-                buttons[i].gameObject.SetActive(true);
+                buttonsToFill[i].gameObject.transform.GetChild(0).GetComponent<Text>().text = btnHelperList[i].Name;
+                buttonsToFill[i].onClick.RemoveAllListeners();
+                buttonsToFill[i].onClick.AddListener(btnHelperList[i].Action);
+                buttonsToFill[i].gameObject.SetActive(true);
             }
             else
             {
-                buttons[i].gameObject.SetActive(false);
+                buttonsToFill[i].gameObject.SetActive(false);
             }
         }
     }

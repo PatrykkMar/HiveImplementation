@@ -49,7 +49,7 @@ namespace HiveGame.BusinessLogic.Services
 
             if (countInQueue >= PLAYERS_TO_START_GAME)
             {
-                var players = _matchmakingRepository.GetFirstTwoInQueue().ToArray();
+                var players = _matchmakingRepository.GetFirstTwoWaitingInQueue().ToArray();
                 players[0].PlayerState = ClientState.PendingMatchWaitingForConfirmation;
                 players[1].PlayerState = ClientState.PendingMatchWaitingForConfirmation;
                 foreach (var playerInGame in players)
@@ -97,8 +97,6 @@ namespace HiveGame.BusinessLogic.Services
             {
                 _matchmakingRepository.RemovePendingPlayers(pendingPlayers);
                 var players = pendingPlayers.Players;
-                foreach (var pl in players) 
-                    _matchmakingRepository.RemovePlayer(pl.PlayerId);
                 var game = _gameFactory.CreateGame(players);
                 players[0].PlayerState = ClientState.InGamePlayerFirstMove;
                 players[1].PlayerState = ClientState.InGameOpponentMove;

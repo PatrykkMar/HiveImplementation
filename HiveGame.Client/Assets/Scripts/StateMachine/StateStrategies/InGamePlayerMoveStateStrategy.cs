@@ -20,8 +20,6 @@ public class InGamePlayerMoveStateStrategy : IStateStrategy
     {
         return new List<ButtonHelper>
         {
-            //new ButtonHelper("Put insect", async () => await ServiceLocator.Services.HubService.PutInsectAsync(PlayerInsectView.ChosenInsect.Value, null)),
-            //new ButtonHelper("Move insect", async () => await ServiceLocator.Services.HubService.MoveInsectAsync())
         };
     }
 
@@ -134,6 +132,18 @@ public class InGamePlayerMoveStateStrategy : IStateStrategy
         InsectToPut = insectToPut;
 
         Debug.Log("Action: " + Enum.GetName(typeof(PlayerMoveStateAction), action));
+        if (action != PlayerMoveStateAction.None)
+            ServiceLocator.Services.EventAggregator.InvokeAddButton(new ButtonHelper("Cancel move", CancelMove));
+    }
+
+    public void CancelMove()
+    {
+        CurrentAction = PlayerMoveStateAction.None;
+        HexFromMove = null;
+        InsectToPut = null;
+        Board.Instance.CancelHighlighing();
+        ServiceLocator.Services.EventAggregator.InvokeClearSetInsect();
+        ServiceLocator.Services.EventAggregator.InvokeRemoveButton("Cancel move");
     }
 
 
