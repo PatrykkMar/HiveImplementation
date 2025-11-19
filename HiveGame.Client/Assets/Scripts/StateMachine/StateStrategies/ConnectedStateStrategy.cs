@@ -14,7 +14,7 @@ public class ConnectedStateStrategy : IStateStrategy
                     await ServiceLocator.Services.HubService.JoinQueueAsync(nick);
                 }
             ),
-            new ButtonHelper("Create hotseat game", async () => {
+            new ButtonHelper("Play on one computer", async () => {
                     await ServiceLocator.Services.HubService.CreateHotseatGameAsync();
                 }
             )
